@@ -1,0 +1,56 @@
+{
+   "parent": "item/generated",
+    "textures": {
+        "layer0": "huajiager:item/disc/disc_null"
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "stand_the_world": 1
+            },
+            "model": "huajiager:item/disc/disc_the_world"
+        },
+        {
+            "predicate": {
+                "stand_star_platinum": 1
+            },
+            "model": "huajiager:item/disc/disc_star_platinum"
+        },
+        {
+            "predicate": {
+                "stand_hierophant_green": 1
+            },
+            "model": "huajiager:item/disc/disc_hierophant_green"
+        },
+        {
+            "predicate": {
+                "stand_orga_requiem": 1
+            },
+            "model": "huajiager:item/disc/disc_orga_requiem"
+        },
+        {
+            "predicate": {
+                "stand_killer_queen": 1
+            },
+            "model": "huajiager:item/disc/disc_killer_queen"
+        },
+        {
+            "predicate": {
+                "stand_crazy_diamond": 1
+            },
+            "model": "huajiager:item/disc/disc_huajiage_crazy_diamond"
+        },
+        {
+            "predicate": {
+                "stand_hermit_purple": 1
+            },
+            "model": "huajiager:item/disc/disc_huajiage_hermit_purple"
+        },
+        {
+            "predicate": {
+                "stand_white_snake": 1
+            },
+            "model": "huajiager:item/disc/disc_huajiage_white_snake"
+        }
+    ]
+}

@@ -1,0 +1,22 @@
+{
+    "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AB ",
+    "C  ",
+    "   "
+  ],
+  "key": {
+    "A": {
+      "item": "huajiager:huaji_star"
+    },
+    "B": {
+      "item": "huajiager:egg_rice"
+    },
+    "C": {
+      "item": "minecraft:diamond_block"
+    }
+  },
+  "result": {
+    "item": "huajiager:egg_rice_u"
+  }
+}

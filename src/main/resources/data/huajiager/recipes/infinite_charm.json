@@ -1,0 +1,22 @@
+{
+    "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CAC",
+    "ABA",
+    "CAC"
+  ],
+  "key": {
+    "A": {
+      "item": "huajiager:neutron_star_fragment"
+    },
+    "B": {
+      "item": "huajiager:huaji_star_universe"
+    },
+    "C": {
+      "item": "huajiager:hope_flower"
+    }
+  },
+  "result": {
+    "item": "huajiager:infinite_charm"
+  }
+}

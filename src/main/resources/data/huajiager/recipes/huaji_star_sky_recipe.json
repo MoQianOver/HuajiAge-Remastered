@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "DDD",
+    "DED",
+    "DDD"
+  ],
+  "key": {
+    "D": { "item": "huajiager:huaji_star_block" },
+    "E": { "item": "huajiager:huaji_star" }
+  },
+  "result": { "item": "huajiager:huaji_star_sky" }
+}

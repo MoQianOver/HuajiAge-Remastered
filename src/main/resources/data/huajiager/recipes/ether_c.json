@@ -1,0 +1,19 @@
+{
+    "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    " B ",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "item": "huajiager:ether"
+    },
+    "B": {
+      "item": "huajiager:neutron_star_fragment"
+    }
+  },
+  "result": {
+    "item": "huajiager:ether_circumflux_board"
+  }
+}

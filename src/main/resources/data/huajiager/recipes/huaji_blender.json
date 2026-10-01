@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "xzx",
+    "zyz",
+    "xzx"
+  ],
+  "key": {
+    "x": {
+      "item": "minecraft:obsidian"
+    },
+    "z": {
+      "item": "huajiager:huaji"
+    },
+    "y": {
+      "item": "minecraft:beacon"
+    }
+  },
+  "result": {
+    "item": "huajiager:huaji_blender"
+  }
+}

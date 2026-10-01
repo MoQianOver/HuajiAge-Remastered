@@ -1,0 +1,22 @@
+{
+    "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "   ",
+    "CBC",
+    "A A"
+  ],
+  "key": {
+    "A": {
+      "item": "huajiager:neutron_star_fragment"
+    },
+    "B": {
+      "item": "huajiager:huaji_boots"
+    },
+    "C": {
+      "item": "huajiager:hope_flower"
+    }
+  },
+  "result": {
+    "item": "huajiager:orga_boots"
+  }
+}

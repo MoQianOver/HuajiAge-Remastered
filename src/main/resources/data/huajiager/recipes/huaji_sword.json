@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " D ",
+    " D ",
+    " E "
+  ],
+  "key": {
+    "D": { "item": "huajiager:huaji_ingot" },
+    "E": { "item": "minecraft:diamond" }
+  },
+  "result": { "item": "huajiager:huaji_sword" }
+}

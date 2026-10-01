@@ -1,0 +1,31 @@
+{
+    "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "FAF",
+    "DEB",
+    "FCF"
+  ],
+  "key": {
+    "A": {
+      "item": "huajiager:exglutenbur"
+    },
+    "B": {
+      "item": "huajiager:egg_rice_u"
+    },
+    "C": {
+      "item": "huajiager:lord_core"
+    },
+    "D": {
+      "item": "huajiager:hope_flower"
+    },
+    "E": {
+      "item": "huajiager:infinite_charm"
+    },
+    "F": {
+      "tag": "huajiager:discs"
+    }
+  },
+  "result": {
+    "item": "huajiager:singularity"
+  }
+}

@@ -1,0 +1,34 @@
+{
+    "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ADB",
+    "ECF",
+    "BGA"
+  ],
+  "key": {
+    "A": {
+      "item": "huajiager:infinite_charm"
+    },
+    "B": {
+      "item": "huajiager:arrow_stand"
+    },
+    "C": {
+      "item": "huajiager:orga_requiem"
+    },
+    "D": {
+      "item": "huajiager:orga_hair"
+    },
+    "E": {
+      "item": "huajiager:orga_chestplate"
+    },
+    "F": {
+      "item": "huajiager:orga_leggings"
+    },
+    "G": {
+      "item": "huajiager:orga_boots"
+    }
+  },
+  "result": {
+    "item": "huajiager:orga_running"
+  }
+}

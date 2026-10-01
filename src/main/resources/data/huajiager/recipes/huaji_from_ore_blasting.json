@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:blasting",
+  "ingredient": {
+    "item": "huajiager:ore_huaji"
+  },
+  "result": "huajiager:huaji",
+  "experience": 1.0,
+  "cookingtime": 100
+}

@@ -1,0 +1,10 @@
+{
+    "replace": false,
+    "values": [
+        "huajiager:disc",
+        "huajiager:disc_command",
+        "huajiager:disc_mind",
+        "huajiager:disc_memory",
+        "huajiager:disc_stand"
+    ]
+}

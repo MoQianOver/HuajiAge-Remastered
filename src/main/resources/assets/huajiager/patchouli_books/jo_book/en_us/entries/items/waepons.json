@@ -1,0 +1,58 @@
+{
+	"sortnum": 1,
+    "name": "Weapon",
+    "icon": "huajiager:huaji_star_sword",
+    "category": "huajiager:items_category",
+    "pages": [
+        {
+            "type": "text",
+            "text": "This is king NY Gilgamesh's treasure house."
+        },
+		{
+			"type": "spotlight",
+			"item": "huajiager:huaji_sword",
+			"title":"HUAJI Sword",
+			"text":"Looks very Cool sword, HMMM ~ function ~ a little sharp does it count?"
+	    },
+		{
+			"type": "spotlight",
+			"item": "huajiager:huaji_star_sword",
+			"title":"Star Sword",
+			"text":"It is said that $(1)Lord.Lu$() once transformed it into a galactic array of blaster guns, which could easily wipe out stars and shatter them. However, this is only a distant legend now."
+	    },
+		{
+			"type": "spotlight",
+			"item": "huajiager:exglutenbur",
+			"title":"Exglutenbur",
+			"text":"Living in seclusion in the 'spicy gluten island' of $(4)$(l)gluten brother $() under the guard of the hot pot lake of the Deification Weapons, with a powerful two forms, but it is said that only the real warrior dare to liberate its $(7)$(l) third form $()."
+	    },
+		{
+			"type": "spotlight",
+			"item": "huajiager:hero_bow",
+			"title":"Bow of the great hero",
+			"text":"$(4)$(l)Stella！！！$(li)$(3)(The damage caused by the big bang can be turned off by configuration file)"
+	    },
+		{
+			"type": "spotlight",
+			"item": "huajiager:multi_knife",
+			"title":"Multi Stacks Knife",
+			"text":"The knife with which Mr. Dior practised every day."
+	    },
+		{
+			"type": "spotlight",
+			"item": "huajiager:road_roller",
+			"title":"Road Roller",
+			"text":"Road Roller!!!$(li)One septum hit per 10m during the stop adds 2 impact damage and 5 consecutive hits will cause a large explosion.$(li)$(3)$(l)(Damage can be closed by configuration file)"
+	    },
+		{
+			"type": "crafting",
+			"recipe":"huajiager:huaji_sword",
+			"recipe2":"huajiager:huaji_star_sword"
+	    },
+		{
+			"type": "crafting",
+			"recipe":"huajiager:exglutenbur",
+			"recipe2":"huajiager:hero_bow"
+	    }
+    ]
+}

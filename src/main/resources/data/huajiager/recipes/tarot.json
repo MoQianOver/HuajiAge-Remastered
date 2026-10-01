@@ -1,0 +1,26 @@
+{
+    "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BAB",
+    "ACA",
+    "BAB"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:obsidian"
+    },
+    "B": {
+      "item": "minecraft:lapis_block"
+    },
+    "C": {
+      "item": "huajiager:ether"
+    }
+  },
+  "result": {
+  "item": "huajiager:tarot",
+  "nbt": {
+      "Name": "empty"
+ 		}
+  }
+  
+}

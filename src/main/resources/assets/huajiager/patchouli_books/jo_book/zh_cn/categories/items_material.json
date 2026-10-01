@@ -1,0 +1,7 @@
+{
+	"sortnum": 1,
+	"name": "材料",
+	"description": "啊啊啊……都是素材啊，素材啊！",
+	"parent":"huajiager:items_category",
+	"icon": "huajiager:huaji_star"
+}

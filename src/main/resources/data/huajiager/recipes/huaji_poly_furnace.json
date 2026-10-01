@@ -1,0 +1,25 @@
+{
+    "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "DDD",
+    "ABA",
+    "CCC"
+  ],
+  "key": {
+    "A": {
+      "item": "huajiager:hope_flower"
+    },
+    "B": {
+      "item": "huajiager:huaji_blender"
+    },
+    "C": {
+      "item": "huajiager:huaji_star_block"
+    },
+    "D": {
+      "item": "huajiager:ether_circumflux_board"
+    }
+  },
+  "result": {
+    "item": "huajiager:huaji_poly_furnace"
+  }
+}

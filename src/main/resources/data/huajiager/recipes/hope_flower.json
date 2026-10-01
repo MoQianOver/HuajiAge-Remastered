@@ -1,0 +1,19 @@
+{
+    "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "ABA",
+    "AAA"
+  ],
+  "key": {
+    "A": {
+      "item": "huajiager:hope_element"
+    },
+    "B": {
+      "item": "minecraft:diamond"
+    }
+  },
+  "result": {
+    "item": "huajiager:hope_flower"
+  }
+}

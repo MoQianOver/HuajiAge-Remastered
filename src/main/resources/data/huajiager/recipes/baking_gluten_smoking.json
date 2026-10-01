@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smoking",
+  "ingredient": {
+    "item": "huajiager:raw_gluten"
+  },
+  "result": "huajiager:baking_gluten",
+  "experience": 0.35,
+  "cookingtime": 100
+}

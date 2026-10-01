@@ -1,0 +1,9 @@
+{
+	"name": "patchouil.huajiager.book.name",
+	"landing_text": "patchouil.huajiager.book.landing",
+	"show_progress": false, 
+      "model":"huajiager:book_huaji",
+	  "creative_tab":"huajiager:huaji",
+	  "use_resource_pack": true,
+       "version": 1
+}

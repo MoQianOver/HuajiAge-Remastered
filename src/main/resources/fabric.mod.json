@@ -1,0 +1,49 @@
+{
+	"schemaVersion": 1,
+	"id": "huajiager",
+	"version": "${version}",
+	"name": "滑稽纪元：重制",
+	"description": "滑稽纪元的非官方fabric移植版",
+	"authors": [
+		"MoQianOver",
+		"DragonGodSUN"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "MIT",
+	"icon": "assets/huajiager/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"org.huajiager.HuajiAgeRemastered"
+		],
+		"client": [
+			"org.huajiager.HuajiAgeRemasteredClient"
+		],
+		"jei_mod_plugin": [
+			"org.huajiager.compat.jei.HuajiJeiPlugin"
+		],
+		"fabric-datagen": [
+			"org.huajiager.HuajiAgeRemasteredDataGenerator"
+		]
+	},
+	"mixins": [
+		"huajiager.mixins.json",
+		{
+			"config": "huajiager.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"patchouli": ">=1.20.1-80-FABRIC",
+		"jei": ">=15.28.1.170"
+	}
+}

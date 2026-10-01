@@ -1,0 +1,15 @@
+{
+  "stand": "huajiager:hermit_purple",
+  "name": "stand.huajiager.hermit_purple.name",
+  "disc": "huajiager:disc/disc_huajiager_hermit_purple",
+  "stand_tags": ["arrow"],
+  "stages": 1,
+  "states":["default","overdrive"],
+  "attributes": [0.5,0,500,5,50000,80,100000],
+  "sounds": [ "huajiager:stand_hermit_purple_1",
+              "huajiager:stand_hermit_purple_2",
+              "huajiager:stand_hermit_purple_wave"
+              ],
+  "gravity": false,
+  "author": "LH_Lshen"
+}

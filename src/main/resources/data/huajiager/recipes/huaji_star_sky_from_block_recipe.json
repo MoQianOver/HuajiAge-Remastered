@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "huajiager:huaji_star_block_sky"
+    }
+  ],
+  "result": {
+    "item": "huajiager:huaji_star_sky",
+    "count": 9
+  }
+}

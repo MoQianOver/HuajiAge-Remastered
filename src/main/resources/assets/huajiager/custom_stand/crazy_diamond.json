@@ -1,0 +1,16 @@
+{
+  "stand": "huajiager:crazy_diamond",
+  "name": "stand.huajiager.crazy_diamond.name",
+  "disc": "huajiager:disc/disc_huajiager_crazy_diamond",
+  "stand_tags": ["arrow"],
+  "stages": 1,
+  "states":["default","heal","idle"],
+  "attributes": [1,12,250,2,170000,80,180000],
+  "sounds": [ "huajiager:stand_crazy_diamond_1",
+              "huajiager:stand_crazy_diamond_2",
+              "huajiager:stand_crazy_diamond_3",
+              "huajiager:stand_crazy_diamond_4" ],
+  "sounds_repeat": ["entity.player.attack.strong-0.7"],
+  "gravity": false,
+  "author": "LH_Lshen"
+}

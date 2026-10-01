@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAB",
+    "ACA",
+    "DDD"
+  ],
+  "key": {
+    "A": {
+      "item": "huajiager:huaji_ingot"
+    },
+    "B": {
+      "item": "minecraft:glowstone"
+    },
+    "C": {
+      "item": "huajiager:wave_crystal"
+    },
+    "D": {
+      "item": "minecraft:gold_block"
+    }
+  },
+  "result": {
+    "item": "huajiager:expensive_camera"
+  }
+}

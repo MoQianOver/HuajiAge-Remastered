@@ -1,0 +1,26 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "huajiager:item/disc/disc_null"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "command_explosion": 1
+      },
+      "model": "huajiager:item/disc_command_explosion"
+    },
+    {
+      "predicate": {
+        "command_move_up": 1
+      },
+      "model": "huajiager:item/disc_command_move_up"
+    },
+    {
+      "predicate": {
+        "command_self_attack": 1
+      },
+      "model": "huajiager:item/disc_command_self_attack"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "burning=false,facing=north": {
+      "model": "huajiager:block/huaji_blender"
+    },
+    "burning=false,facing=south": {
+      "model": "huajiager:block/huaji_blender",
+      "y": 180
+    },
+    "burning=false,facing=west": {
+      "model": "huajiager:block/huaji_blender",
+      "y": 270
+    },
+    "burning=false,facing=east": {
+      "model": "huajiager:block/huaji_blender",
+      "y": 90
+    },
+    "burning=true,facing=north": {
+      "model": "huajiager:block/huaji_blender_working"
+    },
+    "burning=true,facing=south": {
+      "model": "huajiager:block/huaji_blender_working",
+      "y": 180
+    },
+    "burning=true,facing=west": {
+      "model": "huajiager:block/huaji_blender_working",
+      "y": 270
+    },
+    "burning=true,facing=east": {
+      "model": "huajiager:block/huaji_blender_working",
+      "y": 90
+    }
+  }
+}

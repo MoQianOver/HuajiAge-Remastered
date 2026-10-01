@@ -1,0 +1,19 @@
+{
+    "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "ABA",
+    "   "
+  ],
+  "key": {
+    "A": {
+      "item": "huajiager:neutron_star_fragment"
+    },
+    "B": {
+      "item": "huajiager:huaji_helmet"
+    }
+  },
+  "result": {
+    "item": "huajiager:blance_helmet"
+  }
+}

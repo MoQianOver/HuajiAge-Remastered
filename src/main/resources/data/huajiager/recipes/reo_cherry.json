@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "EHE",
+    "HAH",
+    "EHE"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:apple"
+    },
+    "H": {
+      "item": "huajiager:huaji"
+    },
+    "E": {
+      "item": "minecraft:emerald"
+    }
+  },
+  "result": {
+    "item": "huajiager:reo_cherry"
+  }
+}

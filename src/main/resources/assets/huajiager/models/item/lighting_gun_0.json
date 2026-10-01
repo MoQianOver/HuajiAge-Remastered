@@ -1,0 +1,6 @@
+{
+    "parent": "item/bow",
+    "textures": {
+        "layer0": "huajiager:item/lighting_gun_0"
+        }
+}

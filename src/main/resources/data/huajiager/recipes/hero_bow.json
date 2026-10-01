@@ -1,0 +1,22 @@
+{
+    "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " CA",
+    "CB ",
+    "A  "
+  ],
+  "key": {
+    "A": {
+      "item": "huajiager:ether"
+    },
+    "B": {
+      "item": "huajiager:huaji_star_sky"
+    },
+    "C": {
+      "item": "huajiager:neutron_star_fragment"
+    }
+  },
+  "result": {
+    "item": "huajiager:hero_bow"
+  }
+}

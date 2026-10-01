@@ -1,0 +1,31 @@
+{
+  "type": "huajiager:multi_knife_shiny",
+  "ingredients": [
+    {
+      "item": "huajiager:baking_gluten"
+    }, {
+      "item": "minecraft:diamond"
+    }, {
+      "item": "huajiager:baking_gluten"
+    }, {
+      "item": "minecraft:magma_block"
+    }, {
+      "type": "minecraft:item_nbt",
+      "item": "huajiager:multi_knife",
+      "nbt": {
+        "light": false
+      }
+    }, {
+      "item": "minecraft:magma_block"
+    }, {
+      "item": "huajiager:baking_gluten"
+    }, {
+      "item": "minecraft:diamond"
+    }, {
+      "item": "huajiager:baking_gluten"
+    }
+  ],
+  "result": {
+    "item": "huajiager:multi_knife"
+  }
+}

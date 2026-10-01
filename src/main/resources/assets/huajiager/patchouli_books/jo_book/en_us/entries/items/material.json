@@ -1,0 +1,78 @@
+{
+	"sortnum": 3,
+    "name": "Advanced Material",
+    "icon": "huajiager:neutron_star_fragment",
+    "category": "huajiager:items_material",
+    "pages": [
+        {
+            "type": "text",
+            "text": "Do you think it is over to defeat the wither?No, no, the journey to the infinite stars has just begun."
+        },
+		{
+			"type": "spotlight",
+			"item": "huajiager:huaji_ingot",
+			"title":"HUAJI Ingot",
+			"text":"It's a gold block infused with comical power, luxurious base material."
+	    },
+		{
+			"type": "spotlight",
+			"item": "huajiager:neutron_star_fragment",
+			"title":"Neutron Star Fragment",
+			"text":"The debris of a neutron star, formed by the collapse of a star, has a density of billions of tons per cubic centimeter -- not to mention, of course, MC's fantastic physics, mass, density, and gravity."
+	    },
+		{
+			"type": "spotlight",
+			"item": "huajiager:redstone_druse",
+			"title":"redstone Druse",
+			"text":"Absorb the HUAJI particles of red stone crystal cell growth crystal clusters, wonderful material isomeric catalyst."
+	    },
+		{
+			"type": "spotlight",
+			"item": "huajiager:flash_flour",
+			"title":"Flash Dough",
+			"text":"It is said that it is necessary to make pure baked gluten,only spicy gluten island can produce."
+	    },
+		{
+			"type": "spotlight",
+			"item": "huajiager:hope_element",
+			"title":"Hope Element",
+			"text":"The flower petals of hope blooming on the other side are extremely important energy materials in the universe."
+	    },
+		{
+			"type": "crafting",
+			"recipe":"huajiager:ether_c",
+			"recipe2":"huajiager:hope_flower"
+	    },
+		{
+			"type": "image",
+			 "images": [
+        "huajiager:textures/book/image/huaji_blender.png",
+		"huajiager:textures/book/image/huaji_blender_gui.png"
+		],
+			"title": "",
+			"border": true,
+			"text":"$(l)HUAJI Blender"
+	    },
+		{
+			"type": "spotlight",
+			"title": "§lHUAJI Perfusion",
+			"item": "huajiager:huaji_blender",
+			"text":"HUAJI particle has important application value, but its elemental substance has a strong inertia, direct application value is not high, only after mixed with other materials, its special place can really reflect.$(li)This instrument can mix HUAJI with other materials."
+	    },
+		{
+			"type": "blender",
+				"r1":"minecraft:gold_block",
+				"r2":"huajiager:huaji_star"
+		},
+		{
+			"type": "blender",
+				"r1":"minecraft:redstone_block",
+				"r2":"minecraft:hay_block"
+		},
+		{
+			"type": "blender",
+				"r1":"minecraft:chorus_flower",
+				"r2":""
+		}
+    ]
+}

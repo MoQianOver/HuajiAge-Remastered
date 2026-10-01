@@ -1,0 +1,1 @@
+{"targets":["swap"],"passes":[{"name":"timestop_invertmask","intarget":"minecraft:main","outtarget":"swap","uniforms":[{"name":"InverseAmount","values":[0.72]},{"name":"Radius","values":[0.16]},{"name":"BgGray","values":[1.0]},{"name":"BgSaturation","values":[0.36]}]},{"name":"blit","intarget":"swap","outtarget":"minecraft:main"}]}

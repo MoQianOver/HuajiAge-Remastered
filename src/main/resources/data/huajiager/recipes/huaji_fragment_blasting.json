@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "item": "huajiager:huaji_fragment"
+  },
+  "result": "huajiager:huaji",
+  "experience": 10.0,
+  "cookingtime": 200
+}

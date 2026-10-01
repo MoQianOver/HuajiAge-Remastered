@@ -1,0 +1,19 @@
+{
+    "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " A ",
+    "ABA",
+    " A "
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:wheat"
+    },
+    "B": {
+      "item": "huajiager:flash_flour"
+    }
+  },
+  "result": {
+    "item": "huajiager:raw_gluten"
+  }
+}

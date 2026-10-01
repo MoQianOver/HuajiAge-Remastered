@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " D ",
+    "DED",
+    " F "
+  ],
+  "key": {
+    "D": { "item": "huajiager:neutron_star_fragment" },
+    "E": { "item": "huajiager:huaji_sword" },
+    "F": { "item": "minecraft:diamond" }
+  },
+  "result": { "item": "huajiager:huaji_star_sword" }
+}
