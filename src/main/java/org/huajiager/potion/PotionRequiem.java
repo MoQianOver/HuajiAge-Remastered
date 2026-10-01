@@ -4,7 +4,7 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 
 /**
- * 对应 版 PotionRequiem。
+ * 镇魂曲效果。
  */
 public class PotionRequiem extends StatusEffect {
     public PotionRequiem() {

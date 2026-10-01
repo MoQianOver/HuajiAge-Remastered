@@ -21,12 +21,12 @@ import org.huajiager.stand.messages.SyncExposedStandDataMessage;
 import org.huajiager.stand.states.StandStateBase;
 
 /**
- * 替身通用工具类， 。
+ * 替身通用工具类。
  *
  * 已按依赖就绪情况迁入常用方法（getType / getStandData / getStandHandler /
  * standEffectLoad / getTypeWithIndex 等）；重型方法（getCustomStands / getTagStands /
  * getDiscTex / getArrowStands / getStandByEntity 等）依赖客户端资源加载与
- * StandCustom，仍以 TODO 桩保留（见文件尾）。
+ * StandCustom，当前未提供。
  */
 public final class StandUtil {
 
@@ -276,8 +276,4 @@ public final class StandUtil {
         return StandLoader.STAND_LIST.get(Math.floorMod(index, StandLoader.STAND_LIST.size()));
     }
 
-    // ===== TODO 桩（+）：以下方法依赖未的 StandCustom /
-    // StandResourceLoader / CustomResourceLoader 与客户端资源加载，暂不 =====
-    // getCustomStands() / getTagStands() / getTagModels() / getDiscTex() /
-    // getArrowStands() / getStandByEntity() ...
 }

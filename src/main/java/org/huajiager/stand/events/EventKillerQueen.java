@@ -20,7 +20,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 
 /**
- * 杀手皇后标记事件， 。
+ * 杀手皇后标记事件。
  *
  * - onTargetEntity（AttackEntityCallback）：持有杀手皇后且替身激活（potionStand）时攻击生物，
  *   自动发放/更新"点赞"物品的锁定实体 UUID。

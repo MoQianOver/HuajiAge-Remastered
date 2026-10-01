@@ -3,7 +3,7 @@ package org.huajiager.item;
 import net.minecraft.item.Item;
 
 /**
- * 无尽之星， 。
+ * 无尽之星。
  */
 public class ItemHuajiStarUniverse extends Item {
 

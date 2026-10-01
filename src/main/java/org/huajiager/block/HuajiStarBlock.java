@@ -6,7 +6,7 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.block.MapColor;
 
 
-//滑稽之星压缩块（huaji_star_block
+//滑稽之星压缩块（huaji_star_block）
 public class HuajiStarBlock extends Block {
 	public HuajiStarBlock() {
 		super(AbstractBlock.Settings.create()

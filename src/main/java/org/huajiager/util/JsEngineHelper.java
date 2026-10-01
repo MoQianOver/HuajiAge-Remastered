@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 /**
  * JavaScript 引擎加载器（Nashorn 替代方案）。
  *
- * 原 mod 在 （Java 8）下使用 `new ScriptEngineManager().getEngineByName("nashorn")`
+ * Java 8 时代使用 Nashorn 引擎（`new ScriptEngineManager().getEngineByName("nashorn")`）
  * 驱动替身(stand) JS 脚本与自定义 JS 动画。Fabric 1.20.1 需要 Java 17，而 JDK 15+ 已移除 Nashorn，
  * 因此通过 GraalJS（org.graalvm.js:js + js-scriptengine）提供 javax.script.ScriptEngine 兼容实现。
  *

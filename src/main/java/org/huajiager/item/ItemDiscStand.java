@@ -22,7 +22,7 @@ import org.huajiager.stand.instance.StandBase;
 import org.huajiager.util.NBTHelper;
 
 /**
- * 替身 Disc（独立编写）， 。
+ * 替身 Disc（独立编写）。
  *
  * 作用：收纳 / 切换替身的道具，是测试多种替身的前置载体。
  * 右键（服务端）：将 Disc 存储的替身（StandId / StandStage / StandModel）装载到玩家——
@@ -34,7 +34,7 @@ import org.huajiager.util.NBTHelper;
  *
  * tooltip：显示存储替身 / 阶段 / 模型（本地化替身名，StandUtil 约定 lang key + translatable）。
  *
- * 注：创造模式变体（各原生替身 stage0/1 + 奥尔加镇魂曲 stage3）在 ItemLoader 的
+ * 注：创造模式变体（各原生替身 + 奥尔加镇魂曲）在 ItemLoader 的
  * ItemGroup entries 中通过 {@link #createDisc(ItemStack, String, int)} 生成。
  */
 public class ItemDiscStand extends Item {
@@ -147,7 +147,7 @@ public class ItemDiscStand extends Item {
         return NBTHelper.getTagCompoundSafe(stack).getString(TAGS.STAND_MODEL.getTag());
     }
 
-    /** 通用创造模式变体工厂：单参数（默认 stage0，模型 empty）。 */
+    /** 通用创造模式变体工厂：单参数（模型 empty 占位）。 */
     public static ItemStack createDisc(ItemStack stack, String standId) {
         return createDisc(stack, standId, 0, DEFAULT_STAND_ID);
     }

@@ -4,7 +4,7 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 
 /**
- * 对应 版 PotionFiveBuff（五属性增幅，client 图标绘制留待）。
+ * 五属性增幅药水效果。
  */
 public class PotionFiveBuff extends StatusEffect {
     public PotionFiveBuff() {

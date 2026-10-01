@@ -18,10 +18,10 @@ import net.minecraft.world.World;
 import java.util.List;
 
 /**
- * Dio 面包， （原 ItemFood 12,2f,false）。
+ * Dio 面包（食物，饱食度 12、饱和度 2f）。
  *
  *  onFoodEaten（服务端）食用后：加 5 种强化药水(9s)、回复 5 点生命、触发时停 THE_WORLD_TIME、
- * 发送替身对应消息并播放 THE_WORLD / STAR_PLATINUM 音效；30% 概率发放 roadRoller。 addInformation（客户端）按 Shift 显示两段都市传说 tooltip，移迁后
+ * 发送替身消息并播放 THE_WORLD / STAR_PLATINUM 音效；30% 概率发放 roadRoller。 addInformation（客户端）按 Shift 显示两段都市传说 tooltip，此后
  * 详情文本交由 createDetailedTooltip() 提供，由 client 源集 ItemTooltipHandlers 按 Shift 展开。
  */
 public class ItemDioBread extends Item {

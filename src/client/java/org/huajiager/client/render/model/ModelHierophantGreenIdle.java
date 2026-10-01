@@ -7,9 +7,9 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
 /**
- * HIEROPHANT GREEN 闲置态模型（官方 Blockbench 后仰 + 背后翡翠条带造型）1.20.1 移植版。
+ * HIEROPHANT GREEN 闲置态模型（Blockbench 后仰 + 背后翡翠条带造型）。
  *
- * 数值照搬官方  * （），
+ * 数值照搬自 Blockbench 导出模型，
  * 适配 HAModelPart / StandAnimatedModel 渲染体系。
  *
  * 造型：身体大幅后仰（body rotX=1.3963≈80°）悬浮，双臂自然垂落、双腿盘坐，
@@ -320,7 +320,7 @@ public class ModelHierophantGreenIdle extends HAModelBase implements StandAnimat
 	@Override
 	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float r, float g,
 			float b, float a) {
-		// 无动画兜底：静态渲染后仰盘坐 + 条带造型（各部件已按官方构造值设好角度）
+		// 无动画兜底：静态渲染后仰盘坐 + 条带造型（各部件已按构造值设好角度）
 		renderParts(matrices, vertices, light, overlay, r, g, b, a);
 	}
 
@@ -331,7 +331,7 @@ public class ModelHierophantGreenIdle extends HAModelBase implements StandAnimat
 		renderParts(matrices, vertices, light, overlay, 1f, 1f, 1f, 1f);
 	}
 
-	/** renderStand 共用的闲置动画：整体漂浮 + 条带差相起伏（照搬官方 render()）。 */
+	/** renderStand 共用的闲置动画：整体漂浮 + 条带差相起伏（照搬 render()）。 */
 	private void applyStandAnimation(float ageTicks) {
 		float off = (float) (MathHelper.cos((float) (0.1 * ageTicks)) * 0.1);
 		head.offsetY = off;

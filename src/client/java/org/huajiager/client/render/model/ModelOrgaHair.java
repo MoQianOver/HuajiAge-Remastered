@@ -14,10 +14,10 @@ import net.minecraft.util.Identifier;
 /**
  * 奥尔加发型客户端模型， （Techne）。
  *
- * 1.20.1 下按参考工程（HUAJI Age-Astral Regenesis 的 ModelOrgaArmor）的模型树完整复刻：
+ * 按 ModelOrgaArmor 的模型树完整复刻：
  * 以标准外层护甲网格（ArmorEntityModel.getModelData）为基底，在 head 节点下
  * addChild 10 段发型盒体（hair1~hair10）。盒体数据（UV、偏移、尺寸、旋转角）与
- * 参考工程逐字段一致，贴图 64x64（textures/models/armor/orga.png）。
+ * 与参考模型逐字段一致，贴图 64x64（textures/models/armor/orga.png）。
  *
  * 渲染交由 HuajiAgeRemasteredClient 中与滑稽套装完全一致的 ArmorRenderer 管线
  * （外层护甲模型 + copyBipedStateTo 姿态同步 + 仅 HEAD 可见），保证与已验证可见的
@@ -45,7 +45,7 @@ public class ModelOrgaHair {
 
 	/**
 	 * 构建"外层护甲结构 + 头部挂载 10 段发型盒体"的 ArmorEntityModel。
-	 * 模型树与参考工程一致，bake 为 64x64 纹理布局。
+	 * 模型树与参考模型一致，bake 为 64x64 纹理布局。
 	 */
 	public static ArmorEntityModel<LivingEntity> createHairAttachedArmorModel() {
 		ModelData data = ArmorEntityModel.getModelData(Dilation.NONE);

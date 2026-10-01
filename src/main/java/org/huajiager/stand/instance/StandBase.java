@@ -18,13 +18,13 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.world.World;
 
 /**
- * 替身(Stand)基类， 。
+ * 替身(Stand)基类。
  *
- * 骨架阶段（-Back）：保留字段 / 构造 / getter / 状态容器（addState、initState、
- * putInternalStandStates、chaeckState 等）构成的注册链路核心，无重型外部依赖。 * doStandPower / doStandCapability / doStandCapabilityClient / getBindingRes 等方法强依赖
- * 未的 StandUtil、StandStates、StandResLoader 等重型包，按原源码以 TODO 桩占位。
+ * 保留字段 / 构造 / getter / 状态容器（addState、initState、
+ * putInternalStandStates、chaeckState 等）构成的注册链路核心，无重型外部依赖。 * doStandPower / doStandCapability / doStandCapabilityClient / getBindingRes 等方法
+ * 由具体替身按需实现。
  *
- * 注意：原 版引用 CapabilityExposedData.States（capability 包），本工程统一收敛为
+ * 注意：状态常量统一收敛为
  * org.huajiager.capability.ExposedData.States。
  */
 public class StandBase implements IStand {
@@ -44,7 +44,7 @@ public class StandBase implements IStand {
     protected boolean displayHand;
 
     public StandBase() {
-        // 骨架阶段： loadStates() 被注释，保持空
+        // loadStates() 未启用，保持空
     }
 
     public StandBase(String name, float speed, float damage, int duration, float distance, int cost, int charge,
@@ -121,9 +121,6 @@ public class StandBase implements IStand {
         return displayHand;
     }
 
-    // ===== TODO 桩（+）：getBindingRes() 依赖未的 StandResLoader / StandRes，原源码如下 =====
-    // public StandRes getBindingRes() {
-    //     return StandResLoader.getStand(name) != null ? StandResLoader.getStand(name) : StandResLoader.THE_WORLD_RES;
     // }
 
     public Map<String, StandStateBase> getStatesMap() {

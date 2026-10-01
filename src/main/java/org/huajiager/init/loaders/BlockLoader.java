@@ -20,7 +20,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 
 /**
- * 方块注册器（）， 。
+ * 方块注册器。
  *
  * Fabric 侧按注册名注册 Block + BlockItem（ BlockLoader 为 ore_huaji /
  * huaji_star_block 均注册了 ItemBlock 进物品栏），并通过 ItemGroupEvents

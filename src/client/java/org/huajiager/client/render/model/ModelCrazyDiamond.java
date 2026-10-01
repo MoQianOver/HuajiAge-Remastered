@@ -8,14 +8,14 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 
 /**
- * 疯狂钻石（CRAZY DIAMOND）官方模型 1.20.1 移植版。
+ * 疯狂钻石（CRAZY DIAMOND）模型。
  *
  * 数值照搬 Blockbench JSON（models/entity/crazy_diamond.json，128x128 UV）。
  * 由 gen_crazy_diamond.py 程序化生成：
  * 1) setRotationPoint 已转为相对父节点局部坐标（Blockbench Y-up -> MC Y-down，
  *    翻转坐标差：childFliped - parentFliped），并完整恢复 JSON parent 挂载链，
  *    修复此前 119 个骨骼全部为孤儿节点导致的"只见头与半个身子、手脚缺失"。 * 2) addBox 为相对 bone pivot 的局部坐标。 * 3) viewFirst 子树（第一人称专用手部）保留字段但不挂载、不在第三人称渲染。
- * 配合 RenderStandBase 官方矩阵（180-yaw + scale(-1,-1,1)）渲染即为正立悬浮造型。
+ * 配合 RenderStandBase 矩阵（180-yaw + scale(-1,-1,1)）渲染即为正立悬浮造型。
  */
 public class ModelCrazyDiamond extends HAModelBase implements StandAnimatedModel {
 
@@ -417,7 +417,7 @@ public ModelCrazyDiamond() {
 	viewFirst = new HAModelPart(this);
 	viewFirst.setRotationPoint(0F, 3.45F, 0.2F);
 
-	// 治疗态粉红罩：直接用官方 crazy_diamond_heal.png 左下角粉红区域
+	// 治疗态粉红罩：直接用 crazy_diamond_heal.png 左下角粉红区域
 	// (0,80)-(24,96) 作 UV，6x6x6 盒六面均落在粉红区内；不改贴图像素。
 	redHalo = new HAModelPart(this);
 	redHalo.setRotationPoint(0F, 0F, 0F);
@@ -791,7 +791,7 @@ public ModelCrazyDiamond() {
 	heart4.addChild(Shape9);
 	heart4.addChild(Shape28);
 	rightleg.addChild(legdownr);
-	// —— 第一人称拳头子树（viewFirst）—— 官方 renderFirst 专用：仅第一人称攻击/治疗态
+	// —— 第一人称拳头子树（viewFirst）——  renderFirst 专用：仅第一人称攻击/治疗态
 	// 渲染，第三人称本体（root 树）不包含该子树，故不挂 root、只按 JSON parent 链互挂。
 	viewFirst.addChild(left_hands_ro);
 	viewFirst.addChild(right_hands_ro);
@@ -864,7 +864,7 @@ public ModelCrazyDiamond() {
 	}
 
 	/**
-	 * 第一人称攻击/治疗态：只渲染官方 renderFirst 的拳头环（viewFirst 子树），本体隐藏。
+	 * 第一人称攻击/治疗态：只渲染 renderFirst 的拳头环（viewFirst 子树），本体隐藏。
 	 * 拳头环整体绕 Y 缓慢旋转 + 上下浮动，模拟疯狂钻石拳头乱舞观感。	 * 半透明 alpha 由调用方传入（translucent 层），对齐世界/白金之星式拳头。
 	 */
 	public void renderHandsStand(MatrixStack matrices, VertexConsumer vertices, int light, int overlay,
@@ -979,7 +979,7 @@ public ModelCrazyDiamond() {
 		matrices.pop();
 	}
 
-	/** 度转弧度并写入部件旋转角（与官方模型 setRotation 同口径）。 */
+	/** 度转弧度并写入部件旋转角（与 setRotation 同口径）。 */
 	private static void setRotation(HAModelPart part, float x, float y, float z) {
 		part.rotateAngleX = x * 0.017453292F;
 		part.rotateAngleY = y * 0.017453292F;

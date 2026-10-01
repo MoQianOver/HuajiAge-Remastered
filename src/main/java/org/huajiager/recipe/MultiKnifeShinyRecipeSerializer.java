@@ -25,7 +25,7 @@ public class MultiKnifeShinyRecipeSerializer implements RecipeSerializer<MultiKn
 		String group = JsonHelper.getString(json, "group", "");
 		CraftingRecipeCategory category = parseCategory(JsonHelper.getString(json, "category", "misc"));
 		DefaultedList<Ingredient> input = readIngredients(JsonHelper.getArray(json, "ingredients"));
-		// 1.20.1 官方解析器本身不读 result 的 nbt，result 只需取普通 multi_knife
+		// 1.20.1 解析器本身不读 result 的 nbt，result 只需取普通 multi_knife
 		ItemStack result = ShapedRecipe.outputFromJson(JsonHelper.getObject(json, "result"));
 		return new MultiKnifeShinyRecipe(id, group, category, result, input);
 	}

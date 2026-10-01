@@ -21,13 +21,13 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 /**
- * 疯狂钻石方块移动事件， 。
+ * 疯狂钻石方块移动事件。
  *
  * 通过 PlayerInteractEvent（RightClickBlock / LeftClickBlock）实现：
  * 替身激活（potionStand）且当前状态带 block_move 标签时，
  * - 右击方块：把方块沿点击面方向推开一格。 * - 左击方块：把方块沿点击面反方向拉回一格。 * 不能移动带数据（TileEntity/BlockEntity）的方块。
  *
- * Fabric 1.20.1 对应：UseBlockCallback（右击）/ AttackBlockCallback（左键）。
+ * 通过 UseBlockCallback（右击）/ AttackBlockCallback（左键）挂接。
  */
 public final class EventCrazyDiamond {
 

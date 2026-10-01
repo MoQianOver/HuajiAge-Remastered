@@ -31,12 +31,12 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 /**
- * 五色之力弹（菲华力）实体， 。
+ * 五色之力弹（菲华力）实体。
  *
  * 继承 EntityThrowable，无重力；由 master（持有五色之力的玩家 UUID）驱动：
  * 未触发（de=false）时对附近实体造成火焰 + 15/50 点范围伤害并召雷，触发时改为
- * 附加致盲/缓速/虚弱/发光；命中目标造成翡翠溅射伤害。Fabric 对应 ProjectileEntity。
- * 替身实体 EntityStandBase 已，补回 !(entity instanceof EntityStandBase)
+ * 附加致盲/缓速/虚弱/发光；命中目标造成翡翠溅射伤害。
+ * 替身实体 EntityStandBase 需排除，补回 !(entity instanceof EntityStandBase)
  * 排除：弹体射线检测、范围伤害与命中分支均不把替身展示实体当作目标，
  * 避免发射的五五开之力弹误伤/误引爆自己或队友召唤的替身。
  *
@@ -120,7 +120,7 @@ public class EntityFivePower extends ProjectileEntity {
 		}
 		if (this.getWorld().isClient) {
 			// 客户端影分身不参与物理：位移/碰撞/引爆全部由服务端权威推进，
-			// 客户端只按网络同步的位置渲染。本地再  推进会与服务端
+			// 客户端只按网络同步的位置渲染。本地再推进会与服务端
 			// 位置覆盖叠加成"双重驱动"，表现为弹体前后一抽一抽（同 EntityHeroArrow 修复）。
 			if (tickLife()) {
 				spawnParticles();

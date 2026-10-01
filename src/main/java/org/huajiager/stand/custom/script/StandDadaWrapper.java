@@ -10,7 +10,7 @@ import org.huajiager.stand.StandUtil;
 import net.minecraft.entity.LivingEntity;
 
 /**
- * 替身数据包装（ ）。
+ * 替身数据包装。
  * <p>供自定义替身 JS 脚本读取/修改替身名、阶段、状态、触发标记与精神力（MP）等数据。
  * 访问实体时经由 {@link StandUtil#getStandData(LivingEntity)} / getStandHandler 获取。
  * 对未觉醒替身的实体做了 null 兜底，避免脚本在任何时刻调用而崩溃。</p>

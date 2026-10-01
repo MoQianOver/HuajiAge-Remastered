@@ -21,7 +21,7 @@ import org.huajiager.util.NBTHelper;
 import net.minecraft.nbt.NbtCompound;
 
 /**
- * 命运的塔罗牌（独立编写）， 。
+ * 命运的塔罗牌（独立编写）。
  *
  * 作用：装载 / 卸载替身，是觉醒之箭外的常用替身切换道具。
  *  - 普通右键：若玩家当前无替身且牌中存有替身 → 装载该替身（阶段/模型一并写入），

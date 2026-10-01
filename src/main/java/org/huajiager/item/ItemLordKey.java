@@ -16,7 +16,7 @@ import net.minecraft.world.World;
 import java.util.List;
 
 /**
- * 五行至尊之芯， 。
+ * 五行至尊之芯。
  *  ：头戴已激活（active）但未 lord 的 ItemBlancedHelmet 时，
  * 将头盔置为 lord（解放 Lord.Lu）、消耗之芯、召唤三道闪电，并发送
  * messege.huaji.blancedHelmet.lord.break（含玩家名）；条件不满足时提示 failed。

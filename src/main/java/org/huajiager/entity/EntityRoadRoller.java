@@ -37,7 +37,7 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 /**
- * 压路机实体， 。
+ * 压路机实体。
  *
  * 继承 EntityThrowable，bounding box 外扩 (2,1.5,2)，投掷物特性为“静止时无重力、
  * 运动时施加 0.06 重力”。命中/包围范围内实体造成 thrown 伤害并引发大爆炸。 * The World 时停联动与 Star Platinum 粒子/音效逻辑经 ServerUtil 广播。
@@ -143,7 +143,7 @@ public class EntityRoadRoller extends ProjectileEntity {
 		// 手动推进：ProjectileEntity.tick 基类不自动移动实体（EntityThrowable.
 		// 内部自带 move(motion) + 重力），若不 push，压路机只会停在出生点附近原地打转，
 		// 对地形毫无反应，只有迎面恰好扫到贴近生物才触发——即"对地面右键不发射、只对生物有效"。
-		// 这里用  逐 tick 沿速度前进，还原投掷行为。
+		// 这里逐 tick 沿速度前进，还原投掷行为。
 		double nx = getX() + v.x;
 		double ny = getY() + v.y;
 		double nz = getZ() + v.z;

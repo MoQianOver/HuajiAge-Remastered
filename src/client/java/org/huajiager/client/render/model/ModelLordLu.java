@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
  * 模型树为 core（背部核心环）+ wing（八片零厚翼膜）+ wingBones（八根翼骨），
  * 全部盒体数据（UV、偏移、尺寸、旋转角）与逐字段一致，贴图 128x128
  * （textures/entity/lord_lu_power.png）。lord 态由 ArmorRenderer 在背部渲染，
- * 翼膜与翼骨按实体 tick 反向旋转形成扇动动画（同参考版 LayerLordLu）。
+ * 翼膜与翼骨按实体 tick 反向旋转形成扇动动画。
  */
 public class ModelLordLu {
 
@@ -125,17 +125,17 @@ public class ModelLordLu {
 	 * 渲染层与 LayerLordPower 语义对齐：enableBlend 混合 + disableLighting +
 	 * 固定满亮 lightmap(240,240)。
 	 *
-	 * 黑色根因（两轮误判后才定位）：1.20.1 官方 rendertype_entity_translucent_emissive
+	 * 黑色根因（两轮误判后才定位）：1.20.1  rendertype_entity_translucent_emissive
 	 * 并非"无光照"——其顶点着色器带 minecraft_mix_light(Light0_Direction, Light1_Direction,
 	 * Normal, Color) 法线光照调制，且片元着色器以 light 参数越界采样 Sampler1 作
 	 * overlayColor。本模组 0 厚度翼面法线朝 x/y，受固定方向光调制后亮度跌至 0.4 系数，
 	 * 暗黄绿贴图被压成近黑；叠加半透明混合后观感即"黑色翅膀"。
 	 * 已在 assets/minecraft/shaders/core/rendertype_entity_translucent_emissive.vsh/.fsh
-	 * 覆盖官方 shader：vsh 去掉 mix_light（vertexColor = Color，等价 disableLighting），
+	 * 覆盖 shader：vsh 去掉 mix_light（vertexColor = Color，等价 disableLighting），
 	 * fsh 去掉 overlay 越界采样，保留 alpha<0.1 discard（翼膜区域贴图 alpha=0，与
 	 * enableBlend 下透明一致）与雾化。该 emissive 层全工程仅本模型使用，无副作用。
 	 *
-	 * 卡顿根因： ageInTicks = ticksExisted + partialTicks（含渲染帧插值），移植版
+	 * 卡顿根因： ageInTicks = ticksExisted + partialTicks（含渲染帧插值），此前实现
 	 * 传 entity.age 整数 tick，动画每秒只更新 20 次，视觉上翅膀似 15-30 帧跳变。	 * 故调用方须补传 MinecraftClient.getInstance().getTickDelta() 插值。
 	 * 调用前 matrices 需已平移到玩家背部位置。
 	 */

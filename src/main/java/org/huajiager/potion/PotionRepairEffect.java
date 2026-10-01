@@ -7,10 +7,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 
 /**
- * 对应 版 PotionRepairEffect。
+ * 耐久修复效果。
  * <p>"物品修复"药水效果：持续修复副手 / 背包 / 装备栏物品耐久，每秒恢复 40 点。
  * 原实现为空壳（未覆写 applyUpdateEffect），大招只瞬间修了主手、药水效果形同虚设
- * → 副手/背包/装备栏耐久不回。现按原作描述实现：主手已由 capability 瞬间修复，
+ * → 副手/背包/装备栏耐久不回。主手已由 capability 瞬间修复，
  * 药水持续修复仅覆盖副手、背包（36 格，排除主手格）与装备栏（4 格）。</p>
  */
 public class PotionRepairEffect extends StatusEffect {

@@ -15,7 +15,7 @@ import net.minecraft.item.ItemStack;
  * modeSwitch 分支：按 MODE_SWITCH 键且头戴五五开头盔时发送 MessageBlanceHelmetMode，
  * 由服务端依据 NBT 三态调度 ModeChange。
  * Fabric 用 ClientTickEvents.END_CLIENT_TICK 轮询 KeyBinding.wasPressed()
- * （参考 EventStandKey 轮询范式）。
+ * （沿用 EventStandKey 轮询范式）。
  */
 public final class EventBlanceHelmetKey {
 

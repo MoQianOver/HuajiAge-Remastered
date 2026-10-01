@@ -27,7 +27,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 /**
- * 第二卷轴， 。
+ * 第二卷轴。
  *
  * 使用方法一：左键攻击生物或右键放出弹射物（EntitySecondFoil）击中生物，可使用五次。
  * 使用方法二：将物品丢出，10 秒内不可捡起；落地倒计时结束后——附近有可捡起的玩家则恢复

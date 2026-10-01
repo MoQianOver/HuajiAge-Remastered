@@ -7,14 +7,13 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
 /**
- * Killer Queen 官方模型 1.20.1 移植版（default / 待机态）。
+ * Killer Queen 模型（default / 待机态）。
  *
- * 数值照搬官方 Blockbench 导出
- * （），
- * textureWidth/Height=128 与官方 entity_killer_queen_default.png 贴图 UV 完全匹配。
- * 配合 RenderStandBase 的官方矩阵（180-yaw + scale(-1,-1,1)）渲染即为保持一致的
- * 正立悬浮待机造型；动画仅保留官方 render() 的上下漂浮 + 头部正视。
- * 官方 renderFirst 为空：第一人称不渲染本体（与绿法皇一致，避免贴脸遮挡视野）。
+ * 数值照搬自 Blockbench 导出；
+ * textureWidth/Height=128 与 entity_killer_queen_default.png 贴图 UV 完全匹配。
+ * 配合 RenderStandBase 的矩阵（180-yaw + scale(-1,-1,1)）渲染即为保持一致的
+ * 正立悬浮待机造型；动画仅保留 render() 的上下漂浮 + 头部正视。
+ *  renderFirst 为空：第一人称不渲染本体（与绿法皇一致，避免贴脸遮挡视野）。
  */
 public class ModelKillerQueen extends HAModelBase implements StandAnimatedModel {
 
@@ -199,7 +198,7 @@ public class ModelKillerQueen extends HAModelBase implements StandAnimatedModel 
 		renderParts(matrices, vertices, light, overlay, 1f, 1f, 1f, 1f);
 	}
 
-	/** 官方 render()：整体上下漂浮 + 头部正视（替身朝向由渲染器矩阵 180-yaw 处理，此处不叠加）。 */
+	/**  render()：整体上下漂浮 + 头部正视（替身朝向由渲染器矩阵 180-yaw 处理，此处不叠加）。 */
 	private void applyStandAnimation(float ageTicks) {
 		float off = (float) (MathHelper.cos((float) (0.1 * ageTicks)) * 0.1);
 		head.offsetY = off;

@@ -12,7 +12,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 
 /**
- * Orga Requiem 飞行态， 。
+ * Orga Requiem 飞行态。
  * <p> 收尾：依赖的 StandPowerHelper.rangePunchAttack 已补全，本态真实启用。
  * 行为：范围拳击连打（按使用者 maxHealth/2 结算伤害）+ 周期性隐身。 * 超时退出（doTaskOutOfTime）施加替身标记/加速/饥饿（饥饿等级按
  * ConfigHuaji.Stands.allowStandPunish 是否开启额外惩罚档）。</p>

@@ -39,7 +39,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 
 /**
- * 白蛇心智抽取事件（ ）。
+ * 白蛇心智抽取事件。
  *
  * <p>两段逻辑：
  * <ul>
@@ -89,7 +89,7 @@ public final class EventWhiteSnake {
 			return ActionResult.PASS;
 		});
 
-		// 被夺生物持续掉血：每 tick 遍历全实体，命中 disc_deprive 标志则结算（对应 LivingUpdateEvent）
+		// 被夺生物持续掉血：每 tick 遍历全实体，命中 disc_deprive 标志则结算
 		// 标记为持久化 attachment（重生/重进保留，直到用心智碟或替身碟右键解除）
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
 			for (ServerWorld world : server.getWorlds()) {
@@ -112,7 +112,7 @@ public final class EventWhiteSnake {
 		});
 	}
 
-	/** 对应 onOverdriveAttack：白蛇抽取心智 DISC。 */
+	/** 白蛇抽取心智 DISC。 */
 	private static void tryDepriveDisc(PlayerEntity attacker, LivingEntity living) {
 		StandBase stand = StandUtil.getType(attacker);
 		IExposedData data = StandUtil.getStandData(attacker);
@@ -161,7 +161,7 @@ public final class EventWhiteSnake {
 				if (!hurtStand.equals(StandLoader.EMPTY)) {
 					if (hurtStage <= stage) {
 						NBTHelper.setDiscDeprive(living, true);
-						// 掉碟同时剥夺替身（对照原版：setTrigger(false)+setStand("empty")+setStage(0)）：
+						// 掉碟同时剥夺替身（setTrigger(false)+setStand("empty")+setStage(0)）：
 						// 1) 两碟预标记后再 dropStack；2) 清空被夺者替身数据；
 						// 3) 立即移除被夺者替身展示实体（不依赖实体 tick 的心跳判定）；
 						// 4) 被夺者为玩家时同步客户端替身数据（trigger=false/stand=empty 复位）。
@@ -195,7 +195,7 @@ public final class EventWhiteSnake {
 		}
 	}
 
-	/** 对应 onDiscDeprive：被夺生物持续凋零 + 每 20 tick 掉 1/10 最大生命。 */
+	/** 被夺生物持续凋零 + 每 20 tick 掉 1/10 最大生命。 */
 	private static void onDiscDepriveTick(LivingEntity living) {
 		if (!living.hasStatusEffect(StatusEffects.WITHER) && !living.hasStatusEffect(StatusEffects.NAUSEA)) {
 			living.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 60));
@@ -232,7 +232,7 @@ public final class EventWhiteSnake {
 
 	/**
 	 * 立即移除被夺者当前召唤的替身展示实体（user 匹配）。
-	 * 对照原版：替身数据清空（setTrigger(false)）后替身消失；
+	 * 替身数据清空（setTrigger(false)）后替身消失；
 	 * Fabric 端替身是独立实体，除 tick 心跳 discard 外，在此直接移除，
 	 * 确保"掉碟瞬间替身即消失"，不依赖后续 tick。
 	 */
@@ -265,7 +265,7 @@ public final class EventWhiteSnake {
 		return ItemDiscMemory.getOwnerType(stack).toLowerCase(java.util.Locale.ROOT).contains("player");
 	}
 
-	/** 对应 playSounds：随机播放白蛇命中音 hit_1/2/3。 */
+	/** 随机播放白蛇命中音 hit_1/2/3。 */
 	private static void playSounds(LivingEntity entity) {
 		float i = entity.getRandom().nextFloat() * 10f;
 		if (i < 3.3f) {

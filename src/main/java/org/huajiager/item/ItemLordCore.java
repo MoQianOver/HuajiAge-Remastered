@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 import java.util.List;
 
 /**
- * 挂者核心， 。
+ * 挂者核心。
  *  ：头戴 ItemBlancedHelmet（五五开头盔）且未 active 时，
  * 将头盔置为 active（解除封印）、消耗核心，并发送 messege.huaji.blancedHelmet.active
  * （含玩家名）；未穿戴头盔或已激活时给出 failed 提示。

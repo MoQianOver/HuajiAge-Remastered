@@ -39,15 +39,15 @@ import net.minecraft.world.World;
 
 
 /**
- * 替身展示实体（裁剪版）， 。
+ * 替身展示实体。
  *
- * 继承 EntityHorse，Fabric 1.20.1 对应 HorseEntity。
+ * 继承 Fabric 的 HorseEntity。
  * 裁剪策略：
  * - spawn 数据（IEntityAdditionalSpawnData / writeSpawnData）：站姿类型与用户已通过
- *   DataTracker + NBT 同步，客户端表现（立起音效 / RIDE 尺寸）依赖未的
- *   StandClientUtil / StandStates RIDE 标签，整段裁剪，后续渲染批补齐。 * - hasNoGravity 中 StandResourceLoader.CUSTOM_STAND_SERVER（自定义替身资源未）
+ *   DataTracker + NBT 同步，客户端表现（立起音效 / RIDE 尺寸）依赖未就绪的
+ *   StandClientUtil / StandStates RIDE 标签，整段裁剪。 * - hasNoGravity 中 StandResourceLoader.CUSTOM_STAND_SERVER（自定义替身资源未就绪）
  *   判断裁剪，统一返回 true（无重力）。 * - 骑乘跟随 / 位置吸附（getEntityBoundingBox / getControllingPassenger / travel）
- *   属客户端表现，保留服务端核心 tick 跟随逻辑，交互骑行后续补。
+ *   属客户端表现，此处仅保留服务端核心 tick 跟随逻辑。
  */
 public class EntityStandBase extends HorseEntity {
 
@@ -244,7 +244,7 @@ public class EntityStandBase extends HorseEntity {
             if (!hasEntity()) {
                 // 位置按替身状态区分、与玩家同高度（不再抬高/偏侧）：
                 // - 闲置态：玩家正背后（沿朝向反方向拉开），替身在身后待机。                // - 攻击态（default）：玩家正前方，替身站到身前挥拳。
-                // 依据：/移植版替身均贴附在玩家身上（官方叠加层  于玩家模型空间，
+                // 依据：替身均贴附在玩家身上（叠加层渲染于玩家模型空间，
                 // default translate(0,-0.2,-0.75) 即背后、idle translate(-0.45,-0.2,0.45) 即身前），
                 // 本工程为独立实体渲染，按用户要求改为「闲置=背后、攻击=玩家前方」，y 取玩家脚底同高。
                 // 水平朝向唯一取自玩家 yaw，俯仰（pitch）不参与：
@@ -300,7 +300,7 @@ public class EntityStandBase extends HorseEntity {
                         bz = user.getZ() - nz * OFF_BACK - nx * OFF_LEFT;
                     } else if (isKillerQueen && !punchState) {
                         // KQ 待机态（ModelKillerQueen.=(0.9,-0.1,-0.8)：
-                        // 左侧 0.9、前方 0.8、高 0.1）——按官方数值映射为实体偏移，不再沉底
+                        // 左侧 0.9、前方 0.8、高 0.1）——按模型数值映射为实体偏移，不再沉底
                         final double OFF_FRONT = 0.8D;
                         final double OFF_LEFT = 0.9D; // 正值 = 向玩家左侧偏移 0.9 格
                         bx = user.getX() + nx * OFF_FRONT + nz * OFF_LEFT;
@@ -321,7 +321,7 @@ public class EntityStandBase extends HorseEntity {
                         bz = user.getZ() + nz * OFF_FRONT;
                     }
                 }
-                // 高度：白金之星闲置比玩家脚底高 0.5 格；其它替身闲置高 0.3 格（原状）；攻击态与玩家同高
+                // 高度：白金之星闲置比玩家脚底高 0.5 格；其它替身闲置高 0.3 格（沿用默认高度）；攻击态与玩家同高
                 double by = user.getY()
                         + (idleState ? (isStarPlatinum ? 0.5D : 0.3D) : 0.0D);
                 // 绿法皇特判：攻击态比玩家高 1 格、闲置态比玩家高 0.75

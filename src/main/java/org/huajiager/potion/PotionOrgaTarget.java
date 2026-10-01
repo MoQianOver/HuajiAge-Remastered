@@ -4,7 +4,7 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 
 /**
- * 对应 版 PotionOrgaTarget（Orga 目标标记）。
+ * Orga 目标标记效果。
  */
 public class PotionOrgaTarget extends StatusEffect {
     public PotionOrgaTarget() {

@@ -21,7 +21,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 /**
- * 觉醒之箭（独立编写）， 。
+ * 觉醒之箭（独立编写）。
  *
  * 行为（服务端右键）：若玩家尚未拥有替身（StandData 为空替身），
  * 随机抽取 0~99 号替身，按 ConfigHuaji.Stands.chanceStandFail 概率判定觉醒：
@@ -61,7 +61,7 @@ public class ItemArrowStand extends Item {
             // 「无替身」判定统一走工程语义 StandUtil.getType == null：
             // 其内部对 null / 空串 / "empty" 三重容错，规避 attachment 初始值
             // 与 StandLoader.EMPTY 字符串直接比对的分支不确定性
-            // （原实现 data.getStand().equals(EMPTY) 实测误入 fail_load 分支）。
+            // （data.getStand().equals(EMPTY) 直接比对实测误入 fail_load 分支）。
             // 写入路径改用 getOrCreateStandData：getAttached 对 createDefaulted
             // attachment 返回 initializer 每次新建的临时实例，setStand 不落库。            // getOrCreate 才把实例 attach 到实体 storage，觉醒出的替身才能持久保存。
             IExposedData data = StandUtil.getOrCreateStandData(player);

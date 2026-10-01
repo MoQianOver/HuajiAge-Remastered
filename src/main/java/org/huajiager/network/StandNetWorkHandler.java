@@ -25,13 +25,13 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 /**
- * 替身网络注册器，对应 StandNetWorkHandler（SimpleNetworkWrapper）。
+ * 替身网络注册器。
  *
  * Fabric 1.20.1 用 FabricPacket + ServerPlayNetworking.registerGlobalReceiver 注册
  * （1.20.2+ 的 PayloadTypeRegistry/CustomPayload 在此版本不可用）。
- * 客户端向服务端发送（原 sendToServer）为 client-only API，
+ * 客户端向服务端发送为 client-only API，
  * 已下沉到 client source set（见 HuajiAgeRemasteredClient）。
- * 本批仅注册核心链路两条消息，其余消息待依赖类落盘后逐批补入。
+
  */
 public final class StandNetWorkHandler {
 

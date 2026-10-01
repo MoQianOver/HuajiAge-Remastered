@@ -6,7 +6,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 
 /**
- * S2C：服务端向客户端广播替身能力表现（对应 MessageDoStandPowerClient）。
+ * S2C：服务端向客户端广播替身能力表现。
  *
  * 载荷仅 playerName + standName，客户端 handler（位于 client source set，
  * 见 org.huajiager.HuajiAgeRemasteredClient）取出实体后调用

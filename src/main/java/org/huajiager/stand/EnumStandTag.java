@@ -1,7 +1,7 @@
 package org.huajiager.stand;
 
 /**
- * 替身标签常量枚举， 。
+ * 替身标签常量枚举。
  * 供替身状态机 / 实体逻辑判断特殊状态标签（如 RIDE 骑乘）。
  */
 public class EnumStandTag {

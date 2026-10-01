@@ -8,7 +8,7 @@ import org.huajiager.stand.states.StandStateBase;
 import net.minecraft.entity.LivingEntity;
 
 /**
- * Killer Queen 拳击态， 。
+ * Killer Queen 拳击态。
  * <p> 收尾：依赖的 StandPowerHelper.rangePunchAttack 已补全，本态真实启用。
  * 由 StandKillerQueen 在 doStandPower 的 punch 分支挂载调用（见 StandKillerQueen）。</p>
  */

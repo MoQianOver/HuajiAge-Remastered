@@ -6,7 +6,7 @@ import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 
 /**
- * 烤面筋， （原 ItemFood）。
+ * 烤面筋（食物）。
  *  setAlwaysEdible 且回 5 种正面效果，Fabric 侧收敛为 FoodComponent（构造器块内设置，适配 1.20.1）。
  */
 public class ItemBakingGluten extends Item {

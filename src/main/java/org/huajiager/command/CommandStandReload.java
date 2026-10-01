@@ -11,7 +11,7 @@ import net.minecraft.text.Text;
 /**
  * 替身数据重载命令。
  *
- * 原 CommandBase（命令名 reloadStand，权限 0，执行 StandLoader.reloadStands()）
+ * 命令名 reloadStand，权限 0，执行 StandLoader.reloadStands()。
  * 以 Fabric 1.20.1 Brigadier 重写，并经 {@link #register} 在
  * CommandRegistrationCallback 中挂载（见主入口 onInitialize）。
  *
@@ -24,8 +24,7 @@ public final class CommandStandReload {
 	}
 
 	/**
-	 * 注册 /reloadStand 命令到给定 dispatcher（等价于原 HACommands.onServerStarting 的
-	 * event.registerServerCommand(new CommandStandReload())）。
+	 * 注册 /reloadStand 命令到给定 dispatcher（命令语义见类头）。
 	 */
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(net.minecraft.server.command.CommandManager.literal("reloadStand")

@@ -342,7 +342,7 @@ public class EntitySheerHeartAttack extends TameableEntity {
 		return null;
 	}
 
-	// ===== 繁殖与可攻击目标限制桩 =====
+	// ===== 繁殖与可攻击目标限制 =====
 	// 小车不可繁殖；可攻击目标限制已由 ActiveTargetGoal + canTarget（排除玩家与替身）覆盖，
 	// 无需额外实现断言性 API。
 }

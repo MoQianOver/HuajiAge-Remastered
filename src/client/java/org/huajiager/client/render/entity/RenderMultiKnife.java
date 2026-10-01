@@ -32,7 +32,7 @@ public class RenderMultiKnife extends EntityRenderer<EntityMultiKnife> {
 	public void render(EntityMultiKnife entity, float yaw, float tickDelta, MatrixStack matrices,
 			VertexConsumerProvider vcp, int light) {
 		matrices.push();
-		// 对齐 mrqx0195(1.20.1 移植版 RenderMultiKnife) 变换序列：
+		// 变换序列：
 		// 渲染位抬升到眼睛高度1.5倍再下移0.3，Y(朝向)→X(90)刀尖朝前→X(-俯仰)，scale(1,-1,-1)，无额外缩放。
 		matrices.translate(0, entity.getStandingEyeHeight() * 1.5, 0);
 		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(entity.getRotation()));
@@ -49,7 +49,7 @@ public class RenderMultiKnife extends EntityRenderer<EntityMultiKnife> {
 
 		matrices.scale(1f, -1f, -1f);
 		// 关键：HAModelPart 底层是标准 1.20.1 ModelPart，addBox 像素坐标渲染时已自动 /16，
-		// 刀身 12 单位 = 0.75 格，与 mrqx0195 烘焙模型一致； 0.03 是 「像素×scale」语义，
+		// 刀身 12 单位 = 0.75 格，烘焙模型一致；0.03 是 「像素×scale」语义，
 		// 1.20.1 下再乘 0.03 会让刀身缩到 0.02 格导致肉眼不可见（此前"非常小"的根源）。
 		MODEL.render(matrices, vc, l, OverlayTexture.DEFAULT_UV);
 		matrices.pop();

@@ -139,7 +139,7 @@ public final class EventTimeStop {
 		DELAYED_STARTS.put(player.getUuid(), new DelayedStart(delayTicks, duration, applyPotion));
 	}
 
-	/** 每 tick 递减延迟时停队列，归零后对对应玩家实际触发时停。 */
+	/** 每 tick 递减延迟时停队列，归零后对该玩家实际触发时停。 */
 	private static void tickDelayedStarts(MinecraftServer server) {
 		if (DELAYED_STARTS.isEmpty()) {
 			return;
@@ -259,7 +259,7 @@ public final class EventTimeStop {
 	}
 
 	/**
-	 * 对应 {@code EventTimeStop.onTheWorld}：发动者倒计时递减、范围内打 TIME_STOP、
+	 * 发动者倒计时递减、范围内打 TIME_STOP、
 	 * 冻结运动实体；最后一 tick 恢复原运动。
 	 */
 	private static void onTheWorld(Entity eater) {
@@ -337,7 +337,7 @@ public final class EventTimeStop {
 	}
 
 	/**
-	 * 对应 {@code EventTimeStop.onTimeStop}：被冻结目标递减 TIME_STOP，
+	 * 被冻结目标递减 TIME_STOP，
 	 * 非玩家冻结/释放，玩家锁定 + 致盲，并结算 DIO 标记。
 	 */
 	private static void onTimeStop(Entity target) {

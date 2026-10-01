@@ -8,8 +8,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 
 /**
- * 灰色波发符实体模型， ModelOrgaHairKnife（原渲染 ItemLoader.orgaHairKnife 物品 GROUND）。
- *  物品未，由调用方传入兜底 ItemStack（可能为空 → 渲染占位盒）。
+ * 灰色波发符实体模型（此前渲染 ItemLoader.orgaHairKnife 物品 GROUND）。
+ *  物品未注册，由调用方传入兜底 ItemStack（可能为空 → 渲染占位盒）。
  */
 public class ModelOrgaHairKnife extends HAModelBase {
 

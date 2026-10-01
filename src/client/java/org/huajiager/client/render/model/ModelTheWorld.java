@@ -7,10 +7,10 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
 /**
- * THE WORLD 官方模型 1.20.1 移植版。
+ * THE WORLD 模型。
  *
- * 数值照搬官方 （Techne 导出 ），
- * 配合 RenderStandBase 的官方矩阵（180-yaw + scale(-1,-1,1)）渲染即为保持一致的正立悬浮盘腿造型。
+ * 数值照搬自 Techne 导出模型，
+ * 配合 RenderStandBase 的矩阵（180-yaw + scale(-1,-1,1)）渲染即为保持一致的正立悬浮盘腿造型。
  * 动画（漂浮 offsetY + 手部十二连 cos 摆动）一并保留；闲置态收手静止、
  * 攻击态张开连打，由 power（renderStand 传入）驱动。
  */
@@ -283,7 +283,7 @@ public class ModelTheWorld extends HAModelBase implements StandAnimatedModel {
 	@Override
 	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float r, float g,
 			float b, float a) {
-		// 无动画兜底：静态渲染当前姿态（各部件已按官方构造值设好角度）
+		// 无动画兜底：静态渲染当前姿态（各部件已按构造值设好角度）
 		renderParts(matrices, vertices, light, overlay, r, g, b, a);
 	}
 
@@ -296,14 +296,14 @@ public class ModelTheWorld extends HAModelBase implements StandAnimatedModel {
 
 	/**
 	 * 攻击态第一人称专用渲染：只画两只挥拳（left_hands/right_hands），不画本体。
-	 * 对齐官方 ModelTheWorld.renderFirst（第一人称叠加层仅渲染双手、隐藏 body/head/leg
+	 * 对齐 ModelTheWorld.renderFirst（第一人称叠加层仅渲染双手、隐藏 body/head/leg
 	 * 等本体部件）——本工程为独立实体渲染，攻击态替身位于玩家前方，第一人称靠本方法
 	 * 只呈现前方舞动的拳头，替身本体从视野中消失。
 	 */
 	public void renderHandsStand(MatrixStack matrices, VertexConsumer vertices, int light, int overlay,
 			EntityStandBase entity, float ageTicks, float speed, float power, float alpha) {
 		applyStandAnimation(ageTicks, speed, power);
-		// 第一人称攻击态拳头半透明：对齐官方 renderFirst 的 GlStateManager.color(1,1,1,alpha)，
+		// 第一人称攻击态拳头半透明：对齐 renderFirst 的 GlStateManager.color(1,1,1,alpha)，
 		// 调用方需传入 translucent 层（cutout 层忽略 alpha）。
 		left_hands.render(matrices, vertices, light, overlay, 1f, 1f, 1f, alpha);
 		right_hands.render(matrices, vertices, light, overlay, 1f, 1f, 1f, alpha);
@@ -311,7 +311,7 @@ public class ModelTheWorld extends HAModelBase implements StandAnimatedModel {
 
 	/** renderStand / renderHandsStand 共用的替身动画：漂浮、头部正视、挥拳（setRotationAngles+setPunch）。 */
 	private void applyStandAnimation(float ageTicks, float speed, float power) {
-		// 官方 render()：整体上下漂浮
+		//  render()：整体上下漂浮
 		float off = (float) (MathHelper.cos((float) (0.1 * ageTicks)) * 0.1);
 		head.offsetY = off;
 		body.offsetY = off;
@@ -323,9 +323,9 @@ public class ModelTheWorld extends HAModelBase implements StandAnimatedModel {
 		head.rotateAngleY = 0f;
 
 		setRotationAngles(ageTicks, 0f, 0f, power, speed);
-		// 攻击态补齐官方 setPunch：拳头 Z 向前冲 + X 左右错位的随机抖动，
+		// 攻击态补齐 setPunch：拳头 Z 向前冲 + X 左右错位的随机抖动，
 		// 与 setRotationAngles 的 Y 向十二连摆叠加即为"欧拉欧拉"挥拳效果。
-		// 0.3 系数对齐 Astral Regenesis 移植版（hand*.z 抖动 ±(0.05~0.55)px、错位 0.2px）。
+		// 0.3 系数对应挥拳抖动（hand*.z 抖动 ±(0.05~0.55)px、错位 0.2px）。
 		if (power > 0) {
 			setPunch(ageTicks, 0f, 0f, 0.3f, speed);
 		}
@@ -342,12 +342,12 @@ public class ModelTheWorld extends HAModelBase implements StandAnimatedModel {
 	}
 
 	/**
-	 * 官方 setRotationAngles：十二连爪手部围绕摆动。rotateFloat=ageTicks，
-	 * rotateYaw/rotatePitch 官方由 headPitch/netHeadYaw 换算，替身实体场景传 0。
+	 *  setRotationAngles：十二连爪手部围绕摆动。rotateFloat=ageTicks，
+	 * rotateYaw/rotatePitch 由 headPitch/netHeadYaw 换算，替身实体场景传 0。
 	 *
-	 * 频率说明：官方 LayerStand 以 speed = stand.getSpeed()*4/3 驱动拳动
+	 * 频率说明： LayerStand 以 speed = stand.getSpeed()*4/3 驱动拳动
 	 * （THE_WORLD speed=1.2 → 1.6），本地替身副本早前 speed=0 导致 cos 恒常数
-	 * 不会有任何挥拳动画，曾改用固定 0.35 兜底但节奏偏慢；现改回官方语义
+	 * 不会有任何挥拳动画，曾改用固定 0.35 兜底但节奏偏慢；现改回语义
 	 * 「speed*4/3」，THE_WORLD 攻击态挥拳频率 ≈1.6 rad/tick（周期约 0.2s），
 	 * 速度明显加快、更接近"欧拉欧拉"连打的观感。speed<=0 时按 1.6 兜底。
 	 */
@@ -385,14 +385,14 @@ public class ModelTheWorld extends HAModelBase implements StandAnimatedModel {
 	}
 
 	/**
-	 * 官方 setPunch：手部随机抖动（"前冲 + 左右错位"的冲拳力度）。
+	 *  setPunch：手部随机抖动（"前冲 + 左右错位"的冲拳力度）。
 	 *
-	 * 单位修正（关键）：官方 该位移作用在 LayerStand 叠加层的小模型上下文里，
+	 * 单位修正（关键）： 该位移作用在 LayerStand 叠加层的小模型上下文里，
 	 * 数值是「像素」级（hand*.offsetZ 抖动 ±(0.05~0.55)px、left/right_hands 错位 0.2px，
 	 * 1px = 1/16 格）。本工程为独立实体渲染，模型单位为格，若直接套用会放大 16 倍——
 	 * 拳头每帧随机前后窜动 ±0.5 格、贴上相机近裁剪面，第一人称贴脸时被冲出视野/裁剪，
 	 * 走路、飞行镜头摆动叠加后即成"拳头时不时消失"。此处统一 ÷16 换算回 1/16 格的
-	 * 亚格抖动，保留官方冲拳力度与随机错位观感、消除凭空消失。
+	 * 亚格抖动，保留冲拳力度与随机错位观感、消除凭空消失。
 	 */
 	public void setPunch(float rotateFloat, float rotateYaw, float rotatePitch, float power, float speed) {
 		float r = (float) Math.random();

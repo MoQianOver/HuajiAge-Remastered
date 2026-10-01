@@ -16,7 +16,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 /**
- * 头屑飞刀（Orga Hair Knife）， 。
+ * 头屑飞刀（Orga Hair Knife）。
  *
  * 语义：右键投掷 EntityOrgaHairKnife，伤害 = 投掷者最大生命的一半，寿命 600 tick。 * 命中结算在实体 onCollision 中完成（生命越低伤害越高，镇魂曲期间附加因果标记）。
  *

@@ -14,7 +14,7 @@ import org.huajiager.stand.states.StandStateBase;
 import net.minecraft.entity.LivingEntity;
 
 /**
- * 自定义替身（ ）。
+ * 自定义替身。
  * <p>由 {@link StandCustomInfo} 驱动：attributes 数组填充基础属性（速度/伤害/持续/距离/
  * 冷却/充能/最大精神力），states 列表将 custom_stand/states/<stand>_<state>.js 逐状态
  * 包装为 {@link StandStateCustom} 并 addState 注册（addState 内部自动进 HuajiAgeAPI

@@ -7,12 +7,12 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
 /**
- * CRAZY_DIAMOND 闲置态模型（官方 Blockbench crazy_diamond_idle 造型）1.20.1 移植版。
+ * CRAZY_DIAMOND 闲置态模型（Blockbench crazy_diamond_idle 造型）。
  *
- * 数值照搬官方 模型 JSON crazy_diamond_idle.json（79 骨骼），
+ * 数值照搬自模型 JSON crazy_diamond_idle.json（79 骨骼），
  * 适配 HAModelPart / StandAnimatedModel 渲染体系。
  *
- * 造型：蹲伏双拳置于面前（官方闲置造型），通体悬浮。
+ * 造型：蹲伏双拳置于面前（闲置造型），通体悬浮。
  * 贴图配套 entity_crazy_diamond_idle.png（64x128 Blockbench UV）。
  * 闲置态渲染改用本模型，替代此前"default 模型"的错误实现。
  */
@@ -497,7 +497,7 @@ public class ModelCrazyDiamondIdle extends HAModelBase implements StandAnimatedM
 		head.offsetY = off;
 		body.offsetY = off;
 
-		// 头部朝向：实体替身朝向已在渲染器矩阵（180-yaw）处理。		// 构造中的 15° 低头为官方闲置姿势，此处不覆盖。
+		// 头部朝向：实体替身朝向已在渲染器矩阵（180-yaw）处理。		// 构造中的 15° 低头为闲置姿势，此处不覆盖。
 
 		renderParts(matrices, vertices, light, overlay, 1f, 1f, 1f, 1f);
 	}

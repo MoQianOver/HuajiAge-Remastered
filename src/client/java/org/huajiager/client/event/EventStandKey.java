@@ -16,11 +16,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 
 /**
- * 替身按键事件， EventStandKey（原 InputEvent.KeyInputEvent）。
+ * 替身按键事件：处理替身召唤/技能/模式切换的按键输入。
  * <p>Fabric 用 ClientTickEvents.END_CLIENT_TICK 轮询 KeyBinding.wasPressed()。
  * 键位已独立为「单键绑定」：不再要求 Ctrl 修饰，玩家可在 设置→控制→按键绑定
  * 中任意绑定单个按键（如 G）即可触发，HUD 提示显示的是实际绑定键名。
- *  standUp 中的替身音效/粒子（HuajiSoundPlayer）依赖未的音频系统，
+ *  standUp 中的替身音效/粒子（HuajiSoundPlayer）依赖未就绪的音频系统，
  * 裁剪后仅保留替身召唤消息链路（MessageStandUp）。</p>
  */
 public final class EventStandKey {
@@ -74,7 +74,7 @@ public final class EventStandKey {
 	}
 
 	/**
-	 *  standUp：按绑定键（原 Ctrl+P）召唤/收回替身，发送 MessageStandUp(isMovingMusic)。
+	 *  standUp：按绑定键召唤/收回替身，发送 MessageStandUp(isMovingMusic)。
 	 * <p>替身存在性与能量校验全部交由服务端 MessageStandUp.handle（data/stand/charge
 	 * 空守卫 + canBeCost），客户端只负责下发包。原实现依赖 local player 的 STAND_DATA
 	 * 前置判定，但该 persistent attachment 在收到同步包前为 null 会提前 return，
@@ -89,7 +89,7 @@ public final class EventStandKey {
 	}
 
 	/**
-	 *  performSkill：按绑定键（原 Ctrl+O）释放替身技能，发送能力触发消息。
+	 *  performSkill：按绑定键释放替身技能，发送能力触发消息。
 	 * <p>阶段限制：仅/2/3（进化后）可释放技能， 替身（初始/未进化）
 	 * 直接拦截不发技能包——按 {@code data.getStage() <= 0} 判定；同时保留
 	 * 「已拥有替身且已召唤（isTriggered）」前置判定，未召唤直接拦截不发包。	 * 能量校验、扣费与能力触发统一收归服务端 MessageDoStandCapabilityServer.handle
@@ -136,7 +136,7 @@ public final class EventStandKey {
 	}
 
 	/**
-	 *  switchMode：按绑定键（原 Ctrl+I）切换替身状态，发送 MessageStandModeSwitch。
+	 *  switchMode：按绑定键切换替身状态，发送 MessageStandModeSwitch。
 	 */
 	private static void switchMode(PlayerEntity player) {
 		IExposedData data = StandUtil.getStandData(player);

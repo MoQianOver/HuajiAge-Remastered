@@ -31,7 +31,7 @@ import net.minecraft.util.Identifier;
 /**
  * C2S：替身召唤收回消息，
  * 。
- * 载荷为是否移动（isMoving，对应移动时实体跟随展示）。
+ * 载荷为是否移动（isMoving，移动时实体跟随展示）。
  */
 public record MessageStandUp(boolean isMoving) implements FabricPacket {
 
@@ -72,7 +72,7 @@ public record MessageStandUp(boolean isMoving) implements FabricPacket {
 		boolean standEntityExists = !player.getServerWorld().getEntitiesByType(
 				EntityStandBase.TYPE_ENTITY, e -> e.getUser() == player).isEmpty();
 		// 召唤初始状态对齐： MessageStandUp 一律 data.setState(DEFAULT)。
-		// 本移植为满足"召唤默认闲置、按 I 切换才攻击"的需求，对注册了 IDLE 态的替身
+		// 为满足"召唤默认闲置、按 I 切换才攻击"的需求，对注册了 IDLE 态的替身
 		// （白金之星/世界/绿法皇）召唤进闲置态；杀手皇后仅 DEFAULT+PUNCH 两态
 		// （无 IDLE），召唤必须直接进 DEFAULT（待机左前悬浮），按一次 I 即切连击(PUNCH)。
 		// 若强行设 IDLE，KQ 的 states 列表不含 idle，渲染端会误判为背后闲置，

@@ -253,7 +253,7 @@ public final class ItemTooltipHandlers {
 
 	/**
 	 * 奥尔加四件套统一 tooltip：庆贺吧台词（金色）+ 套装列表四行。
-	 * 已装备的对应行黄色高亮（对齐 ItemOrgaArmorBase.addInformation 的
+	 * 已装备的对应行黄色高亮（与套装 addInformation 的
 	 * hasArmorSetItem 行为），未装备灰色。高亮依赖客户端玩家装备槽，
 	 * 故在 client 源集实现（ItemTooltipCallback 渲染时可取 MinecraftClient.player）。
 	 */

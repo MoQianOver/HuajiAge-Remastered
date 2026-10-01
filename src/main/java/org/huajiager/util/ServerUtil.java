@@ -13,7 +13,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 
 /**
- * 服务端网络广播工具， 。
+ * 服务端网络广播工具。
  *
  * 依赖 SimpleNetworkWrapper + MinecraftServer.getPlayerList。 * Fabric 版改经 ServerPlayNetworking 向服务端在线玩家广播 CustomPayload。
  * 原 HuajiAgeNetWorkHandler / StandNetWorkHandler 两套 HANDLER 在本工程合并用一套

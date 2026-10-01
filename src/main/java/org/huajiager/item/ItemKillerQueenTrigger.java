@@ -25,7 +25,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
- * 点赞（杀手皇后触发器）， 。
+ * 点赞（杀手皇后触发器）。
  *
  * 获得：持有杀手皇后且替身激活时攻击生物/挖掘方块，事件 EventKillerQueen 自动发放/更新本物品，
  * NBT 记录被锁定生物 UUID 或方块坐标。右键引爆（消耗 KQ 消耗/10）：

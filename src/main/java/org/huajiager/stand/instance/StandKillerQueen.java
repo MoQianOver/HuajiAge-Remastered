@@ -18,7 +18,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.world.World;
 
 /**
- * Killer Queen 替身， 。
+ * Killer Queen 替身。
  *
  *  收尾状态：
  *  - 默认态 StateKillerQueenDefault 已挂载。 *  - 拳击态 StateKillerQueenPunch（various 重型档）已并挂载，doStandPower 的

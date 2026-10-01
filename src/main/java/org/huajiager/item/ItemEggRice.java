@@ -12,7 +12,7 @@ import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
 /**
- * 真香蛋炒饭， （原 ItemFood）。
+ * 真香蛋炒饭（食物）。
  *  setAlwaysEdible、回 4 种正面效果、吃完回复 10 点生命、发「真香」消息并返还碗。
  */
 public class ItemEggRice extends Item {

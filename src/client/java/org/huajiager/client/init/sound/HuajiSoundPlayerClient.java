@@ -16,7 +16,7 @@ import net.minecraft.world.World;
 
 /**
  * 客户端真实音频播放实现（client source set，独立编写）。
- *  HuajiSoundPlayer 的 @SideOnly(CLIENT) 客户端方法（MIT），
+ *  实现 HuajiSoundPlayer 的客户端播放方法，
  * 经 {@link HuajiSoundPlayer#setClientSoundPlayer} 注入，供 main 源集物品在
  * world.isClient 分支触发 playMusic / stopAllSounds / playMovingSoundClient / playClient。
  *

@@ -8,13 +8,13 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 
 /**
- * 奥尔加的发型， 。
+ * 奥尔加的发型。
  *
  * orgasuit 套装头部件。 ItemOrgaArmorBase + ModelOrgaHair（客户端模型），
  * orgasuit 材质：150 耐久、{5,5,5,5} 保护、20 附魔、皮革音效、3 韧性。
  * 客户端模型渲染（ModelOrgaHair）与贴图（textures/models/armor/orga.png）
  * 在 HuajiAgeRemasteredClient 中以 Fabric ArmorRenderer 注册。
- * 由 ItemInfiniteCharm 的  检测 4 件套并写 NBT（orga 套装判断）。
+ * 由 ItemInfiniteCharm 检测 4 件套并写 NBT（orga 套装判断）。
  */
 public class ItemOrgaHair extends ArmorItem {
 

@@ -15,7 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 /**
- * 奥尔加四件套（头盔/胸甲/护腿/靴子）， 。
+ * 奥尔加四件套（头盔/胸甲/护腿/靴子）。
  *
  * 材质复用 {@link ItemOrgaHair#ORGA_MATERIAL}（orgasuit：150 耐久、5 保护、20 附魔、
  * 皮革音效、3 韧性），与 orga_hair 发型同一套护甲渲染管线（orga_layer_1/2.png）。

@@ -17,7 +17,7 @@ import net.minecraft.util.math.random.Random;
  * 跟随实体的循环音效（client source set，独立编写），
  * 。
  *
- * 继承 MovingSound（随实体更新位置、实体死亡停止、替身在场音量联动）。 * Fabric 1.20.1 对应 MovingSoundInstance：tick() 周期刷新位置（xPos/yPos/zPos），
+ * 继承 MovingSound（随实体更新位置、实体死亡停止、替身在场音量联动）。 * 改实现 MovingSoundInstance：tick() 周期刷新位置（xPos/yPos/zPos），
  * SoundManager 按 isDone() 回收 done 的实例。
  *
  * 替身音量联动（对齐 update）：

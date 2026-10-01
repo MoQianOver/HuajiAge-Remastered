@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 
 /**
- * 翡翠弹实体渲染器， RenderEmeraldBullet。默认绿宝石；bulletType 为已注册物品则渲染对应物品。
+ * 翡翠弹实体渲染器。默认绿宝石；bulletType 为已注册物品则渲染对应物品。
  */
 public class RenderEmeraldBullet extends EntityRenderer<EmeraldBulletEntity> {
 

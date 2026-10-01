@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 自定义替身状态信息结构（ ）。
+ * 自定义替身状态信息结构。
  * <p>由 custom_stand/states/<stand>_<state>.js 脚本 eval 产出的 JS 对象映射而来，
  * 描述单个状态下：stateId / 名称 / stage / modelId / 额外标签 / 是否重复音效 / 是否手持播放。</p>
  */

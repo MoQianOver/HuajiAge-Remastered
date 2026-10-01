@@ -26,9 +26,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
- * 命令飞盘实体， 。
+ * 命令飞盘实体。
  *
- * 继承 EntityThrowable；Fabric 1.20.1 对应 ThrownEntity（投掷运动/重力/摩擦/
+ * 继承 ThrownEntity（投掷运动/重力/摩擦/
  * 碰撞分发均内置于 tick），投掷后按主 UUID 存活校验并维持 180 tick 生命周期，
  * 命中实体按命令类型触发效果，命中方块落回可拾取物品。
  */

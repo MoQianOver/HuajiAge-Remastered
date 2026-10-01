@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 import java.util.List;
 
 /**
- * 心智Disc， 。
+ * 心智Disc。
  *
  * 保留：tooltip 展示主人、对实体/自身右键解 strip（disc_deprive）、显示名追加主人名。
  *  onItemUse(GarageKit) 分支强依赖 TouhouMaid 女仆模组 TileEntityGarageKit，

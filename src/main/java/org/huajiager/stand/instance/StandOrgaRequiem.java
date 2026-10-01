@@ -16,7 +16,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.world.World;
 
 /**
- * Orga Requiem 替身， 。
+ * Orga Requiem 替身。
  *
  *  收尾状态：
  *  - 默认态 StateOrgaRequiemDefault 已挂载。 *  - 飞行态 StateOrgaRequiemFly（various 重型档）已并挂载（状态机内切到 "fly" 即生效，

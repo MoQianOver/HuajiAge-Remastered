@@ -245,7 +245,7 @@ public class HuajiAgeRemasteredClient implements ClientModInitializer {
 			// 关键：不调用 ItemRenderer.renderItem——其内部走独立的 item RenderLayer
 			// （getItemEntityTranslucentCull），与翅膀的 entityTranslucentEmissive 分属
 			// 不同 buffer，层间 flush 顺序不可控，实测物品会盖住翅膀。			// 改为手动把 lordCore BakedModel 的 quads 直接写入与翅膀相同的
-			// entityTranslucentEmissive buffer（纹理用方块图集，quad UV 直接对应）：
+			// entityTranslucentEmissive buffer（纹理用方块图集，quad UV 直接匹配）：
 			// 同 buffer 严格按顶点提交顺序绘制，核心先画、翅膀后画，翅膀必然覆盖核心。
 			if (active) {
 				matrices.push();

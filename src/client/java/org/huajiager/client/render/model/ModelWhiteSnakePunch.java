@@ -7,13 +7,13 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
 /**
- * ModelWhiteSnakePunch 官方模型 1.20.1 移植版。
+ * ModelWhiteSnakePunch 模型。
  *
  * 数值照搬 Blockbench JSON（white_snake_punch.json，128x128 UV）。
  * 由 gen_white_snake_model.py 程序化生成：
  * 1) setRotationPoint 已转为相对父节点局部坐标（Blockbench Y-up -> MC Y-down，
  *    翻转坐标差：childFliped - parentFliped），并完整恢复 JSON parent 挂载链。 * 2) addBox 为相对 bone pivot 的局部坐标（y 方向翻转取 py-oy-h）。 * 3) 旋转角照搬（度转弧度）。
- * 配合 RenderStandBase 官方矩阵（180-yaw + scale(-1,-1,1)）渲染即为正立悬浮造型。
+ * 配合 RenderStandBase 矩阵（180-yaw + scale(-1,-1,1)）渲染即为正立悬浮造型。
  */
 public class ModelWhiteSnakePunch extends HAModelBase implements StandAnimatedModel {
 
@@ -654,7 +654,7 @@ private final HAModelPart armmiddle7;
 	@Override
 	public void renderStand(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, EntityStandBase entity,
 			float ageTicks, float speed, float power) {
-		// 白蛇连打挥拳动画：与疯狂钻石/白金之星/世界同款驱动（参考 ModelCrazyDiamond.renderHandsStand）。
+		// 白蛇连打挥拳动画：与疯狂钻石/白金之星/世界同款驱动（沿用 ModelCrazyDiamond.renderHandsStand）。
 		// viewFirst 为拳头环根节点（挂 root 下，render() 会连同本体一起渲染，此处只驱动骨骼不重复渲染）。
 		float freq = speed > 0 ? speed * 4.0F / 3.0F : 1.6F;
 		float f = ageTicks * freq;
@@ -690,7 +690,7 @@ private final HAModelPart armmiddle7;
 	}
 
 	/**
-	 * 白蛇连击态第一人称拳头（官方 renderFirst 对应 viewFirst 拳头环）：只渲染
+	 * 白蛇连击态第一人称拳头（renderFirst 对应 viewFirst 拳头环）：只渲染
 	 * viewFirst 子树（六拳半透明），本体不贴脸。驱动逻辑与 renderStand 同款——
 	 * 六拳相位错开挥舞 + offsetZ 交替前冲 + 左右环 offsetX 错位抖动。
 	 */
@@ -725,7 +725,7 @@ private final HAModelPart armmiddle7;
 		viewFirst.render(matrices, vertices, light, overlay, 1f, 1f, 1f, alpha);
 	}
 
-	/** 度转弧度并写入部件旋转角（与官方模型 setRotation 同口径）。 */
+	/** 度转弧度并写入部件旋转角（与 setRotation 同口径）。 */
 	private static void setRotation(HAModelPart part, float x, float y, float z) {
 		part.rotateAngleX = x * 0.017453292F;
 		part.rotateAngleY = y * 0.017453292F;

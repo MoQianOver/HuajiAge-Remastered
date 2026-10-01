@@ -9,7 +9,7 @@ import net.minecraft.world.World;
 import java.util.List;
 
 /**
- * 以太中子环流板， 。
+ * 以太中子环流板。
  * 工具提示沿用 lang 键 item.ether_circumflux_board:unicode_tooltips.1.desc。
  */
 public class ItemEtherCircumfluxBoard extends Item {

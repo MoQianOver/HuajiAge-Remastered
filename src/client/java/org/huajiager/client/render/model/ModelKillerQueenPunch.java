@@ -7,14 +7,13 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
 /**
- * Killer Queen 官方模型 1.20.1 移植版（punch / 攻击态）。
+ * Killer Queen 模型（punch / 攻击态）。
  *
- * 数值照搬官方 Blockbench 导出
- * （），
- * textureWidth/Height=128 与官方 entity_killer_queen_punch.png 贴图 UV 完全匹配。
- * 攻击态保留官方 render() 的上下漂浮 + 头部正视，以及 setRotationAngles 的
+ * 数值照搬自 Blockbench 导出；
+ * textureWidth/Height=128 与 entity_killer_queen_punch.png 贴图 UV 完全匹配。
+ * 攻击态保留 render() 的上下漂浮 + 头部正视，以及 setRotationAngles 的
  * 十指"欧拉"挥拳摆动（power 驱动，speed 取替身速度）。
- * renderHandsStand 对齐官方 renderFirst：第一人称仅渲染两只舞动的拳头，
+ * renderHandsStand 对齐 renderFirst：第一人称仅渲染两只舞动的拳头，
  * 本体从视野中消失（Killer Queen 攻击态位于玩家正前方，只呈现前方拳头）。
  */
 public class ModelKillerQueenPunch extends HAModelBase implements StandAnimatedModel {
@@ -252,18 +251,18 @@ public class ModelKillerQueenPunch extends HAModelBase implements StandAnimatedM
 
 	/**
 	 * 攻击态第一人称专用渲染：只画两只挥拳（hands_l/hands_r），不画本体。
-	 * 对齐官方 ModelKillerQueenPunch.renderFirst（第一人称叠加层仅渲染双手）。
+	 * 对齐 ModelKillerQueenPunch.renderFirst（第一人称叠加层仅渲染双手）。
 	 */
 	public void renderHandsStand(MatrixStack matrices, VertexConsumer vertices, int light, int overlay,
 			EntityStandBase entity, float ageTicks, float speed, float power, float alpha) {
 		applyStandAnimation(ageTicks, speed, power);
-		// 第一人称攻击态拳头半透明：对齐官方 renderFirst 的 GlStateManager.color(1,1,1,alpha)，
+		// 第一人称攻击态拳头半透明：对齐 renderFirst 的 GlStateManager.color(1,1,1,alpha)，
 		// 调用方需传入 translucent 层（cutout 层忽略 alpha）。
 		hands_l.render(matrices, vertices, light, overlay, 1f, 1f, 1f, alpha);
 		hands_r.render(matrices, vertices, light, overlay, 1f, 1f, 1f, alpha);
 	}
 
-	/** 官方 render() 漂浮 + 头部正视 + 挥拳动画（setRotationAngles）。 */
+	/**  render() 漂浮 + 头部正视 + 挥拳动画（setRotationAngles）。 */
 	private void applyStandAnimation(float ageTicks, float speed, float power) {
 		float off = (float) (MathHelper.cos((float) (0.1 * ageTicks)) * 0.1);
 		head.offsetY = off;
@@ -288,8 +287,8 @@ public class ModelKillerQueenPunch extends HAModelBase implements StandAnimatedM
 	}
 
 	/**
-	 * 官方 setRotationAngles：十指围绕挥拳摆动。rotateFloat=ageTicks，
-	 * rotateYaw/rotatePitch 替身实体场景传 0。频率沿用 ModelTheWorld 移植口径
+	 *  setRotationAngles：十指围绕挥拳摆动。rotateFloat=ageTicks，
+	 * rotateYaw/rotatePitch 替身实体场景传 0。频率沿用 ModelTheWorld 口径
 	 * （speed*4/3，speed<=0 时按 1.6 兜底）。
 	 */
 	public void setRotationAngles(float rotateFloat, float rotateYaw, float rotatePitch, float power, float speed) {

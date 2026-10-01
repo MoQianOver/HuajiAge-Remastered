@@ -20,10 +20,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 /**
- * 英雄之箭实体， 。
+ * 英雄之箭实体。
  *
  * 继承 EntityThrowable，命中产生 50 格威力的大范围爆炸（是否破坏地形由
- * ConfigHuaji.Huaji.heroExplode 控制）。Fabric 1.20.1 对应 ProjectileEntity。 * 保留默认重力（约等于 throwable 下落），飞行中客户端播洒熔岩 / 烟花粒子。
+ * ConfigHuaji.Huaji.heroExplode 控制）。 * 保留默认重力（约等于 throwable 下落），飞行中客户端播洒熔岩 / 烟花粒子。
  */
 public class EntityHeroArrow extends ProjectileEntity {
 
@@ -125,7 +125,7 @@ public class EntityHeroArrow extends ProjectileEntity {
 				return;
 			}
 		}
-		// 本模板 yarn 映射无 MoverType，用  逐 tick 沿 velocity 推进
+		// 本模板 yarn 映射无 MoverType，逐 tick 沿 velocity 手动推进
 		Vec3d v = this.getVelocity();
 		this.setPosition(getX() + v.x, getY() + v.y, getZ() + v.z);
 	}

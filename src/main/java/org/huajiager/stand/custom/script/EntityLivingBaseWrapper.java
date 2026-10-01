@@ -7,9 +7,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.Vec3d;
 
 /**
- * 生物实体包装（ ）。
+ * 生物实体包装。
  * <p>供自定义替身 JS 脚本读取使用者实时属性（朝向 / 位置 / 速度 / 替身实体等）。
- * 原代码基于酒石酸团队“车万女仆”模组代码，依据 MIT 协议进行编写。</p>
  */
 public class EntityLivingBaseWrapper {
 

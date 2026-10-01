@@ -9,8 +9,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
 /**
- * 替身状态机每 tick 驱动（EventStandPower 对 LivingUpdateEvent 的
- * doStandPower 调用，-Back 时因依赖未齐留桩）。
+ * 替身状态机每 tick 驱动：
+ * 对已触发替身的玩家调用 doStandPower，驱动状态机。
  * <p>Fabric 1.20.1 用 {@link ServerTickEvents#END_SERVER_TICK}，对每个「已拥有替身
  * 且已触发（isTriggered）」的在线玩家调用 {@code getType().doStandPower(player)}，
  * 执行当前状态机的 {@code doTask}（默认态攻击/弹幕/近战等），让召唤后的替身

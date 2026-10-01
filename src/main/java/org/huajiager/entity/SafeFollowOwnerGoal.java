@@ -13,7 +13,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 /**
- *  (this, 1.0D, 5, 20) 的逐行忠实移植：
+ * 基于 FollowOwnerGoal 构造（this, 1.0D, 5, 20）：
  * canStart：主人 5 格内不启动；shouldContinue：导航空闲或距离进入 20 格内即停。 * tick：距离 >= 12 格尝试安全传送，否则 2 格外导航走路跟随。
  * 传送点按 isTeleportFriendlyBlock 校验（脚下 UP 面实心 + 自身/上方非完整方块），
  * 主人飞行时传送点脚下无支撑 -> 不传送、不跟飞，与行为一致。

@@ -12,7 +12,7 @@ import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
 /**
- * 无限耐久护身符， 。
+ * 无限耐久护身符。
  *
  *  addPropertyOverride("orga") 由客户端 ModelPredicateProvider 注册。 * onUpdate 持续修复玩家 4 件盔甲耐久，并在穿戴 orgasuit（ConfigHuaji.orgaSuit）
  * 时写 "orga" NBT 标记。orgasuit 判定对齐 ItemInfiniteCharm：HEAD 为

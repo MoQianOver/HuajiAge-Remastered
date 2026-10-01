@@ -4,7 +4,7 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 
 /**
- * 对应 版 PotionOverdrive。
+ * OVERDRIVE 爆发效果。
  */
 public class PotionOverdrive extends StatusEffect {
     public PotionOverdrive() {

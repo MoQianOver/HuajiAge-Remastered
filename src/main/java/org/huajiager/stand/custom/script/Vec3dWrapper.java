@@ -4,9 +4,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.Vec3d;
 
 /**
- * 三维向量包装（ ）。
- * <p>供自定义替身 JS 脚本以 OO 方式操作坐标。原代码基于酒石酸团队“车万女仆”模组代码，
- * 依据 MIT 协议进行编写。</p>
+ * 三维向量包装。
+ * <p>供自定义替身 JS 脚本以 OO 方式操作坐标。
  */
 public class Vec3dWrapper {
 
@@ -21,7 +20,7 @@ public class Vec3dWrapper {
     }
 
     /**
-     * 以实体为原点，按偏航偏移旋转得到三维向量（原 getRotationVector）。
+     * 以实体为原点，按偏航偏移旋转得到三维向量。
      */
     public static Vec3dWrapper getRotationVector(double x, double y, double z, float yawIn, double yOffset,
             EntityLivingBaseWrapper entityWrapper) {

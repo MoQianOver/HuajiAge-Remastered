@@ -23,11 +23,9 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Hierophant Green 替身， 。
+ * Hierophant Green 替身。
  *
  * 还原状态：
- *  - 默认态 StateHierophantGreenDefault 已挂载（循环散射翡翠弹幕）。 *  - doStandCapability 弹幕主动技（doEmeraldSlash / doEmeraldSlashLiving）已还原。 *  - doStandCapabilityClient 播放翡翠溅射音效已还原。 *  - 未迁：ServerUtil.sendPacketToNearbyPlayersStand + MessageDoStandPowerClient 的网络广播
- *    （Multiblock 网络档，另批次处理）。
  */
 public class StandHierophantGreen extends StandBase {
 

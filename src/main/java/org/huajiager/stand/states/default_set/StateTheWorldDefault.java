@@ -32,7 +32,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * The World 默认态， 。
+ * The World 默认态。
  *
  * 1.20.1 映射说明：
  *  - EntityDragon → EnderDragon， dragonPartHead 分区伤害简化为对龙头实体整体伤害（part 系统未）。 *  - 活跃 volume 内对视线外实体弹飞（世界系近身连打），本实现保留：

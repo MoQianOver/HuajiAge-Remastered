@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * EX面筋棒， 。
+ * EX面筋棒。
  *
  * NBT flavor(0~3)：默认 0（无风味），1=香香 / 2=辣辣 / 3=石灰。
  * - 潜行右键循环切风味（服务端改 NBT），客户端播音效+风味提示

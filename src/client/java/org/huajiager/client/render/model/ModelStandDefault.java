@@ -4,10 +4,10 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 
 /**
- * 替身实体标准人形模型（）。
+ * 替身实体标准人形模型。
  *
- * 采用官方 1.20.1 BipedEntityModel 的标准布局（root pivot(0,24,0)，部件坐标全部
- * 使用官方 HumanoidModel 数值：head box(-4,-8,-4,8,8,8)、body box(-4,0,-2,8,12,4)
+ * 采用 1.20.1 BipedEntityModel 的标准布局（root pivot(0,24,0)，部件坐标全部
+ * 使用 HumanoidModel 数值：head box(-4,-8,-4,8,8,8)、body box(-4,0,-2,8,12,4)
  * 等），与 LivingEntityRenderer 渲染玩家的矩阵语义完全一致，因此在外部
  * scale(-1,-1,1)+180-yaw 矩阵下必然正立、站位正确（脚贴实体位置）。
  * 若沿用旧 1.8 布局（pivot 全部挂 24、box 用 0..12 正坐标）会在新版 Cuboid 语义下
@@ -22,7 +22,7 @@ public class ModelStandDefault extends HAModelBase {
 		super(64, 128);
 
 		this.root = new HAModelPart(this, 0, 0);
-		// 官方 BipedEntityModel root pivot：模型空间原点放到脚底上方 1.5 格处，
+		//  BipedEntityModel root pivot：模型空间原点放到脚底上方 1.5 格处，
 		// 配合外部 scale(-1,-1,1) 使模型正立、脚贴实体位置。
 		this.root.setRotationPoint(0f, 24f, 0f);
 

@@ -14,7 +14,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 /**
- * 压路机物品，独立编写（语义 ，非照搬第三方移植）。
+ * 压路机物品，独立编写。
  *
  * 逻辑：右键在视线方向前方生成 EntityRoadRoller 投掷物，赋予初速与 3D 姿态
  * （rotation/pitch/damage/life），命中目标造成大爆炸并消耗一个物品；非创造模式扣除本体。

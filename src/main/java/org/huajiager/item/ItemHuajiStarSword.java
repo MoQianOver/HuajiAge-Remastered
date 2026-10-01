@@ -18,17 +18,17 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 /**
- * 滑稽之星剑， 。
+ * 滑稽之星剑。
  *
  *  STAR/STARU 两个 ToolMaterial 中仅 STAR 实际用于构造（super(STAR)），
- * STARU 为历史遗留定义未使用，Fabric 侧只移植 STAR。
+ * STARU 为历史遗留定义未使用，实际仅使用 STAR。
  *  addPropertyOverride("burst") 对应 huaji_star_sword.json 的 burst 谓词
  * （0 -> star_sword_0 / 1 -> star_sword_1），Fabric 侧在客户端以
  * ModelPredicateProviderRegistry 注册。
  * 左键空挥播 WAVE1 音效由
  * 客户端事件 EventHuajiStarSwordLeftClick 承接（Fabric 1.20.1 无空挥事件）。
  * <p>伤害说明： 关闭/开启两态基础攻击力相同（material 20 + 剑加成 3 =
- * 23），关闭态仅由  施加减速/虚弱、开启态追加虚空伤害与着火。此前移植版
+ * 23），关闭态仅由状态效果施加减速/虚弱、开启态追加虚空伤害与着火。此前实现
  * 曾试图用 inventoryTick 动态增减 -9 攻击修饰符模拟“关闭态 14 伤害”，但
  * 1.20.1 的 ItemStack.addAttributeModifier 每 tick 向 NBT 重复写入同 UUID 修饰符、
  * 且 NBT 中 UUID 以 IntArray 存储导致手工 remove 永远失效，实测关闭态伤害显示

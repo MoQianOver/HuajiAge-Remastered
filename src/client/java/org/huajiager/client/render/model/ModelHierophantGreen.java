@@ -7,12 +7,12 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
 /**
- * HIEROPHANT GREEN 官方模型 1.20.1 移植版。
+ * HIEROPHANT GREEN 模型。
  *
- * 数值照搬官方 （Techne 导出 ），
- * 配合 RenderStandBase 的官方矩阵（180-yaw + scale(-1,-1,1)）渲染即为保持一致的正立悬浮造型
+ * 数值照搬自 Techne 导出模型，
+ * 配合 RenderStandBase 的矩阵（180-yaw + scale(-1,-1,1)）渲染即为保持一致的正立悬浮造型
  * （头戴帽冠、胸口齿轮盘、背后翡翠触手 extra 旋转）。
- * 动画与官方 render() 一致：整体上下漂浮 + extra.rotateAngleX 随 age 持续旋转。 * 官方 setRotationAngles / setPunch / renderFirst 均为空实现——绿法皇没有挥拳动画，
+ * 动画与 render() 一致：整体上下漂浮 + extra.rotateAngleX 随 age 持续旋转。 *  setRotationAngles / setPunch / renderFirst 均为空实现——绿法皇没有挥拳动画，
  * 攻击态第一人称也不渲染本体（renderHandsStand 为空）。
  */
 public class ModelHierophantGreen extends HAModelBase implements StandAnimatedModel {
@@ -238,7 +238,7 @@ public class ModelHierophantGreen extends HAModelBase implements StandAnimatedMo
 	@Override
 	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float r, float g,
 			float b, float a) {
-		// 无动画兜底：静态渲染当前姿态（各部件已按官方构造值设好角度）
+		// 无动画兜底：静态渲染当前姿态（各部件已按构造值设好角度）
 		renderParts(matrices, vertices, light, overlay, r, g, b, a);
 	}
 
@@ -250,17 +250,17 @@ public class ModelHierophantGreen extends HAModelBase implements StandAnimatedMo
 	}
 
 	/**
-	 * 攻击态第一人称专用渲染：官方 ModelHierophantGreen.renderFirst 为空实现——
+	 * 攻击态第一人称专用渲染： ModelHierophantGreen.renderFirst 为空实现——
 	 * 绿法皇第一人称不渲染本体（只有弹幕特效），此处保持空，避免本体遮挡视野。
 	 */
 	public void renderHandsStand(MatrixStack matrices, VertexConsumer vertices, int light, int overlay,
 			EntityStandBase entity, float ageTicks, float speed, float power) {
-		// 官方 renderFirst 为空：第一人称不渲染任何部件
+		//  renderFirst 为空：第一人称不渲染任何部件
 	}
 
 	/** renderStand 共用的替身动画：漂浮 + extra（背后翡翠盘）持续旋转。 */
 	private void applyStandAnimation(float ageTicks, float speed, float power) {
-		// 官方 render()：整体上下漂浮
+		//  render()：整体上下漂浮
 		float off = (float) (MathHelper.cos((float) (0.1 * ageTicks)) * 0.1);
 		head.offsetY = off;
 		body.offsetY = off;
@@ -274,7 +274,7 @@ public class ModelHierophantGreen extends HAModelBase implements StandAnimatedMo
 		head.rotateAngleX = 0f;
 		head.rotateAngleY = 0f;
 
-		// 官方 render()：extra.rotateAngleX = ageInTicks*2 —— 背后翡翠齿轮盘持续旋转
+		//  render()：extra.rotateAngleX = ageInTicks*2 —— 背后翡翠齿轮盘持续旋转
 		extra.rotateAngleX = ageTicks * 2;
 	}
 

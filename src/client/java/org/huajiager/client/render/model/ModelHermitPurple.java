@@ -6,13 +6,13 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 
 /**
- * ModelHermitPurple 官方模型 1.20.1 移植版。
+ * ModelHermitPurple 模型。
  *
  * 数值照搬 Blockbench JSON（hermit_purple.json，64x64 UV）。
  * 由 gen_hermit_model.py 程序化生成：
  * 1) setRotationPoint 已转为相对父节点局部坐标（Blockbench Y-up -> MC Y-down，
  *    翻转坐标差：childFliped - parentFliped），并完整恢复 JSON parent 挂载链。 * 2) addBox 为相对 bone pivot 的局部坐标（y 方向翻转取 py-oy-h）。 * 3) 旋转角照搬（度转弧度）。
- * 配合 RenderStandBase 官方矩阵（180-yaw + scale(-1,-1,1)）渲染即为正立悬浮造型。
+ * 配合 RenderStandBase 矩阵（180-yaw + scale(-1,-1,1)）渲染即为正立悬浮造型。
  */
 public class ModelHermitPurple extends HAModelBase implements StandAnimatedModel {
 
@@ -1007,7 +1007,7 @@ public ModelHermitPurple() {
 	bone78.addChild(bone80);
 	bone80.addChild(bone81);
 	// frames 动画帧子树（66 个 flash 碎片几何）不挂载：静态渲染会把这些
-	// 动画辅助帧当常态几何画出来，导致替身周围多出杂乱碎片。移植版静态
+	// 动画辅助帧当常态几何画出来，导致替身周围多出杂乱碎片。静态
 	// 渲染只呈现主干造型（body + 双臂 + 藤蔓），flash 帧留给未来动画实现。
 	root.addChild(frames);
 	frames.addChild(flash_frame_1);
@@ -1079,7 +1079,7 @@ public ModelHermitPurple() {
 		render(matrices, vertices, light, overlay);
 	}
 
-	/** 度转弧度并写入部件旋转角（与官方模型 setRotation 同口径）。 */
+	/** 度转弧度并写入部件旋转角（与 setRotation 同口径）。 */
 	private static void setRotation(HAModelPart part, float x, float y, float z) {
 		part.rotateAngleX = x * 0.017453292F;
 		part.rotateAngleY = y * 0.017453292F;

@@ -27,7 +27,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 /**
- * 自定义替身资源加载器（ ）。
+ * 自定义替身资源加载器。
  * <p>从 mod 内置资源 + 用户 config 目录加载自定义替身：
  * - standalone JSON（{@link #loadCustomStand()} → {@link StandCustomInfo}）注册进
  *   {@link #CUSTOM_STAND_SERVER}。 * - JS 状态脚本（custom_stand/states/*.js）经 {@link JsEngineHelper#ENGINE} eval 后
@@ -63,14 +63,14 @@ public class StandResourceLoader {
         loadStandStates(CONFIG_STATE_FOLDER, ACCEPTED_STATE_SUFFIX);
     }
 
-    /** 内部资源加载（原 loadInternalStands，硬编码三替身）。 */
+    /** 内部资源加载（硬编码三替身）。 */
     public static void loadInternalStands() {
         loadInternalStand("crazy_diamond");
         loadInternalStand("hermit_purple");
         loadInternalStand("white_snake");
     }
 
-    /** 内部状态资源加载（原 loadInternalStates，七状态脚本）。 */
+    /** 内部状态资源加载（七状态脚本）。 */
     public static void loadInternalStates() {
         loadInternalState("crazy_diamond_default");
         loadInternalState("crazy_diamond_heal");

@@ -14,7 +14,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 /**
- * 黑色高级轿车， 。
+ * 黑色高级轿车。
  *
  * 右键在视线方向生成 EntityRoadRoller 投掷物，rollType 置为 CAR，
  * 伤害 50、寿命 512，客户端播 ORGA_RIDER 音效并挥动手臂；非创造消耗 1 个。

@@ -67,7 +67,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 /**
- * 物品注册器（）， 。
+ * 物品注册器。
  *
  * Fabric 侧统一在 Registry.ITEM 注册四个物品，并自建一个创造模式标签页
  * （替代原 CreativeTabLoader.tabJo / tabhuaji）收纳全部物品及命令飞盘类型变体。
@@ -280,7 +280,7 @@ public class ItemLoader {
 		Registry.register(Registries.ITEM, Identifier.of(modId, "exglutenbur"), exglutenbur);
 
 		// 创造标签页：对齐 CreativeTabLoader（tabhuaji + tabJo，不含 tabVehicle）
-		// tabhuaji 主组：图标 huaji，按 ItemLoader 注册顺序；未移植物品与载具不入组
+		// tabhuaji 主组：图标 huaji，按 ItemLoader 注册顺序；未注册物品与载具不入组
 		ItemGroup groupHuaji = FabricItemGroup.builder()
 				.icon(() -> new ItemStack(huaji))
 				.displayName(Text.translatable("itemGroup.huajiager.huaji"))
@@ -343,8 +343,8 @@ public class ItemLoader {
 					entries.add(ItemMultiKnife.setLight(new ItemStack(multiKnife), false));
 					entries.add(ItemMultiKnife.setLight(new ItemStack(multiKnife), true));
 					entries.add(roadRoller);
-					// 塔罗牌（存储/卸载替身）+ 各原生替身 Disc 变体（stage0/1）
-					// 奥尔加镇魂曲（停不下来的镇魂曲）物品组只放，不放 stage0/1
+					// 塔罗牌（存储/卸载替身）+ 各原生替身 Disc 变体
+					// 奥尔加镇魂曲（停不下来的镇魂曲）物品组只放镇魂曲变体
 					entries.add(tarot);
 					entries.add(discStand);
 					for (org.huajiager.stand.instance.StandBase sb : org.huajiager.init.loaders.StandLoader.STAND_LIST) {

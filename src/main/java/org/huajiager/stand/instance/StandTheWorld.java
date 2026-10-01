@@ -20,7 +20,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.world.World;
 
 /**
- * The World 替身， 。
+ * The World 替身。
  *
  *  收尾：默认态 StateTheWorldDefault（重型档）与闲置态已挂载。 * 时停主动技 TimeStopHelper 已迁并真实启用；时停网络广播
  * （ServerUtil.sendPacketToNearbyPlayersStand / MessageDoStandPowerClient）已启用。

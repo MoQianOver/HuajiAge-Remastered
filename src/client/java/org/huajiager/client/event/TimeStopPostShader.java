@@ -23,10 +23,10 @@ import net.minecraft.util.Identifier;
 /**
  * THE_WORLD 时停后处理滤镜（客户端）。
  *
- * 行为依据 HuajiAge（MIT）客户端渲染事件 EventViewRender.TimeStopRenderTest：
+ * 行为说明：
  * 通过 vanilla 实体渲染器的后处理加载/卸载（EntityRenderer.loadShader / stopUseShader）
  * 在时停期间按阶段挂载 minecraft 自带的 shaders/post（invert / desaturate / pencil）三档滤镜，
- * 时停结束移除。本工程 1.20.1 沿用 vanilla 同一机制，等价接口为
+ * 时停结束移除。沿用 vanilla 同一机制，等价接口为
  * GameRenderer.loadPostProcessor / disablePostProcessor。
  *
  * 挂载时机：WorldRenderEvents.LAST（世界渲染末尾）只负责按进度决策加载/切换/卸载。 * 实际滤镜画面由 vanilla GameRenderer 在 renderWorld 之后、主 framebuffer 重绑定之前的
@@ -38,7 +38,7 @@ import net.minecraft.util.Identifier;
  * （JsonEffectShaderProgram.getUniformByName(...).set(...) 写入 Uniform 缓存，
  * 渲染时统一 flush，零重编译、零 FBO 重建），过渡逐 tick 平滑推进。
  *
- * 本文件全部实现为本工程依据语义独立编写，未引用任何移植版（Astral Regenesis）代码。
+ * 本文件全部实现为本工程依据语义独立编写。
  */
 public final class TimeStopPostShader {
 
@@ -247,7 +247,7 @@ public final class TimeStopPostShader {
 	}
 
 	/**
-	 * 通过 vanilla GameRenderer 的后处理加载接口应用目标档位（对应 EntityRenderer.loadShader）：
+	 * 通过 vanilla GameRenderer 的后处理加载接口应用目标档位：
 	 * 加载时会先关闭旧处理器再创建新处理器并启用后处理，档位切换/首次加载都走这里。	 * 渲染由 vanilla 在后处理阶段（world 之后）统一完成。
 	 */
 	private static void applyFilter(MinecraftClient mc, String stage) {
@@ -271,7 +271,7 @@ public final class TimeStopPostShader {
 		}
 	}
 
-	/** 时停结束移除滤镜（对应 EntityRenderer.stopUseShader / vanilla disablePostProcessor）。 */
+	/** 时停结束移除滤镜。 */
 	private static void release() {
 		if (currentStage.isEmpty()) {
 			return;

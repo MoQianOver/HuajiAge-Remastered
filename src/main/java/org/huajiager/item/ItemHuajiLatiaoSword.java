@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 import java.util.Random;
 
 /**
- * 辣条剑·滑稽， 。
+ * 辣条剑·滑稽。
  *
  *  setMaxDamage + 属性修饰等价于选择耐久 5400、攻击 14、攻速 2.4 的 ToolMaterial
  * 交由 SwordItem 计算（未覆写属性修饰，攻击数值与目标一致）。

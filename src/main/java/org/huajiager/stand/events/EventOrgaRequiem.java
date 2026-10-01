@@ -26,8 +26,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 /**
- * 停不下来的奥尔加——不死被动（ 
- * 的 handleOrgaEntityDeath / handleOrgaEntityUpdate 花效果段）。
+ * 停不下来的奥尔加——不死被动，效果由 handleOrgaEntityDeath / handleOrgaEntityUpdate 驱动。
  *
  * 死亡判定（仅玩家，满足 hasAllOrgaArmor 或物品栏持有绑定本人 UUID 的镇魂曲物品时生效）：
  *  1) 替身 StandOrgaRequiem 已召唤触发：取消死亡 + setHealth(1f)（最多半颗心）
@@ -39,7 +38,7 @@ import java.util.function.Predicate;
  */
 public final class EventOrgaRequiem {
 
-	/** 对齐参考仓库 mrqx0195OrgaEventHandler.SING_LIST：elapsed tick 列表 */
+	/** 镇魂曲歌词播放的 elapsed tick 列表 */
 	private static final List<Integer> SING_LIST = List.of(
 			104, 244, 368, 474, 544, 776, 862, 942, 962, 1010,
 			1096, 1226, 1364, 1460, 1470, 1520, 1566, 1620, 1700, 1876,
@@ -131,7 +130,7 @@ public final class EventOrgaRequiem {
 			return;
 		}
 		int duration = flower.getDuration();
-		// 希望之花歌词：完全对齐参考仓库 mrqx0195OrgaEventHandler.onOrgaSinging。
+		// 希望之花歌词：按 elapsed tick 播放 sing 台词。
 		// elapsed = 2720 - 剩余tick；效果初始 2820，sing.1 在 elapsed==104（效果开始后
 		// 2820-2616=204 tick≈10.2s）播放，sing.26 在剩余 200 tick 播放。		// p00~p17 在 elapsed 1876~1893（剩余约 41.4~42.2s）逐 tick 播放，形成 ASCII 动画。
 		if (!ConfigHuaji.Huaji.useOrgaFlower && entity instanceof PlayerEntity player) {
@@ -168,7 +167,7 @@ public final class EventOrgaRequiem {
 
 	/**
 	 * 镇魂曲 BGM 两句歌词（bgm.1/bgm.2）：
-	 * 对齐参考仓库 mrqx0195，由服务端在 requiem 效果第 1 tick（duration==599）发送，
+	 * 由服务端在 requiem 效果第 1 tick（duration==599）发送，
 	 * 不再依赖客户端同步 duration（Fabric 下 ==599 几乎必错过）。
 	 */
 	private static void updateRequiemLyrics(ServerPlayerEntity player) {

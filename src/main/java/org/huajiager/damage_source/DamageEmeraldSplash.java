@@ -5,7 +5,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.world.World;
 
 /**
- * 绿宝石弹幕间接伤害源， 。
+ * 绿宝石弹幕间接伤害源。
  *
  * 继承 EntityDamageSourceIndirect("explosion", source, indirectEntityIn) 并追加
  * setExplosion()/setProjectile()/setIsThornsDamage()。Fabric 1.20.1 中直接使用

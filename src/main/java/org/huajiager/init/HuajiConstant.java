@@ -5,7 +5,7 @@ import org.huajiager.HuajiAgeRemastered;
 import net.minecraft.util.Identifier;
 
 /**
- * 常量定义， 。
+ * 常量定义。
  * 注：StandTex 原实现引用 StandLoader 的静态实例取贴图路径，此处先以字面量等价替换
  * （路径与源 mod 一致），待 Stand 系统完成后可恢复引用。
  */

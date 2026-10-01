@@ -7,15 +7,14 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
 /**
- * ORGA REQUIEM 官方模型 1.20.1 移植版。
+ * ORGA REQUIEM 模型。
  *
- * 数值照搬官方 （，
- * 64x64 贴图），配合 RenderStandBase 的官方矩阵（180-yaw + scale(-1,-1,1)）渲染即为
+ * 数值照搬自 Blockbench 导出模型（64x64 贴图），配合 RenderStandBase 的矩阵（180-yaw + scale(-1,-1,1)）渲染即为
  * 保持一致的正立悬浮造型（黑色长发 + 背后七根飘带 Extra）。
- * 动画与官方 render() 一致：整体上下漂浮（offsetY）、背后七根飘带各自相位上下摆动、
- * Extra 绕 Y 轴持续旋转；官方 setRotationAngles / setPunch / renderFirst 均为空实现——
+ * 动画与 render() 一致：整体上下漂浮（offsetY）、背后七根飘带各自相位上下摆动、
+ * Extra 绕 Y 轴持续旋转； setRotationAngles / setPunch / renderFirst 均为空实现——
  * 没有挥拳动画，攻击态第一人称也不渲染本体（renderHandsStand 为空）。
- * 位置与官方 ModelOrgaRequiem.=(-0.5,-0.7,0.75) 对齐（右 0.5 / 高 0.7 / 后 0.75），
+ * 位置与 ModelOrgaRequiem.=(-0.5,-0.7,0.75) 对齐（右 0.5 / 高 0.7 / 后 0.75），
  * 由 RenderStandBase 的 idle/attack 偏移特判落实，模型本身不再做位移。
  */
 public class ModelOrgaRequiem extends HAModelBase implements StandAnimatedModel {
@@ -184,7 +183,7 @@ public class ModelOrgaRequiem extends HAModelBase implements StandAnimatedModel 
 		rightLeg.addChild(rl_2);
 		rl_2.addBox(48, 49, -2.0F, -2.0F, -2.0F, 4, 9, 4, 0.0F, true);
 
-		// 背后七根发带（Extra 子部件）：官方渲染时整体放大 1.2 倍（render scale*1.2）
+		// 背后七根发带（Extra 子部件）：渲染时整体放大 1.2 倍（render scale*1.2）
 		extra = new HAModelPart(this);
 		extra.setRotationPoint(0.0F, 3.0F, 0.0F);
 		setRotation(extra, 0.0F, 0.0F, -0.8727F);
@@ -244,7 +243,7 @@ public class ModelOrgaRequiem extends HAModelBase implements StandAnimatedModel 
 	@Override
 	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float r, float g,
 			float b, float a) {
-		// 无动画兜底：静态渲染当前姿态（各部件已按官方构造值设好角度）
+		// 无动画兜底：静态渲染当前姿态（各部件已按构造值设好角度）
 		renderParts(matrices, vertices, light, overlay, r, g, b, a);
 	}
 
@@ -256,17 +255,17 @@ public class ModelOrgaRequiem extends HAModelBase implements StandAnimatedModel 
 	}
 
 	/**
-	 * 攻击态第一人称专用渲染：官方 ModelOrgaRequiem.renderFirst 为空实现——
+	 * 攻击态第一人称专用渲染： ModelOrgaRequiem.renderFirst 为空实现——
 	 * 第一人称不渲染本体，此处保持空，避免本体遮挡视野。
 	 */
 	public void renderHandsStand(MatrixStack matrices, VertexConsumer vertices, int light, int overlay,
 			EntityStandBase entity, float ageTicks, float speed, float power) {
-		// 官方 renderFirst 为空：第一人称不渲染任何部件
+		//  renderFirst 为空：第一人称不渲染任何部件
 	}
 
-	/** renderStand 共用的替身动画：上下漂浮 + 背后发带摆动 + Extra 绕 Y 旋转（照搬官方 render()）。 */
+	/** renderStand 共用的替身动画：上下漂浮 + 背后发带摆动 + Extra 绕 Y 旋转（照搬 render()）。 */
 	private void applyStandAnimation(float ageTicks, float speed, float power) {
-		// 官方 render()：整体上下漂浮（offsetY 随 cos(0.1*age)）
+		//  render()：整体上下漂浮（offsetY 随 cos(0.1*age)）
 		float off = (float) (MathHelper.cos((float) (0.1 * ageTicks)) * 0.15);
 		head.offsetY = off;
 		leftArm.offsetY = off * 0.8F;
@@ -285,7 +284,7 @@ public class ModelOrgaRequiem extends HAModelBase implements StandAnimatedModel 
 		hair_p_6.offsetY = MathHelper.sin(a + 5.2359877F) * 0.25F;
 		hair_p_7.offsetY = MathHelper.sin(a + (float) (Math.PI * 2)) * 0.25F;
 
-		// 官方 render()：Extra.rotateAngleY = ageInTicks / 2 —— 背后发带组持续旋转
+		//  render()：Extra.rotateAngleY = ageInTicks / 2 —— 背后发带组持续旋转
 		extra.rotateAngleY = ageTicks / 2.0F;
 
 		// 头部朝向：实体替身朝向已在渲染器矩阵（180-yaw）处理，此处保持正面朝向

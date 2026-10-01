@@ -23,7 +23,7 @@ import org.huajiager.util.NBTHelper;
 import java.util.List;
 
 /**
- * 时停辅助， 。
+ * 时停辅助。
  *
  *  81 行整体。doTimeStopClient 入参 WorldClient，此处以 World + World.playSound 承载，
  * 仅客户端侧调用，达到同等本地播放效果。

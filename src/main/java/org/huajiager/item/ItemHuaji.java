@@ -16,7 +16,7 @@ import net.minecraft.world.World;
 import java.util.List;
 
 /**
- * 滑稽， 。
+ * 滑稽。
  * 主手右键适合的多方块结构方块以搭建多方块结构（走 Fabric 已的 HuajiAgeAPI/IMultiBlock）。
  */
 public class ItemHuaji extends Item {

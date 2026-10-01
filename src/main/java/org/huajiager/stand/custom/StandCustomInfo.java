@@ -12,7 +12,7 @@ import com.google.gson.JsonSyntaxException;
 import net.minecraft.util.Identifier;
 
 /**
- * 自定义替身 JSON 信息结构（ ）。
+ * 自定义替身 JSON 信息结构。
  * <p>对应 custom_stand/*.json 的 POJO：替身注册名 / 显示名（本地化 key）/ 状态列表 /
  * 唱片 id / 标签 / 阶段数 / 属性数组 / 音效等。GSON 反序列化后调用 {@link #decorate()}
  * 填充缺失字段默认值。</p>
@@ -96,7 +96,7 @@ public class StandCustomInfo {
         return author;
     }
 
-    /** 填充缺失字段的默认值（原 decorate）。 */
+    /** 填充缺失字段的默认值。 */
     public StandCustomInfo decorate() {
         if (stand == null || stand.isEmpty()) {
             throw new JsonSyntaxException("Custom stand file needs a stand name");

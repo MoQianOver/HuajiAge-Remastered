@@ -7,10 +7,9 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
 /**
- * THE WORLD 闲置态模型（官方 Blockbench 抱胸盘腿造型）1.20.1 移植版。
+ * THE WORLD 闲置态模型（Blockbench 抱胸盘腿造型）。
  *
- * 数值照搬 Astral Regenesis 1.20.1 移植版 ModelTheWorldIdle
- * （https://github.com/mrqx0195/HUAJI_Age-Astral_Regenesis，MIT 协议。 * 源头同 官方 ），
+ * 数值照搬自 Blockbench 模型 ModelTheWorldIdle
  * 适配 HAModelPart / StandAnimatedModel 渲染体系。
  *
  * 造型：正立悬浮，身体侧倾微转，双臂抱胸，双腿盘坐，身后双齿轮缓慢转动。
@@ -169,7 +168,7 @@ public class ModelTheWorldIdle extends HAModelBase implements StandAnimatedModel
 		body.addChild(back2);
 		back2.addBox(0, 83, -2.5F, 0.0F, 3.0F, 2, 7, 2, 0.0F, true);
 
-		// 左臂：抬起抱胸（Astral 原值：rot 0.6981, 0.5236, -0.5236）
+		// 左臂：抬起抱胸（rot 0.6981, 0.5236, -0.5236）
 		leftarm = new HAModelPart(this);
 		leftarm.setRotationPoint(5.0F, 2.0F, 0.0F);
 		setRotation(leftarm, 0.6981F, 0.5236F, -0.5236F);
@@ -183,7 +182,7 @@ public class ModelTheWorldIdle extends HAModelBase implements StandAnimatedModel
 		leftarm.addChild(handl);
 		handl.addBox(48, 4, -3.2F, -1.0F, -4.0F, 4, 8, 4, 0.0F, false);
 
-		// 右臂：横抱胸前（Astral 原值：rot -1.2218, 0.1745, 1.0472）
+		// 右臂：横抱胸前（rot -1.2218, 0.1745, 1.0472）
 		rightarm = new HAModelPart(this);
 		rightarm.setRotationPoint(-5.0F, 2.0F, 0.0F);
 		setRotation(rightarm, -1.2218F, 0.1745F, 1.0472F);
@@ -197,7 +196,7 @@ public class ModelTheWorldIdle extends HAModelBase implements StandAnimatedModel
 		rightarm.addChild(handr);
 		handr.addBox(48, 4, -2.0F, 0.0F, -2.0F, 4, 8, 4, 0.0F, true);
 
-		// 双腿盘坐（Astral 原值此处在 idle 造型的位置/旋转与 default 不同）
+		// 双腿盘坐（idle 造型的位置/旋转与 default 不同）
 		leftleg = new HAModelPart(this);
 		leftleg.setRotationPoint(6.0F, 11.0F, 5.0F);
 		setRotation(leftleg, -0.6981F, -0.6981F, -0.8203F);
@@ -220,7 +219,7 @@ public class ModelTheWorldIdle extends HAModelBase implements StandAnimatedModel
 		rightleg.addChild(legdownr);
 		legdownr.addBox(0, 100, -2.5F, -1.5F, -1.5F, 5, 9, 5, 0.0F, false);
 
-		// 身后双齿轮（专用 pivot，Astral 原值：pivot(0,24,0)，动画阶段再下移放大）
+		// 身后双齿轮（专用 pivot(0,24,0)，动画阶段再下移放大）
 		gears = new HAModelPart(this);
 		gears.setRotationPoint(0.0F, 24.0F, 0.0F);
 
@@ -254,14 +253,14 @@ public class ModelTheWorldIdle extends HAModelBase implements StandAnimatedModel
 	@Override
 	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float r, float g,
 			float b, float a) {
-		// 无动画兜底：静态渲染抱胸盘腿姿态（各部件已按官方构造值设好角度）
+		// 无动画兜底：静态渲染抱胸盘腿姿态（各部件已按构造值设好角度）
 		renderParts(matrices, vertices, light, overlay, r, g, b, a);
 	}
 
 	@Override
 	public void renderStand(MatrixStack matrices, VertexConsumer vertices, int light, int overlay,
 			EntityStandBase entity, float ageTicks, float speed, float power) {
-		// Astral setupAnim：通体上下漂浮（cos(0.1*age)），齿轮下移放大并缓慢自转
+		// 动画：通体上下漂浮（cos(0.1*age)），齿轮下移放大并缓慢自转
 		float off = MathHelper.cos(0.1F * ageTicks);
 		head.offsetY = off;
 		body.offsetY = off;

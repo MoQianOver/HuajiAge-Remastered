@@ -19,7 +19,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
 /**
- * 实体注册器，对应 init.loaders 的实体注册职责（EntityEmeraldBullet）。
+ * 实体注册器（EntityEmeraldBullet 等）。
  * Fabric 下在 onInitialize 中调用 register() 即可。
  */
 public final class EntityLoader {

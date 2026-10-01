@@ -10,14 +10,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 /**
- * STAR PLATINUM 闲置态模型（官方 Blockbench 抱胸盘腿 + 双拳残影造型）1.20.1 移植版。
+ * STAR PLATINUM 闲置态模型（Blockbench 抱胸盘腿 + 双拳残影造型）。
  *
- * 数值照搬 官方 ，
- * 适配 HAModelPart / StandAnimatedModel 渲染体系，与 ModelTheWorldIdle 移植口径一致。
+ * 数值照搬自 Blockbench，
+ * 适配 HAModelPart / StandAnimatedModel 渲染体系，与 ModelTheWorldIdle 口径一致。
  *
- * 造型：正立悬浮，双臂抱胸（官方 idle 手臂收拢、手拳上抬），双腿微收，
- * 通体上下漂浮（cos(0.1*age)），头顶礼帽、披风完整。后附"双拳残影"（官方
- * extraEffect 渲染 hands：放大 1.2 倍、alpha 随 0.15 频率波动），对应白金
+ * 造型：正立悬浮，双臂抱胸（ idle 手臂收拢、手拳上抬），双腿微收，
+ * 通体上下漂浮（cos(0.1*age)），头顶礼帽、披风完整。后附"双拳残影"（
+ * extraEffect 渲染 hands：放大 1.2 倍、alpha 随 0.15 频率波动），即白金
  * 时停/蓄力时拳头叠影观感。
  * 贴图配套 entity_star_platinum_idle.png（64x128 Blockbench UV）。
  *
@@ -92,7 +92,7 @@ public class ModelStarPlatinumIdle extends HAModelBase implements StandAnimatedM
 		body.addChild(crotch);
 		crotch.addBox(16, 82, -4.0F, 10.0F, -3.5F, 8, 2, 6, 0.0F, false);
 
-		// 左臂：抬起抱拳（官方 idle：rot 0.2618, -0.0873, -0.4363）
+		// 左臂：抬起抱拳（ idle：rot 0.2618, -0.0873, -0.4363）
 		leftarm = new HAModelPart(this);
 		leftarm.setRotationPoint(5.0F, 3.0F, 0.0F);
 		setRotation(leftarm, 0.2618F, -0.0873F, -0.4363F);
@@ -111,7 +111,7 @@ public class ModelStarPlatinumIdle extends HAModelBase implements StandAnimatedM
 		leftarm.addChild(armorl);
 		armorl.addBox(0, 74, -2.0F, -0.5F, -3.0F, 4, 1, 6, 0.0F, false);
 
-		// 右臂：抬起抱拳（官方 idle：rot 0.1745, 0.4363, 0.5236）
+		// 右臂：抬起抱拳（ idle：rot 0.1745, 0.4363, 0.5236）
 		rightarm = new HAModelPart(this);
 		rightarm.setRotationPoint(-5.0F, 3.0F, 0.0F);
 		setRotation(rightarm, 0.1745F, 0.4363F, 0.5236F);
@@ -187,7 +187,7 @@ public class ModelStarPlatinumIdle extends HAModelBase implements StandAnimatedM
 		head.addChild(hat);
 		hat.addBox(0, 118, -4.0F, -6.5F, -4.5F, 8, 2, 8, 0.0F, false);
 
-		// 左腿：微盘曲（官方 idle：pivot y12 略收）
+		// 左腿：微盘曲（ idle：pivot y12 略收）
 		leftleg = new HAModelPart(this);
 		leftleg.setRotationPoint(2.0F, 12.0F, 1.0F);
 		setRotation(leftleg, -0.0258F, -0.1374F, -0.1723F);
@@ -210,7 +210,7 @@ public class ModelStarPlatinumIdle extends HAModelBase implements StandAnimatedM
 		rightleg.addChild(legdownr);
 		legdownr.addBox(0, 100, -4.1154F, -1.9128F, -2.5F, 5, 9, 5, 0.0F, true);
 
-		// 双拳残影（官方 hands，独立 group，仅 extraEffect 渲染）
+		// 双拳残影（ hands，独立 group，仅 extraEffect 渲染）
 		hands = new HAModelPart(this);
 		hands.setRotationPoint(-7.0F, -4.0F, -8.0F);
 		setRotation(hands, -1.5708F, 0.0F, 0.0F);
@@ -231,14 +231,14 @@ public class ModelStarPlatinumIdle extends HAModelBase implements StandAnimatedM
 	@Override
 	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float r, float g,
 			float b, float a) {
-		// 无动画兜底：静态渲染抱拳盘腿姿态（各部件已按官方构造值设好角度）
+		// 无动画兜底：静态渲染抱拳盘腿姿态（各部件已按构造值设好角度）
 		renderParts(matrices, vertices, light, overlay, r, g, b, a);
 	}
 
 	@Override
 	public void renderStand(MatrixStack matrices, VertexConsumer vertices, int light, int overlay,
 			EntityStandBase entity, float ageTicks, float speed, float power) {
-		// 官方 render()：通体上下漂浮（cos(0.1*age)*0.1）
+		//  render()：通体上下漂浮（cos(0.1*age)*0.1）
 		float off = MathHelper.cos(0.1F * ageTicks) * 0.1F;
 		head.offsetY = off;
 		body.offsetY = off;
@@ -254,9 +254,9 @@ public class ModelStarPlatinumIdle extends HAModelBase implements StandAnimatedM
 	}
 
 	/**
-	 * 双拳残影（官方 extraEffect hands 组）单独绘制：半透明淡入淡出闪烁。
+	 * 双拳残影（ extraEffect hands 组）单独绘制：半透明淡入淡出闪烁。
 	 * alpha 用 (0.5+0.5*cos) 平滑波动（0→0.45 往返，周期约 2.1s），全程恒大于 0，
-	 * 呈现"拳头叠影若隐若现"的淡入淡出效果；区别于官方 cos 负相位整段跳过渲染
+	 * 呈现"拳头叠影若隐若现"的淡入淡出效果；区别于 cos 负相位整段跳过渲染
 	 * （突然出现-消失）以及固定 0.45 常驻（无闪烁）两种口径。
 	 * 必须走 translucent 混合渲染层：cutout 层（renderStand 用的 getEntityCutoutNoCull）
 	 * 不开启 alpha 混合，传入的 alpha 会被忽略，残影表现为不透明常驻。

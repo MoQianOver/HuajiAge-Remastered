@@ -34,7 +34,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Star Platinum 默认态， 。
+ * Star Platinum 默认态。
  *
  * 行为：
  *  - 非闲置态：与 TheWorld 默认态同构的近身连打（视野角判定 + 龙优先 + LivingEntity 判定 + 掉落物/经验球排除），

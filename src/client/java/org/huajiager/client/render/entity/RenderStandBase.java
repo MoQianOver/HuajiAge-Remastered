@@ -49,14 +49,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 替身实体渲染器（独立实体渲染， RenderStandBase，对照 1.20.1 移植版渲染口径）。
+ * 替身实体渲染器（独立实体渲染）。
  *
  * 背景：替身外观由玩家身上的叠加层（LayerStand / ModelStandBase 体系）绘制，Fabric 端
  * 采用独立实体 + HAModelPart 模型渲染。矩阵与叠加层上下文保持一致：180-yaw + scale(-1,-1,1)，
  * 并额外补 root 上移 translate(0,H,0)（叠加层以玩家脚底为原点即自带该上下文，独立实体需补齐）。
- * THE_WORLD 使用官方 Blockbench 模型 ModelTheWorld（default/攻击：正立悬浮盘腿十二连挥拳）
- * + 64x128 官方贴图；闲置态切换 ModelTheWorldIdle（抱胸盘腿 + 双齿轮转动）+ Idle 专属贴图，
- * 与 官方 / 1.20.1 Astral Regenesis 移植版观感一致。
+ * THE_WORLD 使用 Blockbench 模型 ModelTheWorld（default/攻击：正立悬浮盘腿十二连挥拳）
+ * + 64x128 贴图；闲置态切换 ModelTheWorldIdle（抱胸盘腿 + 双齿轮转动）+ Idle 专属贴图，
  * 未被注册的其它替身回退 ModelStandDefault 标准人形占位。
  */
 public class RenderStandBase extends EntityRenderer<EntityStandBase> {
@@ -76,7 +75,7 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 	/** KILLER_QUEEN 攻击态贴图（ModelKillerQueenPunch 专用 128x128 Blockbench UV）。 */
 	private static final Identifier KILLER_QUEEN_PUNCH_TEXTURE = Identifier
 			.of("huajiager", "textures/entity/entity_killer_queen_punch.png");
-	/** ORGA_REQUIEM 飞行态贴图（ModelOrgaFly 专用 64x64 官方 UV）。 */
+	/** ORGA_REQUIEM 飞行态贴图（ModelOrgaFly 专用 64x64  UV）。 */
 	private static final Identifier ORGA_REQUIEM_FLY_TEXTURE = Identifier
 			.of("huajiager", "textures/entity/entity_orga_requiem_fly.png");
 	/** CRAZY_DIAMOND 贴图（ModelCrazyDiamond 专用 128x128 Blockbench UV）。 */
@@ -85,7 +84,7 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 	/** CRAZY_DIAMOND 闲置态贴图（ModelCrazyDiamondIdle 专用 128x128 Blockbench UV）。 */
 	private static final Identifier CRAZY_DIAMOND_IDLE_TEXTURE = Identifier
 			.of("huajiager", "textures/entity/crazy_diamond_idle.png");
-	/** CRAZY_DIAMOND 治疗态粉红罩贴图：直接用官方 crazy_diamond_heal.png 左下角粉红区，不改贴图像素。 */
+	/** CRAZY_DIAMOND 治疗态粉红罩贴图：直接用 crazy_diamond_heal.png 左下角粉红区，不改贴图像素。 */
 	private static final Identifier CRAZY_DIAMOND_HALO_TEXTURE = Identifier
 			.of("huajiager", "textures/entity/crazy_diamond_heal.png");
 	/** HERMIT_PURPLE 贴图（ModelHermitPurple 专用 64x64 Blockbench UV）。 */
@@ -103,62 +102,62 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 
 	private final HAModelBase defaultModel;
 	private final Map<String, HAModelBase> standModels;
-	/** THE_WORLD 闲置态模型（default 模型的 power=0 收手下垂实现已废弃，改为官方抱胸盘腿造型）。 */
+	/** THE_WORLD 闲置态模型（default 模型的 power=0 收手下垂实现已废弃，改为抱胸盘腿造型）。 */
 	private final ModelTheWorldIdle theWorldIdleModel;
-	/** STAR_PLATINUM 闲置态模型（官方抱胸抱拳 + 双拳残影，区别于 default 攻击挥拳造型）。 */
+	/** STAR_PLATINUM 闲置态模型（抱胸抱拳 + 双拳残影，区别于 default 攻击挥拳造型）。 */
 	private final ModelStarPlatinumIdle starPlatinumIdleModel;
-	/** HIEROPHANT_GREEN 闲置态模型（官方后仰盘坐 + 背后翡翠条带造型，区别于 default 攻击悬浮造型）。 */
+	/** HIEROPHANT_GREEN 闲置态模型（后仰盘坐 + 背后翡翠条带造型，区别于 default 攻击悬浮造型）。 */
 	private final ModelHierophantGreenIdle hierophantGreenIdleModel;
-	/** CRAZY_DIAMOND 闲置态模型（官方蹲伏双拳造型 ModelCrazyDiamondIdle，区别于 default 正立悬浮造型）。 */
+	/** CRAZY_DIAMOND 闲置态模型（蹲伏双拳造型 ModelCrazyDiamondIdle，区别于 default 正立悬浮造型）。 */
 	private final ModelCrazyDiamondIdle crazyDiamondIdleModel;
-	/** HERMIT_PURPLE 爆发态模型（官方藤蔓缠绕造型 ModelHermitPurpleOverdrive，区别于 default 待机造型）。 */
+	/** HERMIT_PURPLE 爆发态模型（藤蔓缠绕造型 ModelHermitPurpleOverdrive，区别于 default 待机造型）。 */
 	private final ModelHermitPurpleOverdrive hermitPurpleOverdriveModel;
-	/** KILLER_QUEEN 攻击态模型（官方十指挥拳造型 ModelKillerQueenPunch，区别于 default 待机造型）。 */
+	/** KILLER_QUEEN 攻击态模型（十指挥拳造型 ModelKillerQueenPunch，区别于 default 待机造型）。 */
 	private final ModelKillerQueenPunch killerQueenPunchModel;
-	/** ORGA_REQUIEM 飞行态模型（官方躺平飞行造型 ModelOrgaFly，区别于 default 直立悬浮造型）。 */
+	/** ORGA_REQUIEM 飞行态模型（躺平飞行造型 ModelOrgaFly，区别于 default 直立悬浮造型）。 */
 	private final ModelOrgaFly orgaFlyModel;
-	/** WHITE_SNAKE 攻击态模型（官方挥拳造型 ModelWhiteSnakePunch，区别于 default 待机造型）。 */
+	/** WHITE_SNAKE 攻击态模型（挥拳造型 ModelWhiteSnakePunch，区别于 default 待机造型）。 */
 	private final ModelWhiteSnakePunch whiteSnakePunchModel;
 
 	public RenderStandBase(EntityRendererFactory.Context ctx) {
 		super(ctx);
 		this.defaultModel = new ModelStandDefault();
 		this.standModels = new HashMap<>();
-		// THE_WORLD 启用官方/移植版模型：ModelTheWorld 即官方 Blockbench 正立悬浮盘腿造型
-		// （head y-6..0、body 0..7、腿 pivot y11 弯曲），配官方贴图 UV 完全匹配。
+		// THE_WORLD 启用模型：ModelTheWorld 即 Blockbench 正立悬浮盘腿造型
+		// （head y-6..0、body 0..7、腿 pivot y11 弯曲），配贴图 UV 完全匹配。
 		register(StandLoader.THE_WORLD.getName(), new ModelTheWorld());
-		// STAR_PLATINUM 启用官方/移植版模型：ModelStarPlatinum 数值照搬官方 		// （正立悬浮造型 + 十二连挥拳），配官方 entity_star_platinum_default.png 贴图 UV
+		// STAR_PLATINUM 启用模型：ModelStarPlatinum（正立悬浮造型 + 十二连挥拳），配 entity_star_platinum_default.png 贴图 UV
 		// 完全匹配，修复此前回落标准人形占位导致的"贴图错乱 / 位置在脚下"。
 		register(StandLoader.STAR_PLATINUM.getName(), new ModelStarPlatinum());
-		// HIEROPHANT_GREEN 启用官方/移植版模型：ModelHierophantGreen 数值照搬官方 		// （正立悬浮造型 + 背后翡翠齿轮盘旋转），配官方 entity_hierophant_green_default.png
+		// HIEROPHANT_GREEN 启用模型：ModelHierophantGreen（正立悬浮造型 + 背后翡翠齿轮盘旋转），配 entity_hierophant_green_default.png
 		// 贴图 UV 完全匹配，修复此前回落标准人形占位导致的"贴图错乱 / 位置在脚下"。
 		register(StandLoader.HIEROPHANT_GREEN.getName(), new ModelHierophantGreen());
-		// KILLER_QUEEN 启用官方/移植版模型：ModelKillerQueen 数值照搬官方 		// （待机悬浮造型），配官方 entity_killer_queen_default.png 贴图 UV 完全匹配，
+		// KILLER_QUEEN 启用模型：ModelKillerQueen（待机悬浮造型），配 entity_killer_queen_default.png 贴图 UV 完全匹配，
 		// 修复此前回落标准人形占位导致的"贴图错乱 / 位置在脚下"。
 		register(StandLoader.KILLER_QUEEN.getName(), new ModelKillerQueen());
-		// ORGA_REQUIEM 启用官方/移植版模型：ModelOrgaRequiem 数值照搬官方 		// （黑色长发 + 背后七根飘带），配官方 entity_orga_requiem_default.png 贴图 UV
+		// ORGA_REQUIEM 启用模型：ModelOrgaRequiem（黑色长发 + 背后七根飘带），配 entity_orga_requiem_default.png 贴图 UV
 		// 完全匹配，修复此前回落标准人形占位导致的"贴图错乱 / 本体贴脸"。
 		register(StandLoader.ORGA_REQUIEM.getName(), new ModelOrgaRequiem());
-		// CRAZY_DIAMOND 启用官方/移植版模型：ModelCrazyDiamond 数值照搬官方
+		// CRAZY_DIAMOND 启用模型：ModelCrazyDiamond
 		// Blockbench JSON（crazy_diamond.json，128x128 UV，正立悬浮出拳造型），
-		// 配官方 crazy_diamond.png 贴图 UV 完全匹配，修复此前回落标准人形占位
+		// 配 crazy_diamond.png 贴图 UV 完全匹配，修复此前回落标准人形占位
 		// 导致的"贴图错乱 / 位置在脚下"。
 		// 注意：StandCustom 的 name 来自 JSON 的 stand 字段 = "huajiager:crazy_diamond"
 		// （带命名空间），pickModel 用 getName() 查表，必须同时注册带/不带命名空间两个 key，
 		// 否则 getName() = "huajiager:crazy_diamond" 查不到短名 key → 回落默认人形。
 		register("crazy_diamond", new ModelCrazyDiamond());
 		register("huajiager:crazy_diamond", new ModelCrazyDiamond());
-		// HERMIT_PURPLE 启用官方/移植版模型：ModelHermitPurple 数值照搬官方
+		// HERMIT_PURPLE 启用模型：ModelHermitPurple
 		// Blockbench JSON（hermit_purple.json，64x64 UV，藤蔓缠绕悬浮造型），
-		// 配官方 hermit_purple.png 贴图 UV 完全匹配，修复此前回落标准人形占位。
+		// 配 hermit_purple.png 贴图 UV 完全匹配，修复此前回落标准人形占位。
 		// 注意：StandCustom 的 name 来自 JSON 的 stand 字段 = "huajiager:hermit_purple"
 		// （带命名空间），pickModel 用 getName() 查表，必须同时注册带/不带命名空间两个 key，
 		// 否则 getName() = "huajiager:hermit_purple" 查不到短名 key → 回落默认人形。
 		register("hermit_purple", new ModelHermitPurple());
 		register("huajiager:hermit_purple", new ModelHermitPurple());
-		// WHITE_SNAKE 启用官方/移植版模型：ModelWhiteSnake 数值照搬官方
+		// WHITE_SNAKE 启用模型：ModelWhiteSnake
 		// Blockbench JSON（white_snake.json，128x128 UV，待机悬浮造型），
-		// 配官方 white_snake.png 贴图 UV 完全匹配，修复此前回落标准人形占位。
+		// 配 white_snake.png 贴图 UV 完全匹配，修复此前回落标准人形占位。
 		// 注意：StandCustom 的 name 来自 JSON 的 stand 字段 = "huajiager:white_snake"
 		// （带命名空间），pickModel 用 getName() 查表，必须同时注册带/不带命名空间两个 key。
 		register("white_snake", new ModelWhiteSnake());
@@ -185,7 +184,7 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 	private HAModelBase pickModel(EntityStandBase entity) {
 		StandBase s = entity.getStand();
 		if (s != null) {
-			// ORGA_REQUIEM 飞行态（state 含 "fly" extraData）：切官方躺平飞行模型
+			// ORGA_REQUIEM 飞行态（state 含 "fly" extraData）：切躺平飞行模型
 			// ModelOrgaFly（身体绕 X 躺平 + 头部后仰 + 飘带绕 Z 旋转），
 			// 与 default 直立悬浮造型区分——"姿势没变"的修复点。
 			if (isFly(entity) && StandLoader.ORGA_REQUIEM.getName().equals(s.getName())) {
@@ -203,15 +202,15 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 			if (isIdle(entity) && isCrazyDiamond(s)) {
 				return crazyDiamondIdleModel;
 			}
-			// HERMIT_PURPLE 爆发态（OVERDRIVE）切官方藤蔓缠绕模型 ModelHermitPurpleOverdrive
+			// HERMIT_PURPLE 爆发态（OVERDRIVE）切藤蔓缠绕模型 ModelHermitPurpleOverdrive
 			if (isOverdrive(entity) && isHermitPurple(s)) {
 				return hermitPurpleOverdriveModel;
 			}
-			// KILLER_QUEEN 攻击态（PUNCH）切官方十指挥拳模型；待机/闲置态用 default 待机造型
+			// KILLER_QUEEN 攻击态（PUNCH）切十指挥拳模型；待机/闲置态用 default 待机造型
 			if (isPunch(entity) && StandLoader.KILLER_QUEEN.getName().equals(s.getName())) {
 				return killerQueenPunchModel;
 			}
-			// WHITE_SNAKE 攻击态（PUNCH）切官方挥拳模型；待机/闲置态用 default 待机造型
+			// WHITE_SNAKE 攻击态（PUNCH）切挥拳模型；待机/闲置态用 default 待机造型
 			if (isPunch(entity) && isWhiteSnake(s)) {
 				return whiteSnakePunchModel;
 			}
@@ -228,7 +227,7 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 	 * 做视锥剔除，行走/飞行的视角晃动会让极小可见盒频繁进出视锥，整颗实体一帧帧闪没。
 	 * 主修复在 EntityStandBase.getVisibilityBoundingBox() 已放大可见盒，此处再显式不剔除。
 	 *
-	 * <p>替身可见性规则（对齐原版 LayerStand：仅当本机玩家拥有替身时才渲染替身模型）：
+	 * <p>替身可见性规则（仅当本机玩家拥有替身时才渲染替身模型）：
 	 * <ul>
 	 *   <li>白蛇替身例外：对所有玩家可见（含无替身者）；</li>
 	 *   <li>本机玩家未觉醒替身（STAND_DATA 为空/未同步）→ 不渲染其他玩家的替身实体；</li>
@@ -261,7 +260,7 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 		matrices.push();
 		boolean idle = isIdle(entity);
 		// 攻击态 + 所属玩家本机第一人称：替身本体不可见，只渲染双手挥拳
-		// （对齐官方 ModelTheWorld.renderFirst —— 第一人称下玩家只见替身的拳头）。
+		// （对齐 ModelTheWorld.renderFirst —— 第一人称下玩家只见替身的拳头）。
 		// 实体本身位于玩家前方（攻击态按实体逻辑置于正前方同高），第一人称视野
 		// 恰好呈现前方舞动的拳头、本体不遮挡画面。闲置态替身在背后，第一人称
 		// 本来不可见，无需特殊处理。
@@ -358,7 +357,7 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 				boolean isOrgaRequiem = s != null
 						&& StandLoader.ORGA_REQUIEM.getName().equals(s.getName());
 				if (isOrgaRequiem && isFly(entity)) {
-					// ORGA_REQUIEM 飞行态（官方 ModelOrgaFly.=(0,-0.9,0)）：
+					// ORGA_REQUIEM 飞行态（ ModelOrgaFly.=(0,-0.9,0)）：
 					// 水平居中、高 0.9——飞行姿态不左右偏，替身躺平悬浮在玩家正上方偏后。
 					// 第一人称下压 0.5 格（用户要求）：飞行本体不再悬浮过高、贴近玩家身体。
 					oy = tiePos.y + 0.9D;
@@ -368,7 +367,7 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 					ox = tiePos.x;
 					oz = tiePos.z;
 				} else if (isOrgaRequiem) {
-					// ORGA_REQUIEM 攻击态（官方 ModelOrgaRequiem.setPunch 为空、位置不变）：
+					// ORGA_REQUIEM 攻击态（ ModelOrgaRequiem.setPunch 为空、位置不变）：
 					// 仍按 =(-0.5,-0.7,0.75) 飘在玩家右后方偏高——远程替身本体不近身，
 					// 第一人称也不会看到本体贴脸。
 					final double OFF_BACK = 0.75D;
@@ -387,7 +386,7 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 					oy = tiePos.y + 1.0D;
 				} else if (isKillerQueen && !isPunch(entity)) {
 					// KQ 待机态（ModelKillerQueen.=(0.9,-0.1,-0.8)：
-					// 左侧 0.9、前方 0.8、高 0.1）——按官方数值映射为实体偏移，不再沉底
+					// 左侧 0.9、前方 0.8、高 0.1）——按数值映射为实体偏移，不再沉底
 					final double OFF_FRONT = 0.8D;
 					final double OFF_LEFT = 0.9D;
 					ox = tiePos.x + nx * OFF_FRONT + nz * OFF_LEFT;
@@ -429,11 +428,11 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 					(float) (oz - entPos.z));
 			renderYaw = tieUser.getYaw();
 		}
-		// 官方实体渲染矩阵（大类同 LivingEntityRenderer）：
+		// 实体渲染矩阵（大类同 LivingEntityRenderer）：
 		//   1) translate 必须放在 scale(-1,-1,1) 之前——平移量会随 y 翻转变号，
 		//      旧实现写在 scale 之后等效于把模型压到脚底以下 H 格（"始终在脚下"的根源）。
 		//      此处 H 为正上移量：模型头部盒位于模型空间 -0.375..0，加 H 后头顶 ≈ H..H+0.375 格。
-		//      H=1.2 时头约在玩家胸口~肩部、盘腿底贴近地面微浮；可微调（0.2=贴脚踝如移植版、1.5=更高）。
+		//      H=1.2 时头约在玩家胸口~肩部、盘腿底贴近地面微浮；可微调（0.2=贴脚踝、1.5=更高）。
 		//      第一人称攻击态（handsOnly）：实体与玩家同高（y=脚底），拳头手腕锚点约在
 		//      脚底上方 1.2+5/16≈1.51 格（略低于准星/眼睛 1.62），额外抬高 0.3 格使拳头
 		//      大体与准星齐平（HAND_FIRST_PERSON_LIFT=1.5）。
@@ -466,12 +465,12 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 			}
 		}
 		matrices.translate(0.0f, lift, 0.0f);
-		//   2) rotationYaw 使模型朝向 yaw（官方 180-yaw 写法）
+		//   2) rotationYaw 使模型朝向 yaw（ 180-yaw 写法）
 		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F - renderYaw));
 		//   3) scale(-1,-1,1) 把 Y 向下的模型坐标翻转为正立
 		matrices.scale(-1f, -1f, 1f);
 
-		// 第一人称飞行态：渲染层换 translucent 并强制覆盖 alpha=0.5（官方 renderFirst 的
+		// 第一人称飞行态：渲染层换 translucent 并强制覆盖 alpha=0.5（ renderFirst 的
 		// 幽灵半透明效果；cutout 层忽略顶点 alpha，必须走混合层才透明）。
 		boolean flyFirstPerson = isFly(entity) && isFirstPersonOwner(entity);
 		VertexConsumer vc = vcp.getBuffer(flyFirstPerson
@@ -488,7 +487,7 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 			// 攻击态=1（ModelTheWorld 张开 + 十二连挥拳 + setPunch 前冲抖动）。
 			float power = idle ? 0.0F : 1.0F;
 			// 第一人称攻击态拳头半透明：cutout 层忽略顶点 alpha，必须换 translucent
-			// 混合层（与白金闲置残影 renderHandsFade 同源问题）；alpha 对齐官方 Res：
+			// 混合层（与白金闲置残影 renderHandsFade 同源问题）；alpha 对齐 Res：
 			// THE_WORLD / STAR_PLATINUM / KILLER_QUEEN 的 renderFirst 均传 0.3f。
 			VertexConsumer handVc = handsOnly
 					? vcp.getBuffer(RenderLayer.getEntityTranslucent(getTexture(entity)))
@@ -501,29 +500,29 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 				starPlatinum.renderHandsStand(matrices, handVc, light, OverlayTexture.DEFAULT_UV, entity,
 						(float) entity.age, speed, power, handAlpha);
 			} else if (handsOnly && model instanceof ModelKillerQueenPunch kqPunch) {
-				// KQ 攻击态官方 renderFirst 只渲双手：第一人称只见前方舞动的十指挥拳
+				// KQ 攻击态 renderFirst 只渲双手：第一人称只见前方舞动的十指挥拳
 				kqPunch.renderHandsStand(matrices, handVc, light, OverlayTexture.DEFAULT_UV, entity,
 						(float) entity.age, speed, power, handAlpha);
 			} else if (handsOnly && (model instanceof ModelHierophantGreen || model instanceof ModelHierophantGreenIdle)) {
-				// 绿法皇官方 renderFirst 为空：第一人称攻击态不渲染本体（只有弹幕特效），
+				// 绿法皇 renderFirst 为空：第一人称攻击态不渲染本体（只有弹幕特效），
 				// 避免本体贴脸遮挡视野。闲置态模型（ModelHierophantGreenIdle 无
 				// renderHandsStand）同样不渲染——绿法皇第一人称一律隐藏本体，
 				// 与白金之星/世界观感一致。
 				// 空实现：完全不渲染任何部件。
 			} else if (handsOnly && model instanceof ModelKillerQueen) {
-				// KQ 待机态官方 renderFirst 为空：第一人称不渲染本体（待机位于玩家
+				// KQ 待机态 renderFirst 为空：第一人称不渲染本体（待机位于玩家
 				// 左前方 0.9 会直接入视野），与绿法皇同口径，仅保留攻击态十指挥拳可见。
 				// 空实现：完全不渲染任何部件。
 			} else if (handsOnly && model instanceof ModelOrgaRequiem) {
-				// ORGA_REQUIEM 官方 renderFirst 为空：第一人称不渲染本体（远程替身本体
+				// ORGA_REQUIEM  renderFirst 为空：第一人称不渲染本体（远程替身本体
 				// 本就飘在玩家右后方，且第一人称攻击态不应出现贴脸本体）。
 				// 空实现：完全不渲染任何部件。
 			} else if (handsOnly && model instanceof ModelOrgaFly) {
-				// ORGA_REQUIEM 飞行态官方 renderFirst 为空：第一人称不渲染本体
+				// ORGA_REQUIEM 飞行态 renderFirst 为空：第一人称不渲染本体
 				// （飞行姿态替身贴身悬浮，第一人称会直接遮挡视野）。
 				// 空实现：完全不渲染任何部件。
 			} else if (handsOnly && model instanceof ModelCrazyDiamond crazyDiamond) {
-				// 疯狂钻石攻击/治疗态官方 renderFirst 只渲拳头环（viewFirst 子树）：
+				// 疯狂钻石攻击/治疗态 renderFirst 只渲拳头环（viewFirst 子树）：
 				// 第一人称只见前方舞动的拳头、本体隐藏，与世界/白金之星式拳头一致。
 				crazyDiamond.renderHandsStand(matrices, handVc, light, OverlayTexture.DEFAULT_UV, entity,
 						(float) entity.age, speed, power, handAlpha);
@@ -534,19 +533,19 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 					crazyDiamond.renderHalo(matrices, haloVc, light, OverlayTexture.DEFAULT_UV, 0.35F);
 				}
 			} else if (handsOnly && (model instanceof ModelHermitPurple || model instanceof ModelHermitPurpleOverdrive)) {
-				// 隐者之紫官方 renderFirst 为空：第一人称不渲染本体（远程替身本体
+				// 隐者之紫 renderFirst 为空：第一人称不渲染本体（远程替身本体
 				// 位于玩家正前方会直接遮挡视野，藤蔓攻击特效独立呈现）。
 				// 空实现：完全不渲染任何部件。
 			} else if (handsOnly && model instanceof ModelWhiteSnakePunch wsPunch) {
-				// 白蛇连击态官方 viewFirst 含六拳拳头环：第一人称只渲染半透明拳头环，
+				// 白蛇连击态 viewFirst 含六拳拳头环：第一人称只渲染半透明拳头环，
 				// 本体隐藏不贴脸，与疯狂钻石/白金之星同款手法。
 				wsPunch.renderHandsStand(matrices, handVc, light, OverlayTexture.DEFAULT_UV, entity,
 						(float) entity.age, speed, power, handAlpha);
 			} else if (handsOnly && model instanceof ModelWhiteSnake) {
-				// 白蛇默认态官方 viewFirst 仅空节点（无拳头 cube）：第一人称隐藏本体。
+				// 白蛇默认态 viewFirst 仅空节点（无拳头 cube）：第一人称隐藏本体。
 				// 空实现：完全不渲染任何部件。
 			} else {
-				// ORGA_REQUIEM 飞行态第一人称：官方 renderFirst 额外绕 X 前倾 35 度，
+				// ORGA_REQUIEM 飞行态第一人称： renderFirst 额外绕 X 前倾 35 度，
 				// 把躺平贴身的替身转到玩家前方视野（否则横躺在脚下看不到）。
 				// 方向若与预期相反，将 -35.0F 改为 +35.0F 即可。
 				if (isFly(entity) && isFirstPersonOwner(entity)) {
@@ -676,7 +675,7 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 
 	@Override
 	public Identifier getTexture(EntityStandBase entity) {
-		// ORGA_REQUIEM 飞行态（fly）用 ModelOrgaFly 专属贴图（64x64 官方 UV）
+		// ORGA_REQUIEM 飞行态（fly）用 ModelOrgaFly 专属贴图（64x64  UV）
 		if (isFly(entity)) {
 			StandBase s = entity.getStand();
 			if (s != null && StandLoader.ORGA_REQUIEM.getName().equals(s.getName())) {
@@ -706,7 +705,7 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 				return CRAZY_DIAMOND_IDLE_TEXTURE;
 			}
 		}
-		// CRAZY_DIAMOND（自定义替身）固定用 128x128 官方贴图。
+		// CRAZY_DIAMOND（自定义替身）固定用 128x128 贴图。
 		// StandCustom 未设置 texPath（getTexPath 返回 null），若不在此返回专属贴图，
 		// 会一路兜底到 FALLBACK_TEXTURE（THE_WORLD 贴图）→ 贴图错乱。
 		StandBase stand = entity.getStand();
@@ -714,12 +713,12 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 				|| "huajiager:crazy_diamond".equals(stand.getName()))) {
 			return CRAZY_DIAMOND_TEXTURE;
 		}
-		// HERMIT_PURPLE（自定义替身）固定用官方贴图：default 态 hermit_purple.png，
+		// HERMIT_PURPLE（自定义替身）固定贴图：default 态 hermit_purple.png，
 		// 爆发态（OVERDRIVE）用 hermit_purple_overdrive.png（64x64 Blockbench UV）。
 		if (stand != null && isHermitPurple(stand)) {
 			return isOverdrive(entity) ? HERMIT_PURPLE_OVERDRIVE_TEXTURE : HERMIT_PURPLE_TEXTURE;
 		}
-		// WHITE_SNAKE（自定义替身）固定用官方贴图：default 态 white_snake.png，
+		// WHITE_SNAKE（自定义替身）固定贴图：default 态 white_snake.png，
 		// 攻击态（PUNCH）用 white_snake_punch.png（128x128 Blockbench UV）。
 		if (stand != null && isWhiteSnake(stand)) {
 			return isPunch(entity) ? WHITE_SNAKE_PUNCH_TEXTURE : WHITE_SNAKE_TEXTURE;

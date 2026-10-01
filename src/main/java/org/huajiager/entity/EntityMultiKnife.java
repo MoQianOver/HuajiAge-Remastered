@@ -23,11 +23,11 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 /**
- * 多刃飞刀实体， 。
+ * 多刃飞刀实体。
  *
  * 继承 EntityThrowable，无重力旋转飞行；命中实体造成范围连锁伤害（附近实体数量
- * 加成）与点燃（light 模式），命中方块后停驻直至寿命耗尽。Fabric 对应 ProjectileEntity，
- * 用 setNoGravity(true) 代替 getGravityVelocity 返回 0。
+ * 加成）与点燃（light 模式），命中方块后停驻直至寿命耗尽。
+ * 用 setNoGravity(true) 实现无重力飞行。
  */
 public class EntityMultiKnife extends ProjectileEntity {
 

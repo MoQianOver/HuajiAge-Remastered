@@ -30,9 +30,9 @@ import net.minecraft.text.Text;
  * <p>差异（裁剪）：
  * <ul>
  *   <li>在信息块左上绘制替身 Disc 图标（StandUtil.getDiscTex + drawModalRectWithCustomSizedTexture），
- *       该方法依赖未的自定义替身资源加载且当前资源目录无 disc 贴图，本实现暂跳过图标绘制；</li>
+ *       该方法依赖未就绪的自定义替身资源加载且当前资源目录无 disc 贴图，本实现暂跳过图标绘制；</li>
  *   <li>替身显示名：经 I18n 本地化（stand.huajiage.&lt;name&gt;），StandUtil.getLocalName
- *       当前为裁剪版直接返回注册名，HUD 沿用该实现；</li>
+ *       当前直接返回注册名，HUD 沿用该实现；</li>
  *   <li>提示文案使用 Ctrl+ 组合修饰符（键名由 Keyboard.getKeyName 拼接）；后按键
  *       已改为独立单键绑定（见 EventStandKey），此处直接显示实际绑定键名，不再加 “Ctrl+” 前缀。</li>
  * </ul>
@@ -111,7 +111,7 @@ public final class EventStandHudRender {
 
 		// —— 左上角按键提示——
 		// 技能提示与切换提示统一在「替身已召唤（isTriggered）」时显示：
-		// 裁剪版无 stage 推进机制（stage 恒为 0），若沿用 stage>0 门槛，
+		// 当前实现无 stage 推进机制（stage 恒为 0），若沿用 stage>0 门槛，
 		// 技能提示将永远不显示；此处与 EventStandKey.performSkill 已放开
 		// 的「召唤后即可用技能」判定保持一致。
 		if (ConfigHuaji.Stands.allowStandTip) {

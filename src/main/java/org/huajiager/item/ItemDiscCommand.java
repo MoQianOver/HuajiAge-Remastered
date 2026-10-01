@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 import java.util.List;
 
 /**
- * 命令飞盘， 。
+ * 命令飞盘。
  *
  * 右键投掷一枚受控命令飞盘，携带三种命令类型（爆炸/上升/自伤）。
  *  addPropertyOverride / getSubItems 在 Fabric 侧分别收敛为

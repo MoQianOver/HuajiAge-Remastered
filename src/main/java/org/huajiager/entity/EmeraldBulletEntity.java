@@ -30,9 +30,9 @@ import net.minecraft.world.World;
 import java.util.List;
 
 /**
- * 翡翠弹幕实体， 。
+ * 翡翠弹幕实体。
  *
- * 继承 EntityThrowable；Fabric 1.20.1 对应 ProjectileEntity（无重力用 setNoGravity 代替
+ * 继承 ProjectileEntity（无重力用 setNoGravity 代替
  * getGravityVelocity 返回 0）。运动由 NBT 注入的 MOTION_X/Y/Z 驱动 + 锁定追踪目标修正。 * 碰撞时产生间接爆炸伤害并播放玻璃碎裂音效。
  */
 public class EmeraldBulletEntity extends ProjectileEntity {

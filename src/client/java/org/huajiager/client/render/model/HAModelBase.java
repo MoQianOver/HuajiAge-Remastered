@@ -4,7 +4,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 
 /**
- * ModelBase 的 1.20.1 兼容适配层（）。
+ * ModelBase 的 1.20.1 兼容适配层。
  *  ，保留 textureWidth/Height。
  */
 public abstract class HAModelBase {

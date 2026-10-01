@@ -16,14 +16,14 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 /**
- * 多刃飞刀（多刀）， 。
+ * 多刃飞刀（多刀）。
  *
  *  addPropertyOverride("light") 对应模型 multi_knife.json 的 light 谓词
  * （0 -> multi_knife_n / 1 -> multi_knife_shiny），Fabric 侧在客户端
  * HuajiAgeRemasteredClient 中以 ModelPredicateProviderRegistry 注册。
  * 右键发射已的 EntityMultiKnife 实体（工程 src/main/java/org/huajiager/entity）。
  *
- * 配置项 ConfigHuaji.Stands.knifeHeight（发射高度修正）未移植配置系统，
+ * 配置项 ConfigHuaji.Stands.knifeHeight（发射高度修正）未接入配置系统，
  * 此处以常量 KNIFE_HEIGHT 代替并取默认值 0.1F。
  */
 public class ItemMultiKnife extends Item {

@@ -32,7 +32,7 @@ public class HuajiAgeRemastered implements ModInitializer {
 		// Nashorn -> GraalJS 引擎验证（替身脚本运行时依赖）
 		ScriptEngine engine = JsEngineHelper.ENGINE;
 
-		// Back：替身注册链路（StandLoader 构造即登记 5 站并 reloadStands）
+		// 替身注册链路（StandLoader 构造即登记 5 站并 reloadStands）
 		new org.huajiager.init.loaders.StandLoader();
 
 		// 音效注册（显式 init，避开 <clinit> 在注册表冻结后注册的崩溃）
@@ -56,7 +56,7 @@ public class HuajiAgeRemastered implements ModInitializer {
 		// 物品注册（命令飞盘/第二卷轴/虚空镜片 + 创造标签页）
 		org.huajiager.init.loaders.ItemLoader.register();
 
-		// stage2-BLOCK: block registry (ore_huaji / huaji_star_block + BlockItem)
+		// 方块注册（ore_huaji / huaji_star_block + BlockItem）
 		org.huajiager.init.loaders.BlockLoader.register();
 
 		// 搅拌机/终极熔炉配方类型与序列化器注册
@@ -65,7 +65,7 @@ public class HuajiAgeRemastered implements ModInitializer {
 		// 机器 ScreenHandlerType 注册
 		org.huajiager.screen.MenuLoader.register();
 
-		// stage2-OREGEN: overworld ore_huaji vein + glowstone companion
+		// 主世界 ore_huaji 矿脉生成 + 萤石伴生
 		org.huajiager.common.world.gen.OreGenEventHandler.register();
 
 		// 替身状态效果注册（PotionStand 等，MessageStandUp 召唤依赖）
@@ -120,8 +120,7 @@ public class HuajiAgeRemastered implements ModInitializer {
 		// 攻击命中带 disc_deprive 状态标签的目标时抽取心智/替身 DISC，被夺生物持续凋零掉血。
 		org.huajiager.stand.events.EventWhiteSnake.register();
 
-		//  HACommands-> Fabric Brigadier 。
-		// 在服务器启动时回调注册 /reloadStand，等价于原 HACommands.onServerStarting。
+		// 命令注册走 Fabric Brigadier，在服务器启动时回调注册 /reloadStand。
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
 				org.huajiager.command.CommandStandReload.register(dispatcher));
 		LOGGER.info("[HuajiAge] {} v{} initialized", NAME, version);

@@ -3,7 +3,7 @@ package org.huajiager.item;
 import net.minecraft.item.Item;
 
 /**
- * 中子星碎片， 。
+ * 中子星碎片。
  */
 public class ItemNeutronStarFragment extends Item {
 

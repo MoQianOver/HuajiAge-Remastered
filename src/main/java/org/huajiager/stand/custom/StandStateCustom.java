@@ -16,7 +16,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 
 /**
- * 自定义替身状态（ ）。
+ * 自定义替身状态。
  * <p>将 custom_stand/states/*.js 中导出的状态对象桥接到本地 {@link StandStateBase}：
  * - 每 tick 由 {@link #doTask(LivingEntity)} 调 JS {@code update(world, entityWrapper, dataWrapper)}。 * - 超时由 {@link #doTaskOutOfTime(LivingEntity)} 调 JS {@code timeOut(...)}。 * - Hold（持续按键）由 {@link #doTaskCapability(LivingEntity)} 调 JS {@code capability(...)}。
  * 通过 Invocable 直接 invoke JS 对象方法。若脚本对象不可调用（异常环境），自动退化为空实现。</p>

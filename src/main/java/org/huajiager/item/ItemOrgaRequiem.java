@@ -24,8 +24,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 
 /**
- * 停不下来的奥尔加镇魂曲（独立编写，MIT 语义参考、不照搬代码）。
- *  。
+ * 停不下来的奥尔加镇魂曲。
  *
  * 核心为被动持有逻辑（物品 NBT 绑定 owner + inventoryTick 周期结算）：
  *  1) 首次持有（NBT 无 owner）：
@@ -63,7 +62,7 @@ public class ItemOrgaRequiem extends Item {
 		}
 	}
 
-	/** 对应 update()：首次绑定 owner / 非持有者周期标记 / 持有者移除希望之花 */
+	/** 首次绑定 owner / 非持有者周期标记 / 持有者移除希望之花 */
 	private void update(ItemStack stack, PlayerEntity player) {
 		if (stack.isEmpty() || !(stack.getItem() instanceof ItemOrgaRequiem)) {
 			return;

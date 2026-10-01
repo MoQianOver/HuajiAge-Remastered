@@ -12,7 +12,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Direction;
 
 /**
- * ModelRenderer 的 1.20.1 兼容适配层（）。
+ * ModelRenderer 的 1.20.1 兼容适配层。
  * 兼容旧版语义（rotationPoint / rotateAngle / mirror / addBox / addChild），
  * 内部惰性构建 Fabric 1.20.1 ModelPart（Cuboid + children），渲染时同步 pivot/angles。
  */
@@ -28,7 +28,7 @@ public class HAModelPart {
 	public float rotateAngleX;
 	public float rotateAngleY;
 	public float rotateAngleZ;
-	/** ModelRenderer.offsetX/Y/Z：渲染时叠加到 rotationPoint 上，官方动画（悬浮/抖动）用。 */
+	/** ModelRenderer.offsetX/Y/Z：渲染时叠加到 rotationPoint 上，动画（悬浮/抖动）用。 */
 	public float offsetX;
 	public float offsetY;
 	public float offsetZ;

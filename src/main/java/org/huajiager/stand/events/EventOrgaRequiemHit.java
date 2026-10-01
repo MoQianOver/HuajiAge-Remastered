@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * 奥尔加镇魂曲攻击链（ ）：
+ * 奥尔加镇魂曲攻击链：
  * <ol>
  *   <li>{@code onRequiemHit}（AttackEntityCallback）：镇魂曲技能期间（potionRequiem 激活）
  *       且空手命中生物时，播 ORGA_REQUIEM_HIT 音效 + 5 点 requiem_hit 伤害（
@@ -82,7 +82,7 @@ public final class EventOrgaRequiemHit {
 		});
 	}
 
-	/** 对应 EventRequiem.onRequiemHit：音效 + 5 点 requiem_hit 伤害 + REQUIEM/PLAYER_NAME 标记 + 击退。 */
+	/** 音效 + 5 点 requiem_hit 伤害 + REQUIEM/PLAYER_NAME 标记 + 击退。 */
 	private static void onRequiemHit(PlayerEntity player, LivingEntity target) {
 		// 额外攻击音效防重叠：若该玩家上一次命中播放的 orga_requiem_hit 尚未放完
 		// （间隔 < 53 tick）则沿用当前播放实例不再新播；音效放完后再次命中才播新音效。
@@ -101,7 +101,7 @@ public final class EventOrgaRequiemHit {
 		target.takeKnockback(0.6, target.getX() - player.getX(), target.getZ() - player.getZ());
 	}
 
-	/** 对应 EventRequiem.requiemTarget：REQUIEM 标记递减 + 持续伤害结算。 */
+	/** REQUIEM 标记递减 + 持续伤害结算。 */
 	private static void requiemTarget(LivingEntity target) {
 		int requiem = NBTHelper.getEntityInteger(target, HuajiConstant.Tags.REQUIEM);
 		if (requiem <= 0) {
@@ -124,7 +124,7 @@ public final class EventOrgaRequiemHit {
 		}
 	}
 
-	/** 对应 EventRequiem.RequiemHit：potionRequiemTarget 药水标记的持续伤害。 */
+	/** potionRequiemTarget 药水标记的持续伤害。 */
 	private static void requiemHit(LivingEntity target) {
 		if (!target.hasStatusEffect(PotionLoader.potionRequiemTarget)) {
 			return;

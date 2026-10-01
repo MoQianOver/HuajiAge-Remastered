@@ -43,7 +43,7 @@ import net.minecraft.world.World;
  * - 名称逐字彩虹色（以系统毫秒近似实现逐字循环着色）
  * - 隐者之紫替身 OVER_DRIVE 联动：持有隐者之紫（huajiager:hermit_purple）且处于波纹疾走蓄力时，每 tick 将波澜点点满
  *
- * 设计说明：伤害以 World.getDamageSources().indirectMagic 间接魔法伤害近似（参考 DamageFivePower 口径）。
+ * 设计说明：伤害以 World.getDamageSources().indirectMagic 间接魔法伤害近似（沿用 DamageFivePower 口径）。
  */
 public class ItemWaveKnife extends SwordItem {
 

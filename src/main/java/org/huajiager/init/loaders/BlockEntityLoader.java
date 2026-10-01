@@ -10,7 +10,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
 /**
- * BlockEntity 注册器（），新建。
+ * BlockEntity 注册器。
  *
  *  huaji_blender / huaji_poly_furnace 均携带 TileEntity。 * Fabric 1.20.1 侧在方块注册后通过本类注册 BlockEntityType，供 Block 的
  * createBlockEntity 引用（HuajiBlender / HuajiPolyfurnace 实现 BlockEntityProvider）。

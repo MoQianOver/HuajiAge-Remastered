@@ -26,7 +26,7 @@ import net.minecraft.world.World;
 import java.util.List;
 
 /**
- * 第二卷轴·追杀弹， 。
+ * 第二卷轴·追杀弹。
  *
  * 继承 EntityShulkerBullet 并保留其自动追踪逻辑；Fabric 1.20.1 侧简化为
  * ProjectileEntity 直线追踪方案：每 tick 朝目标方向匀速飞行，命中任何生物即触发
@@ -108,7 +108,7 @@ public class EntitySecondFoil extends ProjectileEntity {
 		}
 		if (this.getWorld().isClient) {
 			// 客户端本地推进：对齐 EntityShulkerBullet.tick 结构——追踪计算与碰撞
-			// 只在服务端执行，但位移推进（）客户端也必须做，用服务端同步来的
+			// 只在服务端执行，但位移推进客户端也必须做，用服务端同步来的
 			// velocity 逐 tick 连续位移。此前客户端完全 return 只靠 20Hz 位置包跳变渲染，
 			// 慢速追踪（速度仅 0.6）下每个同步间隔的"阶梯感"被放大，表现为一卡一卡。
 			Vec3d v = this.getVelocity();

@@ -13,11 +13,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 /**
- * 替身精神力食物基类， （原 ItemFood）。
+ * 替身精神力食物基类。
  *
  *  onFoodEaten（服务端）吃完后：若持有替身（StandLoader.getStand 非空）
  * 则给替身充能（chargeHandler.charge(mp)）。Fabric 侧每个子类吃完后也累加替身精神力。
- * 独立编写，行为参考。
+ * 独立编写，行为见各子类实现。
  */
 public abstract class ItemFoodMP extends Item {
     private int mp;

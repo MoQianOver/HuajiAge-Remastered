@@ -33,7 +33,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-/** 大英雄之弓，独立编写（语义 ，未照搬第三方移植）。 */
+/** 大英雄之弓，独立编写。 */
 public class ItemHeroBow extends BowItem {
 
 	/** Burst（解放）状态 NBT 标签， NBTHelper 语义。 */

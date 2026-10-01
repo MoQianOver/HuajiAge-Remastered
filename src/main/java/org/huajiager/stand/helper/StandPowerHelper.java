@@ -73,7 +73,7 @@ public final class StandPowerHelper {
     }
 
     /**
-     * 充能（原 MPCharge，走 Capability，Fabric 侧改走 attachment 挂载的 StandHandler）。
+     * 充能：走 attachment 挂载的 StandHandler。
      * <p>必须用 getAttachedOrCreate 而非 getAttached：STAND_HANDLER 为 createDefaulted
      * attachment，getAttached 在未显式 set 时返回 initializer 每次新建的临时实例（不落库），
      * 回充落在临时实例上、而召唤校验（MessageStandUp / EventStandKey）经
@@ -88,7 +88,7 @@ public final class StandPowerHelper {
     }
 
     /**
-     * 批量施加药水效果（原 potionEffect）。
+     * 批量施加药水效果。
      */
     public static void potionEffect(LivingEntity user, List<StatusEffectInstance> potions) {
         for (StatusEffectInstance potion : potions) {
@@ -97,9 +97,9 @@ public final class StandPowerHelper {
     }
 
     /**
-     * 替身范围内直线拳击连打（原 rangePunchAttack，重型方法）。
+     * 替身范围内直线拳击连打（重型方法）。
      * <p>1.20.1 映射口径与 StateTheWorldDefault / StateStarPlatinumDefault 一致：
-     *  - 视野角判定 + 龙优先（EnderDragonEntity.damage）。     *  - LivingEntity 命中：时停标记结算（TIME_STOP/DIO_HIT）或玩家/跌落伤害（playerAttack / fallingAnvil）。     *  - 额外排除 !(i instanceof EntityStandBase)，EntityStandBase 未（），按 default 态口径裁剪。     *  - 掉落物/经验球排除；大体型方块实体给玩家抗性；其余实体按伤害比例弹飞。</p>
+     *  - 视野角判定 + 龙优先（EnderDragonEntity.damage）。     *  - LivingEntity 命中：时停标记结算（TIME_STOP/DIO_HIT）或玩家/跌落伤害（playerAttack / fallingAnvil）。     *  - 额外排除 !(i instanceof EntityStandBase)，EntityStandBase 未接入该链，按 default 态口径裁剪。     *  - 掉落物/经验球排除；大体型方块实体给玩家抗性；其余实体按伤害比例弹飞。</p>
      *
      * @param user     使用者
      * @param degree   视野角阈值（度）
@@ -275,7 +275,7 @@ public final class StandPowerHelper {
     }
 
     /**
-     * 生成粒子特效（原 createParticleEffect）。
+     * 生成粒子特效。
      * <p>Fabric 1.20.1 无 playEvent 广播层，按 ID 映射到 world 级事件：
      * type=1 → 经验球拾取音效 + 世界事件 2005。</p>
      */
@@ -291,7 +291,7 @@ public final class StandPowerHelper {
     }
 
     /**
-     * 播放世界事件（原 playEvent）。两个重载均落到 world.syncWorldEvent。
+     * 播放世界事件。两个重载均落到 world.syncWorldEvent。
      */
     public static void playEvent(Entity entity, int event_type, int data) {
         entity.getWorld().syncWorldEvent(event_type, entity.getBlockPos(), data);
@@ -302,14 +302,14 @@ public final class StandPowerHelper {
     }
 
     /**
-     * 批量追加药水效果（原 potionEffectAdd，变长参数版）。
+     * 批量追加药水效果（变长参数版）。
      */
     public static void potionEffectAdd(LivingEntity user, StatusEffectInstance... potions) {
         potionEffect(user, Arrays.asList(potions));
     }
 
     /**
-     * 按注册名施加药水效果（原 potionEffectAdd(String, duration, level)）。
+     * 按注册名施加药水效果（String、duration、level 版本）。
      */
     public static void potionEffectAdd(LivingEntity user, String type, int duration, int level) {
         StatusEffectInstance potion = newPotion(type, duration, level);
@@ -319,14 +319,14 @@ public final class StandPowerHelper {
     }
 
     /**
-     * 按注册名查询状态效果（原 getPotion）。
+     * 按注册名查询状态效果。
      */
     public static StatusEffect getPotion(String type) {
         return Registries.STATUS_EFFECT.get(Identifier.tryParse(type));
     }
 
     /**
-     * 按注册名构造状态效果实例（原 newPotion，level 按 1 基减一）。
+     * 按注册名构造状态效果实例（level 按 1 基减一）。
      */
     public static StatusEffectInstance newPotion(String type, int duration, int level) {
         StatusEffect potion = getPotion(type);
@@ -337,7 +337,7 @@ public final class StandPowerHelper {
     }
 
     /**
-     * 获取使用者已召唤的替身实体（原 getUserStand，补充）。
+     * 获取使用者已召唤的替身实体。
      * <p>在用户周围 10×6×10 范围内找 allay 替身实体（EntityStandBase）且 getUser() == user。
      * 供 JS 的 entityWrapper.getStandEntity() / getSpeed() 使用。</p>
      */
@@ -352,7 +352,7 @@ public final class StandPowerHelper {
     }
 
     /**
-     * 替身放出超时的默认惩罚：续挂"替身在场"药水（原 potionDefaultOutOfTime）。
+     * 替身放出超时的默认惩罚：续挂"替身在场"药水。
      * <p>还会在配置开启惩罚时施加惩罚药水，本地精简为只续精神药水（不至于超时即崩）。</p>
      */
     public static void potionDefaultOutOfTime(LivingEntity user) {
@@ -370,7 +370,7 @@ public final class StandPowerHelper {
     }
 
     /**
-     * 清除全部非正向（负面）药水效果（原 removeBadPotion）。
+     * 清除全部非正向（负面）药水效果。
      */
     public static void removeBadPotion(LivingEntity user) {
         if (user == null || user.getStatusEffects().isEmpty()) {
@@ -388,7 +388,7 @@ public final class StandPowerHelper {
     }
 
     /**
-     * 延长"替身在场"药水时间（原 increaseStandTime）。
+     * 延长"替身在场"药水时间。
      */
     public static void increaseStandTime(LivingEntity user, int ticks) {
         if (user == null || PotionLoader.potionStand == null) {
@@ -398,7 +398,7 @@ public final class StandPowerHelper {
     }
 
     /**
-     * 延长指定药水效果时间（原 increasePotionTime）。
+     * 延长指定药水效果时间。
      * <p>已有该效果则在剩余时长上追加 duration×buffer；没有则施加 duration×buffer 时长的
      * level-1 级效果。</p>
      */
@@ -420,7 +420,7 @@ public final class StandPowerHelper {
     }
 
     /**
-     * 获取玩家手持物品（原 getPlayerHoldItem）。主手传 true，副手传 false。
+     * 获取玩家手持物品。主手传 true，副手传 false。
      */
     public static ItemStack getPlayerHoldItem(LivingEntity user, boolean mainHand) {
         if (user == null) {
@@ -433,7 +433,7 @@ public final class StandPowerHelper {
     }
 
     /**
-     * 修复物品耐久（原 repairItem，全量修复）。
+     * 修复物品耐久（全量修复）。
      */
     public static void repairItem(ItemStack stack) {
         if (stack != null && !stack.isEmpty() && stack.isDamaged()) {
@@ -442,7 +442,7 @@ public final class StandPowerHelper {
     }
 
     /**
-     * 按注册名播放音效（原 playSound）。未注册的音效 id 安全忽略。
+     * 按注册名播放音效。未注册的音效 id 安全忽略。
      */
     public static void playSound(Entity entity, String soundId, float volume, float pitch) {
         if (entity == null || soundId == null) {
@@ -465,7 +465,7 @@ public final class StandPowerHelper {
     }
 
     /**
-     * 获取物品注册名（原 getItemRegistryName）。
+     * 获取物品注册名。
      */
     public static String getItemRegistryName(ItemStack stack) {
         if (stack == null || stack.isEmpty()) {
@@ -475,7 +475,7 @@ public final class StandPowerHelper {
     }
 
     /**
-     * 发送系统消息（原 sendMessage）。替身技能台词走聊天栏（普通消息），
+     * 发送系统消息。替身技能台词走聊天栏（普通消息），
      * 与状态 JS 的念写/波纹疾走文案保持一致，不再用 actionBar 顶部即时显示。
      */
     public static void sendMessage(LivingEntity user, String key) {
@@ -491,7 +491,7 @@ public final class StandPowerHelper {
     }
 
     /**
-     * 获取指定距离 + 视野角范围内的活体实体（原 getRangeLiving）。
+     * 获取指定距离 + 视野角范围内的活体实体。
      * <p>返回原生数组，JS 侧以 {@code entities.length} / {@code entities[i]} 直接遍历。</p>
      */
     public static LivingEntity[] getRangeLiving(LivingEntity user, float distance, float degree) {
@@ -510,7 +510,7 @@ public final class StandPowerHelper {
     }
 
     /**
-     * 治疗实体（原 healEntity，加血不超过上限）。
+     * 治疗实体（加血不超过上限）。
      */
     public static void healEntity(LivingEntity target, int toHeal) {
         if (target != null && toHeal > 0) {
@@ -527,7 +527,7 @@ public final class StandPowerHelper {
     }
 
     /**
-     * 给玩家背包追加指定注册名的物品（原 addItemToplayer）。
+     * 给玩家背包追加指定注册名的物品。
      */
     public static void addItemToplayer(LivingEntity user, String itemId, int amount) {
         if (user == null || itemId == null || amount <= 0 || !(user.getWorld() instanceof ServerWorld)) {
@@ -547,7 +547,7 @@ public final class StandPowerHelper {
     }
 
     /**
-     * 给予玩家命令唱片（原 giveDisc），带当前使用者身份 + 命令类型。
+     * 给予玩家命令唱片，带当前使用者身份 + 命令类型。
      */
     public static void giveDisc(LivingEntity user, String type) {
         if (user == null || type == null || ItemLoader.discCommand == null
@@ -566,7 +566,7 @@ public final class StandPowerHelper {
     }
 
     /**
-     * 消耗物品数量（原 consumeItem）。
+     * 消耗物品数量。
      */
     public static void consumeItem(ItemStack stack, int count) {
         if (stack != null && !stack.isEmpty() && count > 0) {

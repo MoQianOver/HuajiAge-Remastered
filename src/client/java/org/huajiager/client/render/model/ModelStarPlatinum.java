@@ -7,10 +7,10 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
 /**
- * STAR PLATINUM 官方模型 1.20.1 移植版。
+ * STAR PLATINUM 模型。
  *
- * 数值照搬官方 （Techne 导出 ），
- * 配合 RenderStandBase 的官方矩阵（180-yaw + scale(-1,-1,1)）渲染即为保持一致的正立悬浮造型。
+ * 数值照搬自 Techne 导出模型，
+ * 配合 RenderStandBase 的矩阵（180-yaw + scale(-1,-1,1)）渲染即为保持一致的正立悬浮造型。
  * 结构/动画实现与 ModelTheWorld 同构：漂浮 offsetY + 手部十二连 cos 摆动（power 驱动），
  * 攻击态第一人称 renderHandsStand 只画双手挥拳。
  */
@@ -277,7 +277,7 @@ public class ModelStarPlatinum extends HAModelBase implements StandAnimatedModel
 	@Override
 	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float r, float g,
 			float b, float a) {
-		// 无动画兜底：静态渲染当前姿态（各部件已按官方构造值设好角度）
+		// 无动画兜底：静态渲染当前姿态（各部件已按构造值设好角度）
 		renderParts(matrices, vertices, light, overlay, r, g, b, a);
 	}
 
@@ -290,12 +290,12 @@ public class ModelStarPlatinum extends HAModelBase implements StandAnimatedModel
 
 	/**
 	 * 攻击态第一人称专用渲染：只画两只挥拳（left_hands/right_hands），不画本体。
-	 * 对齐官方 ModelStarPlatinum.renderFirst（第一人称叠加层仅渲染双手）。
+	 * 对齐 ModelStarPlatinum.renderFirst（第一人称叠加层仅渲染双手）。
 	 */
 	public void renderHandsStand(MatrixStack matrices, VertexConsumer vertices, int light, int overlay,
 			EntityStandBase entity, float ageTicks, float speed, float power, float alpha) {
 		applyStandAnimation(ageTicks, speed, power);
-		// 第一人称攻击态拳头半透明：对齐官方 renderFirst 的 GlStateManager.color(1,1,1,alpha)，
+		// 第一人称攻击态拳头半透明：对齐 renderFirst 的 GlStateManager.color(1,1,1,alpha)，
 		// 调用方需传入 translucent 层（cutout 层忽略 alpha）。
 		left_hands.render(matrices, vertices, light, overlay, 1f, 1f, 1f, alpha);
 		right_hands.render(matrices, vertices, light, overlay, 1f, 1f, 1f, alpha);
@@ -303,7 +303,7 @@ public class ModelStarPlatinum extends HAModelBase implements StandAnimatedModel
 
 	/** renderStand / renderHandsStand 共用的替身动画：漂浮、头部正视、挥拳（setRotationAngles+setPunch）。 */
 	private void applyStandAnimation(float ageTicks, float speed, float power) {
-		// 官方 render()：整体上下漂浮
+		//  render()：整体上下漂浮
 		float off = (float) (MathHelper.cos((float) (0.1 * ageTicks)) * 0.1);
 		head.offsetY = off;
 		body.offsetY = off;
@@ -331,7 +331,7 @@ public class ModelStarPlatinum extends HAModelBase implements StandAnimatedModel
 	}
 
 	/**
-	 * 官方 setRotationAngles：十二连爪手部围绕摆动。rotateFloat=ageTicks，
+	 *  setRotationAngles：十二连爪手部围绕摆动。rotateFloat=ageTicks，
 	 * rotateYaw/rotatePitch 替身实体场景传 0。
 	 * 频率与 ModelTheWorld 同语义：speed*4/3（STAR_PLATINUM speed=1.5 → 挥拳频率约 2.0 rad/tick），
 	 * speed<=0 时按 1.6 兜底。
@@ -370,8 +370,8 @@ public class ModelStarPlatinum extends HAModelBase implements StandAnimatedModel
 	}
 
 	/**
-	 * 官方 setPunch：手部随机抖动（"前冲 + 左右错位"的冲拳力度）。
-	 * 口径与 ModelTheWorld 一致：官方 数值作用在叠加层小模型里是像素级，
+	 *  setPunch：手部随机抖动（"前冲 + 左右错位"的冲拳力度）。
+	 * 口径与 ModelTheWorld 一致： 数值作用在叠加层小模型里是像素级，
 	 * 本工程为独立实体渲染（模型单位为格），统一 ÷16 换算回 1/16 格的亚格抖动。
 	 */
 	public void setPunch(float rotateFloat, float rotateYaw, float rotatePitch, float power, float speed) {

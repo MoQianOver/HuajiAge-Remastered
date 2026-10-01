@@ -14,7 +14,7 @@ import org.lwjgl.glfw.GLFW;
  * 压路机时停连击（DIO 推挤）左键钩子：主手持压路机物品时左键点击发
  * MessageLeftClickRoadRoller，还原 ItemRoadRoller 的 LeftClickEmpty 语义。
  *
- * 依赖 PlayerInteractEvent.LeftClickEmpty，Fabric 1.20.1 无对应事件，
+ * Fabric 1.20.1 无 LeftClickEmpty 事件，
  * 且 options.attackKey.wasPressed() 会被游戏本 tick 的正常攻击/挖矿处理提前消费导致漏检，
  * 故沿用 EventHeroBowModeChange 的方案：glfwGetMouseButton 对左键实时状态做边沿检测
  * （松开→按下算一次点击），在 ClientTickEvents.END_CLIENT_TICK 轮询。

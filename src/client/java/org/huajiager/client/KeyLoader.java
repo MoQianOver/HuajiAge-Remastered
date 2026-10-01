@@ -7,7 +7,7 @@ import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
 
 /**
- * 替身按键注册器， 。
+ * 替身按键注册器。
  *
  * 版四个按键均带 CONTROL 修饰符；Fabric 1.20.1 的 KeyBinding 不支持
  * 组合修饰符。后改为「独立单键绑定」：这里仅注册原始键位（默认 K/P/O/I），

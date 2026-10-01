@@ -17,7 +17,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 /**
- * 虫箭（独立编写）， 。
+ * 虫箭（独立编写）。
  *
  * 行为：仅当玩家穿戴全套「替身装甲基类 ItemOrgaArmorBase」时右键才生效——
  * 客户端停止全部音乐并播放 SoundLoader.ORGA_REQUIEM_1 旋律、提示

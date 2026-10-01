@@ -32,7 +32,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 /**
- * 灰色波发符实体， 。
+ * 灰色波发符实体。
  *
  * 继承 EntityThrowable，无重力、以 NBT 注入动量驱动；命中造成按攻击者当前生命值
  * 计算的巨额伤害（20 - 当前生命 的 2 倍加成），若攻击者为镇魂版灰色波（ORGA_REQUIEM

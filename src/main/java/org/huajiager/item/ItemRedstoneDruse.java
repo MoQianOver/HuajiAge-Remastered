@@ -3,7 +3,7 @@ package org.huajiager.item;
 import net.minecraft.item.Item;
 
 /**
- * 红石晶簇， 。
+ * 红石晶簇。
  */
 public class ItemRedstoneDruse extends Item {
 

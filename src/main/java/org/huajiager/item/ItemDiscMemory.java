@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 import java.util.List;
 
 /**
- * 记忆Disc， 。
+ * 记忆Disc。
  */
 public class ItemDiscMemory extends Item {
 

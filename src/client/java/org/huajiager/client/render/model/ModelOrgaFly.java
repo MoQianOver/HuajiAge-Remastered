@@ -7,19 +7,18 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
 /**
- * ORGA REQUIEM 飞行态模型 1.20.1 移植版。
+ * ORGA REQUIEM 飞行态模型。
  *
- * 数值照搬官方 （，
- * 64x64 贴图），配合 RenderStandBase 的官方矩阵（180-yaw + scale(-1,-1,1)）渲染即为
+ * 数值照搬自 Blockbench 导出模型（64x64 贴图），配合 RenderStandBase 的矩阵（180-yaw + scale(-1,-1,1)）渲染即为
  * 保持一致的飞行姿态：身体绕 X 躺平 90 度（body.rotateAngleX=1.5708）、头部后仰
  * 85 度（head.rotateAngleX=1.4835）+ 左倾 20 度、四肢收拢/张开，背后七根飘带
  * Extra 位于 (0,22,-14) 整体绕 X 躺平。
- * 动画与官方 render() 一致：head/body/Extra 整体上下漂浮（offsetY）、
+ * 动画与 render() 一致：head/body/Extra 整体上下漂浮（offsetY）、
  * Extra.rotateAngleZ = ageTicks/2 持续旋转（飞行态以绕 Z 代替绕 Y，视觉上飘带
  * 绕玩家身体轴线旋转）。
- * 位置与官方 ModelOrgaFly.=(0,-0.9,0) 对齐（正中、高 0.9），由
+ * 位置与 ModelOrgaFly.=(0,-0.9,0) 对齐（正中、高 0.9），由
  * RenderStandBase 的 fly 偏移特判落实，模型本身不再做位移。
- * 第一人称官方 renderFirst 渲染飞行本体（绕 Z 180 + 前倾 35 度），工程口径与
+ * 第一人称 renderFirst 渲染飞行本体（绕 Z 180 + 前倾 35 度），工程口径与
  * 其它 ORGA 一致：renderHandsStand 空实现（第一人称隐藏本体）。
  */
 public class ModelOrgaFly extends HAModelBase implements StandAnimatedModel {
@@ -256,7 +255,7 @@ public class ModelOrgaFly extends HAModelBase implements StandAnimatedModel {
 	@Override
 	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float r, float g,
 			float b, float a) {
-		// 无动画兜底：静态渲染当前姿态（各部件已按官方构造值设好角度）
+		// 无动画兜底：静态渲染当前姿态（各部件已按构造值设好角度）
 		renderParts(matrices, vertices, light, overlay, r, g, b, a);
 	}
 
@@ -268,7 +267,7 @@ public class ModelOrgaFly extends HAModelBase implements StandAnimatedModel {
 	}
 
 	/**
-	 * 攻击态第一人称专用渲染：官方 ModelOrgaFly.renderFirst 渲染飞行本体（绕 Z 180 +
+	 * 攻击态第一人称专用渲染： ModelOrgaFly.renderFirst 渲染飞行本体（绕 Z 180 +
 	 * 前倾 35 度），工程口径与其它 ORGA 一致——第一人称不渲染本体，避免本体遮挡视野。
 	 */
 	public void renderHandsStand(MatrixStack matrices, VertexConsumer vertices, int light, int overlay,
@@ -276,15 +275,15 @@ public class ModelOrgaFly extends HAModelBase implements StandAnimatedModel {
 		// 第一人称不渲染任何部件
 	}
 
-	/** renderStand 共用的替身动画：整体漂浮 + Extra 绕 Z 持续旋转（照搬官方 render()）。 */
+	/** renderStand 共用的替身动画：整体漂浮 + Extra 绕 Z 持续旋转（照搬 render()）。 */
 	private void applyStandAnimation(float ageTicks, float speed, float power) {
-		// 官方 render()：head/body/Extra 整体上下漂浮（offsetY 随 cos(0.1*age)）
+		//  render()：head/body/Extra 整体上下漂浮（offsetY 随 cos(0.1*age)）
 		float off = (float) (MathHelper.cos((float) (0.1 * ageTicks)) * 0.15);
 		head.offsetY = off;
 		body.offsetY = off;
 		extra.offsetY = off;
 
-		// 官方 setRotationAngles()：Extra.rotateAngleZ = rotateFloat / 2
+		//  setRotationAngles()：Extra.rotateAngleZ = rotateFloat / 2
 		// （飞行态整体躺平，飘带组绕 Z 持续旋转）
 		extra.rotateAngleZ = ageTicks / 2.0F;
 	}

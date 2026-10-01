@@ -15,8 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
 /**
- * GlStateManager/Tessellator 兼容工具，
- * （）。
+ * GlStateManager/Tessellator 兼容工具（面向当前渲染接口的适配层）。
  * 提供：广告牌贴图四边形、物品渲染、占位立方体（缺物品时兜底）。
  */
 public final class HARenderUtil {
@@ -24,7 +23,7 @@ public final class HARenderUtil {
 	private HARenderUtil() {
 	}
 
-	/** 在实体局部空间渲染一个面向相机的贴图广告牌四边形（原 Tessellator GL_QUADS POSITION_TEX）。 */
+	/** 在实体局部空间渲染一个面向相机的贴图广告牌四边形（GL_QUADS POSITION_TEX 方式）。 */
 	public static void renderBillboardQuad(MatrixStack matrices, VertexConsumerProvider vcp, Identifier texture,
 			float width, float height, int light, int overlay, float alpha) {
 		renderBillboardQuad(matrices, vcp, texture, width, height, light, overlay, 1f, 1f, 1f, alpha);
@@ -54,7 +53,7 @@ public final class HARenderUtil {
 				.normal(normalMat, 0f, 0f, 1f).next();
 	}
 
-	/** 用物品渲染管线在实体局部空间渲染一个物品（对应 RenderSnowball / Minecraft.renderItem(GROUND)）。 */
+	/** 用物品渲染管线在实体局部空间渲染一个物品。 */
 	public static void renderItem(MatrixStack matrices, VertexConsumerProvider vcp, ItemStack stack, int light,
 			int overlay) {
 		renderItem(matrices, vcp, stack, light, overlay, ModelTransformationMode.GROUND);
@@ -72,7 +71,7 @@ public final class HARenderUtil {
 		ir.renderItem(stack, mode, false, matrices, vcp, light, overlay, model);
 	}
 
-		/**  尚未的物品统一用空 ItemStack 兜底（渲染器内判定为空时走占位盒）。 */
+		/**  未注册的物品统一用空 ItemStack 兜底（渲染器内判定为空时走占位盒）。 */
 	public static final ItemStack PLACEHOLDER_STACK = ItemStack.EMPTY;
 
 	/** 占位渲染别名，语义与 renderPlaceholderBox 一致。 */

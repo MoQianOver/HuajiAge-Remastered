@@ -9,7 +9,7 @@ import net.minecraft.world.World;
 import java.util.List;
 
 /**
- * 以太粒子·伪， 。
+ * 以太粒子·伪。
  * 工具提示沿用 lang 键 item.ether:unicode_tooltips.2.desc。
  */
 public class ItemEther extends Item {

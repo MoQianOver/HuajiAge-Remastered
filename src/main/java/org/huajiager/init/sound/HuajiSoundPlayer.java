@@ -7,7 +7,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 /**
- * 声音播放助手（独立编写），  (MIT)。
+ * 声音播放助手（独立编写）。
  *
  * splitEnvironmentSourceSets 拆分设计：
  *  - 本类位于 main 源集，只允许引用服务端/公共 API，不得引用 MinecraftClient 等
@@ -19,11 +19,10 @@ import net.minecraft.world.World;
  *    playMusic / stopAllSounds / playMovingSoundClient / playClient 时，实际播放会转发
  *    给客户端注册的实现；客户端实现未注册时安全空转（服务端/逻辑侧友好）。
  *
- * 方法归属说明（对照 HuajiSoundPlayer）：
+ * 方法归属说明：
  *  - playToNearbyClient / playToClient：经 MessagePlaySoundClient 网络包 + ServerUtil
  *    定向广播；Fabric 简化为服务端按维度广播（World.playSound(player=null)），利用 MC
- *    自带音量随距离衰减达到“附近”效果，行为等价（保留 既有实现）。 *  - playToServer：经 MessagePlaySoundToServer 由客户端发服务端再循环广播，调用方
- *    （EventStandKey 替身按键音效）尚未到真实链路，此处留可编译 TODO 桩（见文件尾）。
+ *    自带音量随距离衰减达到“附近”效果，行为等价。 *  - playToServer：经 MessagePlaySoundToServer 由客户端发服务端再循环广播（调用方尚未接入）。
  */
 public class HuajiSoundPlayer {
 
@@ -133,15 +132,6 @@ public class HuajiSoundPlayer {
         }
     }
 
-    // ==================== TODO 桩（+）：客户端→服务端链路 ====================
-    /**
-     *  playToServer(EntityLivingBase, SoundEvent, float, int loop)：
-     * 客户端经 MessagePlaySoundToServer 发送到服务端，服务端再向附近玩家循环广播
-     * MessagePlaySoundClient，用于替身按键触发打击音效。Fabric 侧该链路的调用方
-     * （EventStandKey 替身按键）尚未到真实网络消息，此处保留可编译 TODO 桩，
-     * 待网络消息（C2S 自定义 packet + S2C 广播）恢复时实现。
-     */
-    // public static void playToServer(LivingEntity entity, SoundEvent sound, float volume, int loop) { /* TODO */ }
 
     /**
      * 客户端播放委托接口（main 源集，仅引用服务端/公共类型，供 client 源集实现注入）。

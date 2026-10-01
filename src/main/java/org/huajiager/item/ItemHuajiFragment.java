@@ -3,7 +3,7 @@ package org.huajiager.item;
 import net.minecraft.item.Item;
 
 /**
- * 滑稽碎片， 。
+ * 滑稽碎片。
  */
 public class ItemHuajiFragment extends Item {
 

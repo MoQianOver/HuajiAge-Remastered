@@ -20,10 +20,9 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 /**
- * 卡其托里钛（独立编写，MIT 语义参考、不照搬代码）。
- *  。
+ * 卡其托里钛。
  *
- * 行为（服务端 ）：
+ * 行为（服务端）：
  *  1) 玩家当前没有替身（data.getStand().equals(StandLoader.EMPTY)）时：
  *     - 随机取一个 0~99 的替身索引（经 MathHelper.nextFloat(new Random(), 0, 100)
  *       后由 StandUtil.getTypeWithIndex 映射到"觉醒之箭可抽到的替身池"之一，仅用于判空）。 *     - 按 chanceStandFail(0.3) 概率判定觉醒失败。 *     - 成功：把玩家替身直接设为 ORGA_REQUIEM 并置，播放升级音效 +

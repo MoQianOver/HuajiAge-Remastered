@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 import java.util.List;
 
 /**
- * 多重叠加态滑稽之星， 。
+ * 多重叠加态滑稽之星。
  * 工具提示读取 NBT poly 叠加数值（Fabric 侧用后的 NBTHelper.getTagCompoundSafe）。
  */
 public class ItemHuajiStarPoly extends Item {

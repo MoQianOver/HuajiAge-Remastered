@@ -18,7 +18,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
 /**
- * 滑稽炸弹（huaji_bomb）， 。
+ * 滑稽炸弹（huaji_bomb）。
  *
  * 行为：继承 BlockTNT，沙砾音效；EXPLODE 状态下 explode() 直接
  * createExplosion(null, x, y, z, 10f, true)（无飞行 TNT 实体）。

@@ -17,12 +17,12 @@ import org.huajiager.stand.instance.StandStarPlatinum;
 import org.huajiager.stand.instance.StandTheWorld;
 
 /**
- * 替身注册器， 。
+ * 替身注册器。
  *
- * -Back：注册链路已接通——构造时登记 5 个原生替身（The World / Star Platinum /
+ * 注册链路：构造时登记 5 个原生替身（The World / Star Platinum /
  * Hierophant Green / Orga Requiem / Killer Queen）至 {@link #STAND_LIST}，{@link #reloadStands()}
  * 调用 HuajiAgeAPI.standClear / statesClear 后逐个 {@code registerStand} + {@code putInternalStandStates()}。
- * - 自定义替身（stage2 已 StandResourceLoader + StandCustom）：reloadStands() 内
+ * - 自定义替身（由 StandResourceLoader + StandCustom 加载）：reloadStands() 内
  *   loadCustomStand() 加载 4 个内置 JSON + 8 个 state JS，并一一注册进 HuajiAgeAPI 与 STAND_LIST。
  */
 public class StandLoader {

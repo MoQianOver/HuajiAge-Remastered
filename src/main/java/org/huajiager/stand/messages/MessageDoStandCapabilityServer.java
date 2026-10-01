@@ -17,7 +17,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 /**
- * C2S：客户端请求触发替身能力（对应 MessageDoStandCapabilityServer）。
+ * C2S：客户端请求触发替身能力。
  *
  * 经 SimpleNetworkWrapper(StandNetWorkHandler) SERVER 侧注册，Handler 内
  * 取玩家 ExposedData 后调用 StandLoader.getStand(...).doStandCapability(player)。

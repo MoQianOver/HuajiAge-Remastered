@@ -15,7 +15,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 
 /**
- * 滑稽套装 4 件， 。
+ * 滑稽套装 4 件。
  *
  *  ItemArmor + huajiArmorMaterial（36 耐久，{5,7,10,5} 保护，33 附魔，
  * 钻石装备音效，3 韧性）迁至 ArmorItem + ArmorMaterial。

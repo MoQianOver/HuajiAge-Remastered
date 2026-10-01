@@ -6,7 +6,7 @@ import net.minecraft.item.ToolMaterial;
 import net.minecraft.recipe.Ingredient;
 
 /**
- * 滑稽剑， 。
+ * 滑稽剑。
  *   注册 ToolMaterial.HUAJI（采掘等级3/耐久1200/效率16.0/攻击4.0/附魔20），
  * Fabric 侧以匿名 ToolMaterial 等效实现，SwordItem 构造参数 (材料, +3攻击, 攻速-2.4, 设置)。
  */
