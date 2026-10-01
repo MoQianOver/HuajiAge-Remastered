@@ -43,3 +43,4 @@ replay_*.log
 /src/main/resources/assets/huajiager/sounds/
 
 notes/
+.gitignore
