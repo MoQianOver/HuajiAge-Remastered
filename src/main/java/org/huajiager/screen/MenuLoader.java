@@ -7,7 +7,7 @@ import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.util.Identifier;
 
 /**
- * ScreenHandlerType 注册入口。
+ * ScreenHandlerType注册入口。
  */
 public class MenuLoader {
 
