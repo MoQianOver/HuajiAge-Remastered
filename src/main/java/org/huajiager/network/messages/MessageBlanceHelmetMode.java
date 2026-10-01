@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
  * C2S：按 MODE_SWITCH 键切换平衡头盔 open 状态，
  * 。
  * 客户端仅下发按键意图，服务端依据 NBT 三态调度 ItemBlancedHelmet.modeChange
- * 并回显 open / failed 消息（参考模板 network.messages 包现有 FabricPacket 记录类范式）。
+ * 并回显 open / failed 消息（沿用 network.messages 包现有 FabricPacket 记录类范式）。
  */
 public record MessageBlanceHelmetMode() implements FabricPacket {
 
