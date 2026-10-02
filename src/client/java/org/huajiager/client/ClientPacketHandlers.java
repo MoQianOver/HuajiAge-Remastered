@@ -6,6 +6,7 @@ import org.huajiager.attachment.Attachments;
 import org.huajiager.capability.IExposedData;
 import org.huajiager.capability.StandHandler;
 import org.huajiager.client.event.EventStandKey;
+import org.huajiager.client.event.EventTimeStopView;
 import org.huajiager.init.HuajiConstant;
 import org.huajiager.init.loaders.StandLoader;
 import org.huajiager.init.sound.HuajiSoundPlayer;
@@ -99,6 +100,9 @@ public final class ClientPacketHandlers {
 					mc.world.playSound(payload.x(), payload.y(), payload.z(), sound,
 							SoundCategory.PLAYERS, 5f, 1f, false);
 				}
+				// 记录本次时停来源（the_world=面包/世界发动，star_platinum=白金之星技能），
+				// 供 EventTimeStopView 在时停结束时按来源分发结束音效。
+				EventTimeStopView.setTimeStopSource(payload.source());
 			});
 		});
 

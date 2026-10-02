@@ -25,7 +25,7 @@ import net.minecraft.world.World;
  * 滑稽终极熔炉 TileEntity（Fabric 完整版）， astral HuaJiPolyfurnaceBlockEntity。
  * 3 槽 Inventory（0 输入 / 1 燃料 / 2 输出）+ serverTick 状态机：
  * 燃料 tag（huaji_polyfurnace/time_*）按 FE 能量条（37000000 RF）烧炼，聚合池
- * itemPool 满 {@link #TOTAL_POINT} 后产出滑稽星（huaji_star_universe）。 * BURNING 由 energy > 0 驱动。
+ * itemPool 满 {@link #getTotalPoint()} 后产出滑稽星（huaji_star_universe）。 * BURNING 由 energy > 0 驱动。
  */
 public class TileEntityHuajiPolyfurnace extends BlockEntity implements Inventory {
 
@@ -41,8 +41,13 @@ public class TileEntityHuajiPolyfurnace extends BlockEntity implements Inventory
 	public static final int DATA_FE_ENERGY = 4;
 	public static final int NUM_DATA_VALUES = 5;
 
-	/** 聚合池满阈值。 */
-	public static final int TOTAL_POINT = ConfigHuaji.Huaji.point_star;
+	/**
+	 * 聚合池满阈值。实时读取配置，避免 static final 在类加载时固化默认值
+	 * （81*9*3=2187），导致用户将 point_star 改为 10 后熔炼判定仍用旧阈值。
+	 */
+	public static int getTotalPoint() {
+		return ConfigHuaji.Huaji.point_star;
+	}
 	/** BURN 能量上限（astral MAX_ENERGY=5000）。 */
 	public static final int MAX_ENERGY = 5000;
 	/** RF 能量容量（astral FE_CAPACITY）。 */
@@ -187,8 +192,9 @@ public class TileEntityHuajiPolyfurnace extends BlockEntity implements Inventory
 			inventory.set(SLOT_INPUT, ItemStack.EMPTY);
 		}
 		itemPool += gained;
-		while (itemPool >= TOTAL_POINT) {
-			itemPool -= TOTAL_POINT;
+		int totalPoint = getTotalPoint();
+		while (itemPool >= totalPoint) {
+			itemPool -= totalPoint;
 			ItemStack output = inventory.get(SLOT_RESULT);
 			if (output.isEmpty()) {
 				inventory.set(SLOT_RESULT, new ItemStack(ItemLoader.huajiStarUniverse));

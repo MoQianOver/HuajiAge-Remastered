@@ -26,6 +26,9 @@
 		"jei_mod_plugin": [
 			"org.huajiager.compat.jei.HuajiJeiPlugin"
 		],
+		"modmenu": [
+			"org.huajiager.config.ModMenuIntegration"
+		],
 		"fabric-datagen": [
 			"org.huajiager.HuajiAgeRemasteredDataGenerator"
 		]
@@ -45,6 +48,8 @@
 	},
 	"suggests": {
 		"patchouli": ">=1.20.1-80-FABRIC",
-		"jei": ">=15.28.1.170"
+		"jei": ">=15.28.1.170",
+		"cloth-config": "*",
+		"modmenu": "*"
 	}
 }

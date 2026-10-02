@@ -20,6 +20,16 @@ repositories {
 		name = "Modrinth"
 		url = "https://api.modrinth.com/maven"
 	}
+	// Cloth Config (Shedaniel)
+	maven {
+		name = "Shedaniel"
+		url = "https://maven.shedaniel.me/"
+	}
+	// ModMenu (TerraformersMC)
+	maven {
+		name = "TerraformersMC"
+		url = "https://maven.terraformersmc.com/releases"
+	}
 	mavenCentral()
 }
 
@@ -59,6 +69,12 @@ dependencies {
 
     modCompileOnly "mezz.jei:jei-1.20.1-fabric:15.28.1.170"
     modRuntimeOnly "mezz.jei:jei-1.20.1-fabric:15.28.1.170"
+
+	// Cloth Config + ModMenu —— 可选前置（suggests）：
+	// 编译期可见、dev 运行时不强制加载；fabric.mod.json 中仅声明 suggests，
+	// 未安装时由 FabricLoader.isModLoaded 分支跳过 Cloth 类加载，游戏正常启动。
+	modCompileOnly "me.shedaniel.cloth:cloth-config-fabric:11.1.136"
+	modCompileOnly "com.terraformersmc:modmenu:7.2.2"
 
 	implementation "org.graalvm.js:js:23.0.13"
 	include "org.graalvm.js:js:23.0.13"

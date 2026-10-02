@@ -1,5 +1,6 @@
 package org.huajiager.entity;
 
+import org.huajiager.config.ConfigHuaji;
 import org.huajiager.init.loaders.DamageLoader;
 import org.huajiager.util.HAMathHelper;
 import org.huajiager.util.NBTHelper;
@@ -30,7 +31,7 @@ import net.minecraft.world.World;
 import java.util.List;
 
 /**
- * 翡翠弹幕实体。
+ * 绿宝石弹幕实体。
  *
  * 继承 ProjectileEntity（无重力用 setNoGravity 代替
  * getGravityVelocity 返回 0）。运动由 NBT 注入的 MOTION_X/Y/Z 驱动 + 锁定追踪目标修正。 * 碰撞时产生间接爆炸伤害并播放玻璃碎裂音效。
@@ -89,6 +90,11 @@ public class EmeraldBulletEntity extends ProjectileEntity {
     public EmeraldBulletEntity(World worldIn, LivingEntity throwerIn) {
         this(worldIn);
         this.setOwner(throwerIn);
+        // useHuajiSplash 开启时：法皇攻击态/技能发射的翡翠弹幕贴图替换为滑稽物品贴图
+        // （渲染端 resolveStack 按 bulletType 取物品渲染），关闭时保持默认绿宝石贴图。
+        if (ConfigHuaji.Stands.useHuajiSplash) {
+            setBulletType("huajiager:huaji");
+        }
     }
 
     @Override
@@ -202,6 +208,8 @@ public class EmeraldBulletEntity extends ProjectileEntity {
             double r2 = (Math.random() - 0.5) * 0.2;
             double r3 = (Math.random() - 0.5) * 0.2;
             if (r1 > 0.05) {
+                // 固定绿宝石水花（HAPPY_VILLAGER）；useHuajiSplash 语义已改为贴图替换
+                // （见构造器 setBulletType），不再用 huaji_splash 粒子代替绿宝石水花。
                 spawnParticle(ParticleTypes.HAPPY_VILLAGER, getX() + r1, getY() + r2, getZ() + r3, r1, r2, r3);
             }
         }

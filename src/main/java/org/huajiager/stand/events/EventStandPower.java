@@ -1,10 +1,14 @@
 package org.huajiager.stand.events;
 
+import org.huajiager.api.IStandState;
 import org.huajiager.capability.IExposedData;
+import org.huajiager.init.loaders.PotionLoader;
+import org.huajiager.stand.StandStates;
 import org.huajiager.stand.StandUtil;
 import org.huajiager.stand.instance.StandBase;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
@@ -33,15 +37,24 @@ public final class EventStandPower {
 					}
 					StandBase stand = StandUtil.getType(player);
 					if (stand != null) {
-						// 替身激活期间维持 potionStand（"替身在场"标记）。
-						// 此前 potionStand 仅在 MessageStandUp 召唤瞬间一次性施加
-						// stand.getDuration()（KQ=300tick≈15s），之后全工程无任何续期
-						// （standEffectLoad 定义后从未接线，default/punch 状态 doTask 也不
-						// 施加），15s 后效果过期 → EventKillerQueen.isKillerQueenActive
-						// 的 potionStand 判定恒 false → KQ 替身攻击与玩家左键均不再发放
-						// "点赞"。此处每 tick 补期，效果常驻，替身在场语义保持一致。
-						StandUtil.standEffectLoad(player, false);
-						stand.doStandPower(player);
+						IStandState stateBase = StandStates.getStandState(data.getStand(), data.getState());
+						StatusEffectInstance standEffect = player.getStatusEffect(PotionLoader.potionStand);
+						// 超时判定（对齐原版 EventStand.standPotion）：替身在场标记
+						// potionStand 缺失或剩余 <=5 tick 时，触发当前状态机的
+						// doTaskOutOfTime（超时惩罚/闲置发光，方法内部读取
+						// ConfigHuaji.Stands.allowStandPunish / allowStandGlow 决定
+						// 饥饿/凋零/发光效果，并重新施加 5*20 标记）。
+						// 注意：不可在此处每 tick 续期 potionStand——此前调用
+						// standEffectLoad 的 "<20 续到 60" 使标记恒 >=20、永不到期，
+						// doTaskOutOfTime 从未被调用，这正是 allowStandPunish /
+						// allowStandGlow 调了没效果的根本原因。触发超时后标记被
+						// 重新施加 5*20，下一 tick 起照常进入 doStandPower 分支。
+						if (stateBase != null
+								&& (standEffect == null || standEffect.getDuration() <= 5)) {
+							stateBase.doTaskOutOfTime(player);
+						} else {
+							stand.doStandPower(player);
+						}
 					}
 				}
 			}

@@ -76,7 +76,7 @@ public class StandTheWorld extends StandBase {
             // 音效经 S2C 广播给附近玩家（64 格内，含发动者本人），客户端以发动者坐标为
             // 声源播放（服务端世界广播到达时机/衰减不可靠，故仍走 S2C + 客户端播放）
             ServerUtil.sendPacketToNearbyPlayersStand(user,
-                    new MessageDioBreadTimeStop(sound.getId().toString(),
+                    new MessageDioBreadTimeStop("the_world", sound.getId().toString(),
                             user.getX(), user.getY(), user.getZ()));
             EventTimeStop.scheduleDelayedTimeStop(sp, delayTicks, total, false);
             ServerUtil.sendPacketToNearbyPlayersStand(user,

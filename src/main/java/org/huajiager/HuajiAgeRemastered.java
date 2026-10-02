@@ -59,6 +59,9 @@ public class HuajiAgeRemastered implements ModInitializer {
 		// 方块注册（ore_huaji / huaji_star_block + BlockItem）
 		org.huajiager.init.loaders.BlockLoader.register();
 
+		// 自定义粒子类型注册（huaji_splash 滑稽粒子，useHuajiSplash 配置用）
+		org.huajiager.init.loaders.ParticleLoader.register();
+
 		// 搅拌机/终极熔炉配方类型与序列化器注册
 		org.huajiager.recipe.RecipeLoader.register();
 

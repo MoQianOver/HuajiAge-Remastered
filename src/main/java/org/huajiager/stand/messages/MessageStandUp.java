@@ -5,6 +5,7 @@ import java.util.List;
 import org.huajiager.capability.ExposedData;
 import org.huajiager.capability.IExposedData;
 import org.huajiager.capability.StandHandler;
+import org.huajiager.config.ConfigHuaji;
 import org.huajiager.init.loaders.PotionLoader;
 import org.huajiager.init.loaders.StandLoader;
 import org.huajiager.init.sound.HuajiSoundPlayer;
@@ -155,7 +156,13 @@ public record MessageStandUp(boolean isMoving) implements FabricPacket {
 				} else {
 					standUpSound = SoundLoader.THE_WORLD_STAND_UP;
 				}
-				HuajiSoundPlayer.playToNearbyClient(player, standUpSound, 1.0f);
+				// 召唤亮相音（替身主题乐）受配置 allowStandSound 控制：
+				// 关闭「替身音效」后召唤替身不再广播主题音效（对齐原版
+				// EventStandKey.isMovingMusic 语义；每次召唤实时读静态配置，
+				// cloth 配置保存后经 syncToStatic 即时生效，无需缓存刷新）。
+				if (ConfigHuaji.Stands.allowStandSound) {
+					HuajiSoundPlayer.playToNearbyClient(player, standUpSound, 1.0f);
+				}
 			} else {
 				player.sendMessage(Text.translatable("message.huajiage.stand_stand_up.cost_lack"), false);
 			}

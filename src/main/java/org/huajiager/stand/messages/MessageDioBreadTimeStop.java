@@ -16,17 +16,18 @@ import net.minecraft.util.Identifier;
  * 改由 S2C 广播 + 客户端按坐标播放，保证发动者必然可闻，且范围内其他玩家同样能听到
  * 时停开场音（声源为发动者位置，越远越轻）。
  */
-public record MessageDioBreadTimeStop(String soundId, double x, double y, double z) implements FabricPacket {
+public record MessageDioBreadTimeStop(String source, String soundId, double x, double y, double z) implements FabricPacket {
 
 	public static final PacketType<MessageDioBreadTimeStop> TYPE = PacketType.create(
 			new Identifier("huajiager", "dio_bread_time_stop"), MessageDioBreadTimeStop::new);
 
 	public MessageDioBreadTimeStop(PacketByteBuf buf) {
-		this(buf.readString(), buf.readDouble(), buf.readDouble(), buf.readDouble());
+		this(buf.readString(), buf.readString(), buf.readDouble(), buf.readDouble(), buf.readDouble());
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
+		buf.writeString(source);
 		buf.writeString(soundId);
 		buf.writeDouble(x);
 		buf.writeDouble(y);

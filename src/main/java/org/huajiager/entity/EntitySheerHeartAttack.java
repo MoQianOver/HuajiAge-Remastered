@@ -46,6 +46,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EntityView;
 import net.minecraft.world.World;
@@ -77,6 +78,10 @@ public class EntitySheerHeartAttack extends TameableEntity {
 	// 碰撞爆炸冷却（tick 数）：tick() 中 boundingBox 相交判断在爆炸把目标炸飞后仍可能连续成立，
 	// 不加冷却会导致每 tick 都触发 3f 爆炸——"把生物炸上天然后一直爆炸"。
 	private int explodeCooldown;
+
+	// 目标锁定：防止前后两个相近目标被目标选择 AI 每 tick 交替选中导致小车来回抽搐。
+	// 当前目标仍存活且在有效索敌范围内时保持锁定不切换，仅在目标死亡/离开范围时解锁重选。
+	private LivingEntity lockedTarget;
 
 	public static final EntityType<EntitySheerHeartAttack> TYPE = EntityType.Builder
 			.<EntitySheerHeartAttack>create((type, world) -> new EntitySheerHeartAttack(type, world), SpawnGroup.MISC)
@@ -189,7 +194,32 @@ public class EntitySheerHeartAttack extends TameableEntity {
 		if (this.getTarget() instanceof PlayerEntity) {
 			this.setTarget(null);
 		}
+		// 目标锁定稳定性：上一 tick 锁定的目标若仍存活且在 16 格有效索敌范围内，
+		// 则强制保持该目标（NearestAttackableTargetGoal 会在两个距离相近的目标间
+		// 每 tick 交替选择，导致小车前后来回抽搐）；目标死亡/离开范围后解锁，
+		// 重新交给目标选择 AI 选新目标。
+		LivingEntity locked = this.lockedTarget;
+		LivingEntity currentTarget = this.getTarget();
+		if (locked != null && locked.isAlive() && locked.squaredDistanceTo(this) < 256.0F && canTarget(locked)) {
+			if (currentTarget != locked) {
+				this.setTarget(locked);
+			}
+			this.lockedTarget = locked;
+		} else {
+			this.lockedTarget = null;
+			currentTarget = this.getTarget();
+			if (currentTarget != null && currentTarget.isAlive() && currentTarget.squaredDistanceTo(this) < 256.0F
+					&& canTarget(currentTarget)) {
+				this.lockedTarget = currentTarget;
+			}
+		}
 		LivingEntity entity = this.getTarget();
+		// 目标已死亡（爆炸后尸体仍短暂存在/目标死亡但 AI 未清理）时立即解除锁定：
+		// 避免小车继续把尸体当目标，每 tick 覆盖 velocity 扑向原地尸体导致抽搐。
+		if (entity != null && !entity.isAlive()) {
+			this.setTarget(null);
+			entity = null;
+		}
 		List<EntitySheerHeartAttack> attack = this.getWorld().getEntitiesByClass(EntitySheerHeartAttack.class,
 				this.getBoundingBox().expand(100), e -> true);
 		if (getLife() > 0) {
@@ -218,6 +248,21 @@ public class EntitySheerHeartAttack extends TameableEntity {
 					e.discard();
 				}
 			}
+		}
+		// 朝向同步：把实体朝向（yaw/bodyYaw/headYaw）每 tick 对齐水平移动方向。
+		// 小车速度由 setVelocity 直推（不走导航），默认 BodyControl/LookControl 的
+		// 朝向插值与实际移动方向脱节——普通追踪时表现为脸朝后跑，飞扑时 look 插值
+		// 与速度方向存在相位差、观感为旋转着飞过去。此处按速度水平方向固定朝向，
+		// 飞扑时速度方向恒为指向目标的视线方向，朝向随之锁定，不再旋转。
+		// 注意 MC yaw 定义：0=+Z（南）、顺时针为正（90=-X 西），与数学 atan2
+		// （逆时针为正）方向相反，故取负号，否则朝向与移动方向错位成"横着走"。
+		Vec3d velocity = this.getVelocity();
+		if (velocity.horizontalLengthSquared() > 1.0E-4) {
+			float yaw = (float) (-MathHelper.atan2(velocity.x, velocity.z) * 180.0D / Math.PI);
+			this.setYaw(yaw);
+			this.setBodyYaw(yaw);
+			this.setHeadYaw(yaw);
+			this.setPitch(0.0F);
 		}
 		if (getOwner() == null || !getOwner().isAlive()) {
 			this.getWorld().createExplosion(this, getX(), getY(), getZ(), 2f, false, World.ExplosionSourceType.NONE);
@@ -250,6 +295,9 @@ public class EntitySheerHeartAttack extends TameableEntity {
 					serverWorld.spawnParticles(ParticleTypes.CLOUD, this.getX(), this.getY(), this.getZ(),
 							8, 1.5, 1.5, 1.5, 0.05);
 				}
+				// 爆炸后进入 60 tick（3 秒）冷却：小车继续存活、可再索敌下一目标，
+				// 与目标重新接触后才再次触发接触爆炸；防止 tick 相交判定在目标
+				// 未及时被炸离时连续触发"每 tick 一爆"。
 				explodeCooldown = 60;
 			}
 		}

@@ -68,7 +68,7 @@ public class HuajiPolyfurnaceScreen extends HandledScreen<HuajiPolyfurnaceMenu> 
 		}
 		if (isPointWithinBounds(POOL_X, POOL_Y, POOL_WIDTH, POOL_HEIGHT, mouseX, mouseY)) {
 			tooltipLines.add(Text.translatable("gui.huajiager.poly.pool"));
-			tooltipLines.add(Text.literal(handler.getPool() + "/" + TileEntityHuajiPolyfurnace.TOTAL_POINT).formatted(Formatting.YELLOW, Formatting.BOLD));
+			tooltipLines.add(Text.literal(handler.getPool() + "/" + TileEntityHuajiPolyfurnace.getTotalPoint()).formatted(Formatting.YELLOW, Formatting.BOLD));
 		}
 		if (isPointWithinBounds(ENERGY_X, ENERGY_Y, ENERGY_WIDTH, ENERGY_HEIGHT, mouseX, mouseY)) {
 			tooltipLines.add(Text.translatable("gui.huajiager.poly.energy"));
@@ -119,7 +119,7 @@ public class HuajiPolyfurnaceScreen extends HandledScreen<HuajiPolyfurnaceMenu> 
 				FLAME_U, FLAME_V + burnOffsetY,
 				FLAME_WIDTH, FLAME_HEIGHT - burnOffsetY);
 
-		double pool = (double) handler.getPool() / TileEntityHuajiPolyfurnace.TOTAL_POINT;
+		double pool = (double) handler.getPool() / TileEntityHuajiPolyfurnace.getTotalPoint();
 		int poolOffsetY = (int) ((1.0 - pool) * POOL_HEIGHT);
 		context.drawTexture(TEXTURE,
 				x + POOL_X, y + POOL_Y + poolOffsetY,

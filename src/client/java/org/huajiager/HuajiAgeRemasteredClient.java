@@ -18,6 +18,7 @@ import org.huajiager.client.event.EventTimeStopView;
 import org.huajiager.client.event.ItemTooltipHandlers;
 import org.huajiager.client.event.TimeStopPostShader;
 import org.huajiager.client.init.sound.HuajiSoundPlayerClient;
+import org.huajiager.client.particle.HuajiSplashParticle;
 import org.huajiager.client.render.entity.RenderDiscCommand;
 import org.huajiager.client.render.entity.RenderEmeraldBullet;
 import org.huajiager.client.render.entity.RenderFivePower;
@@ -47,6 +48,7 @@ import org.huajiager.screen.HuajiPolyfurnaceScreen;
 import org.huajiager.screen.MenuLoader;
 import org.huajiager.stand.entity.EntityStandBase;
 import org.huajiager.init.loaders.ItemLoader;
+import org.huajiager.init.loaders.ParticleLoader;
 import org.huajiager.item.ItemBlancedHelmet;
 import org.huajiager.item.ItemDiscCommand;
 import org.huajiager.item.ItemDiscStand;
@@ -58,8 +60,10 @@ import org.huajiager.item.ItemInfiniteCharm;
 import org.huajiager.item.ItemMultiKnife;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.ArmorRenderer;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
@@ -102,6 +106,12 @@ public class HuajiAgeRemasteredClient implements ClientModInitializer {
 		EntityRendererRegistry.register(EntitySecondFoil.TYPE, RenderSecondFoil::new);
 		EntityRendererRegistry.register(EntityLordLuWing.TYPE, RenderLordLuWing::new);
 
+		// 滑稽水花粒子工厂：useHuajiSplash 开启后 EmeraldBulletEntity 会发射
+		// ParticleLoader.HUAJI_SPLASH（贴图 particle/huaji.png，见 particles/huaji_splash.json）。
+		ParticleFactoryRegistry.getInstance().register(ParticleLoader.HUAJI_SPLASH,
+				spriteProvider -> (parameters, world, x, y, z, vx, vy, vz) ->
+						new HuajiSplashParticle(world, x, y, z, vx, vy, vz, spriteProvider));
+
 		ClientPacketHandlers.register();
 
 		KeyLoader.register();
@@ -121,6 +131,13 @@ public class HuajiAgeRemasteredClient implements ClientModInitializer {
 		EventTimeStopView.register();
 		TimeStopPostShader.register();
 		ItemTooltipHandlers.register();
+
+		// Cloth Config（可选前置）：仅当已安装 cloth-config 时注册配置类并同步值回
+		// ConfigHuaji 静态字段（业务代码继续读 ConfigHuaji，无需改动调用点）。
+		// 未安装时跳过，不加载任何 Cloth 类，避免 NoClassDefFoundError。
+		if (FabricLoader.getInstance().isModLoaded("cloth-config")) {
+			org.huajiager.config.ConfigScreen.register();
+		}
 
 		// Inject real client sound player implementation
 		HuajiSoundPlayer.setClientSoundPlayer(HuajiSoundPlayerClient.INSTANCE);

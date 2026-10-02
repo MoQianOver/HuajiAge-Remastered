@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.huajiager.capability.StandHandler;
+import org.huajiager.config.ConfigHuaji;
 import org.huajiager.init.HuajiConstant;
 import org.huajiager.mixin.client.MixinGameRenderer;
 import org.huajiager.stand.StandUtil;
@@ -36,7 +37,7 @@ import net.minecraft.util.Identifier;
  * 30+ 个 post json，每次换档 loadPostProcessor 重建 FBO 并重编译 GLSL；现只加载两个
  * 基础 program（timestop_inv / timestop_gray），此后每帧只更新动态 uniform
  * （JsonEffectShaderProgram.getUniformByName(...).set(...) 写入 Uniform 缓存，
- * 渲染时统一 flush，零重编译、零 FBO 重建），过渡逐 tick 平滑推进。
+ * 渲染时统一 flush，零重编译、零 FBO 重建），过渡逐渲染帧平滑推进。
  *
  * 本文件全部实现为本工程依据语义独立编写。
  */
@@ -62,10 +63,21 @@ public final class TimeStopPostShader {
 	 */
 	private static int maxRemaining = 0;
 
-	/** 开场反色过渡：总时长 2 秒（40 tick @20tps），三段—— */
-	private static final int OPENING_TICKS = 40;
-	private static final int OPENING_EXPAND = 10;
-	private static final int OPENING_KEEP = 20;
+	/**
+	 * 本次时停实例已渲染帧数（与 vanilla RenderTickEvent 同节奏，每渲染帧一次）。
+	 * 对齐原版 EventViewRender.TimeStopRenderTest 的 static ticks：
+	 * 时停激活期间每帧 ++、非激活清零。开场反色窗口以帧计数判定，
+	 * 避免把原版的"帧"误当"游戏 tick"，导致默认 1.5 的 150 帧被放大成
+	 * 150 tick（7.5 秒）——即反色持续过长、圆扩散变慢的根因。
+	 */
+	private static int ticks = 0;
+
+	/**
+	 * 开场反色过渡：总时长由配置 ConfigHuaji.Stands.timeStopEffect 决定
+	 * （对齐原版 EventViewRender：t0 = (int)(timeStopEffect*100) 渲染帧，反转在
+	 * ticks>10 且 ticks<t0 期间加载 invert 着色器，即反转持续 timeStopEffect*100-10 帧）。
+	 * 三段（扩散 / 保持 / 收缩）按 1:2:1 比例动态划分，见 {@link #openingTicks()}：
+	 */
 
 	/** 圆形遮罩半径（宽高比修正后的归一化距离）。FULL_R=2.0 足够覆盖任意常见宽高比
 	 * （16:9 角落≈1.02、21:9≈1.27、32:9≈1.85），圆扩散到最大时整个屏幕被盖满，
@@ -73,11 +85,17 @@ public final class TimeStopPostShader {
 	private static final float MIN_R = 0.03f;
 	private static final float FULL_R = 2.0f;
 
-	/** 灰色滤镜开始时的淡入时长：前 10 tick 饱和度从接近原色压到最灰，避免反色→灰色跳变。 */
+	/** 灰色滤镜开始时的淡入时长：前 10 渲染帧饱和度从接近原色压到最灰，避免反色→灰色跳变。 */
 	private static final int GRAY_FADE_IN_TICKS = 10;
 
 	/** 灰色滤镜结束前的淡出时长：最后 1 秒（20 tick）饱和度连续回升到接近原色，滤镜平滑消失。 */
 	private static final int GRAY_FADE_OUT_TICKS = 20;
+
+	/**
+	 * 反色扩散/收缩各延长的渲染帧数（用户要求"扩大与收缩各再慢 0.5 秒"，
+	 * 60fps 下 0.5 秒 = 30 帧）。只加扩散与收缩，保持段不变，总反色时长 +60 帧。
+	 */
+	private static final int OPENING_EXTRA_FRAMES = 30;
 
 	private static final org.slf4j.Logger LOGGER =
 			org.slf4j.LoggerFactory.getLogger(TimeStopPostShader.class.getName());
@@ -102,23 +120,28 @@ public final class TimeStopPostShader {
 			return;
 		}
 
-		// 时停实例全程用"剩余 tick 相对本次实例峰值"锚定阶段：反色开场（前2s=40tick）、
-		// 灰色中段、最后1s(20tick)灰淡出三区间全部由 remaining 相对 maxRemaining 的位置
-		// 决定，不再依赖世界时钟与会话状态，也不会被同步或边缘判定抖动打回/跳过。
+		// 开场反色窗口以"本次时停实例渲染帧计数"锚定（对齐原版 EventViewRender：
+		// t0 = (int)(timeStopEffect*100) 帧，默认 1.5 → 150 帧 ≈ 2.5s@60fps），
+		// 灰色中段与最后 1s(20tick) 灰淡出仍由 remaining 相对 maxRemaining 锚定；
+		// 帧计数与时停剩余 tick 各自独立推进，互不干扰，且不依赖世界时钟与会话状态。
 		int remaining = getRemaining(player);
 		if (remaining > maxRemaining) {
 			maxRemaining = remaining;
 		}
 		int total = Math.max(maxRemaining, 1);
-		int past = total - remaining; // 本次时停已流逝 tick（0 起，单调不回的确定性时钟）
-		if (past < OPENING_TICKS) {
-			// 前 2 秒：全屏反色强度渐入→保持→渐落（每 tick 平滑 uniform）
+		ticks++; // 本次时停实例已渲染帧数（对齐原版 EventViewRender 的 static ticks）
+		int openingTicks = openingTicks(); // 渲染帧（反色基础总长，来自配置）
+		int openingTotal = openingTicks + OPENING_EXTRA_FRAMES * 2; // 扩散/收缩各 +30 帧后的反色总时长
+		int openingExpand = Math.max(1, openingTicks / 4 + OPENING_EXTRA_FRAMES); // 扩散（+0.5s）
+		int openingKeep = Math.max(1, openingTicks / 2); // 保持段不变
+		if (ticks < openingTotal) {
+			// 开场：全屏反色强度渐入→保持→渐落（每渲染帧平滑 uniform）
 			applyFilter(mc, STAGE_INV);
-			updateInv(past);
+			updateInv(ticks, openingTotal, openingExpand, openingKeep);
 		} else if (remaining > GRAY_FADE_OUT_TICKS) {
 			// 中段：全屏灰色（开头淡入后稳定在最灰，饱和度随剩余进度缓慢回升）
 			applyFilter(mc, STAGE_GRAY);
-			updateGrayFull(total, remaining);
+			updateGrayFull(ticks, openingTotal, remaining, total);
 		} else {
 			// 最后 1 秒：全屏灰色饱和度连续回升到接近原色，滤镜平滑淡出消失
 			applyFilter(mc, STAGE_GRAY);
@@ -127,24 +150,40 @@ public final class TimeStopPostShader {
 	}
 
 	/**
-	 * 开场反色过渡：2s（40 tick）内三段连续曲线——
-	 * 前 10 tick 圆形遮罩从中心小圆扩散到全屏覆盖（MIN_R→FULL_R），反色强度 0.20→0.93 渐入。	 * 中间 20 tick 圆保持全屏（FULL_R），反色峰值 0.93。	 * 后 10 tick 圆从全屏收缩回中心小圆（FULL_R→MIN_R），反色强度 0.93→0.20 渐落，
+	 * 开场反色总时长（渲染帧）：读取 ConfigHuaji.Stands.timeStopEffect，
+	 * 按原版公式 t0 = (int)(timeStopEffect * 100) 换算，单位为渲染帧
+	 * （原版 EventViewRender.TimeStopRenderTest 在 RenderTickEvent 中逐帧累计，
+	 * 反转窗口为 ticks>10 且 ticks<t0，即 t0-10 帧）。
+	 * 默认 1.5 → 150 帧：60fps 下开场约 2.5 秒（反转窗口 140 帧 ≈ 2.33 秒），
+	 * 扩散/收缩各 37 帧 ≈ 0.6 秒，符合原版节奏；在此基础上扩散与收缩再各延长
+	 * OPENING_EXTRA_FRAMES=30 帧（0.5 秒），即扩散 67 / 保持 75 / 收缩 67 帧，
+	 * 总反色时长 210 帧 ≈ 3.5s；用户调整配置时时长按比例变化（保持段随配置同步增长）。
+	 */
+	private static int openingTicks() {
+		return Math.max(1, (int) (ConfigHuaji.Stands.timeStopEffect * 100));
+	}
+
+	/**
+	 * 开场反色过渡：三段连续曲线按 openingTicks 的 1:2:1 划分后，扩散/收缩再各
+	 * 延长 OPENING_EXTRA_FRAMES 帧（帧）——
+	 * 前段扩散：圆形遮罩从中心小圆扩散到全屏覆盖（MIN_R→FULL_R），反色强度 0.20→0.93 渐入；	 * 中段保持：圆保持全屏（FULL_R），反色峰值 0.93（时长不变）；	 * 末段收缩：圆从全屏收缩回中心小圆（FULL_R→MIN_R），反色强度 0.93→0.20 渐落，
 	 * 圆外背景灰化渐现（BgGray 0→1、BgSaturation 0.40→0.15），收尾视觉与灰色滤镜自然衔接。
 	 */
-	private static void updateInv(int past) {
+	private static void updateInv(int ticks, int openingTotal, int openingExpand, int openingKeep) {
 		float amount, radius = FULL_R, bgGray = 0.0f, bgSat = 0.40f;
-		if (past < OPENING_EXPAND) {
-			// 0..9 扩散 + 强度渐入
-			float t = past / (float) (OPENING_EXPAND - 1);
+		if (ticks < openingExpand) {
+			// 0..expand-1 扩散 + 强度渐入
+			float t = ticks / (float) (openingExpand - 1);
 			radius = lerp(MIN_R, FULL_R, t);
 			amount = lerp(0.20f, 0.93f, t);
-		} else if (past < OPENING_EXPAND + OPENING_KEEP) {
-			// 10..29 圆保持全屏
+		} else if (ticks < openingExpand + openingKeep) {
+			// 扩散后圆保持全屏
 			amount = 0.93f;
 		} else {
-			// 30..39 收缩 + 强度渐落 + 背景灰化渐现
-			int shrink = past - OPENING_EXPAND - OPENING_KEEP;
-			float t = shrink / (float) (OPENING_TICKS - OPENING_EXPAND - OPENING_KEEP - 1);
+			// 末尾：收缩 + 强度渐落 + 背景灰化渐现
+			int shrink = ticks - openingExpand - openingKeep;
+			int shrinkLen = Math.max(1, openingTotal - openingExpand - openingKeep - 1);
+			float t = shrink / (float) shrinkLen;
 			radius = lerp(FULL_R, MIN_R, t);
 			amount = lerp(0.93f, 0.20f, t);
 			bgGray = t;
@@ -157,12 +196,12 @@ public final class TimeStopPostShader {
 	}
 
 	/**
-	 * 灰色滤镜中段（圆保持全屏覆盖）：前 10 tick 饱和度从 0.50（接近原色）压到 0.15（最灰）淡入，
+	 * 灰色滤镜中段（圆保持全屏覆盖）：前 10 渲染帧饱和度从 0.50（接近原色）压到 0.15（最灰）淡入，
 	 * 避免反色结尾直接跳成全灰；之后稳定在最灰，随剩余进度缓慢回升（视觉过渡更顺）。
 	 * 圆始终保持在 FULL_R（全屏盖满，超出裁掉），收缩只发生在最后 1 秒淡出阶段。
 	 */
-	private static void updateGrayFull(int total, int remaining) {
-		int grayElapsed = (total - OPENING_TICKS) - remaining; // 进入灰色阶段后的流逝 tick
+	private static void updateGrayFull(int ticks, int openingTotal, int remaining, int total) {
+		int grayElapsed = ticks - openingTotal; // 进入灰色阶段后的渲染帧数（对齐开场反色的帧计数）
 		float saturation;
 		if (grayElapsed < GRAY_FADE_IN_TICKS) {
 			saturation = lerp(0.50f, 0.15f, grayElapsed / (float) (GRAY_FADE_IN_TICKS - 1));
@@ -268,11 +307,14 @@ public final class TimeStopPostShader {
 			LOGGER.warn("[TimeStopPostShader] load {} failed: {}", id, ex.toString());
 			currentStage = "";
 			maxRemaining = 0;
+			ticks = 0;
 		}
 	}
 
-	/** 时停结束移除滤镜。 */
+	/** 时停结束移除滤镜，并重置帧计数器 / 剩余峰值。 */
 	private static void release() {
+		ticks = 0;
+		maxRemaining = 0;
 		if (currentStage.isEmpty()) {
 			return;
 		}
@@ -281,6 +323,5 @@ public final class TimeStopPostShader {
 			mc.gameRenderer.disablePostProcessor();
 		}
 		currentStage = "";
-		maxRemaining = 0;
 	}
 }

@@ -1,5 +1,6 @@
 package org.huajiager.item;
 
+import org.huajiager.config.ConfigHuaji;
 import org.huajiager.entity.EntityMultiKnife;
 import org.huajiager.init.loaders.ItemLoader;
 
@@ -23,16 +24,13 @@ import net.minecraft.world.World;
  * HuajiAgeRemasteredClient 中以 ModelPredicateProviderRegistry 注册。
  * 右键发射已的 EntityMultiKnife 实体（工程 src/main/java/org/huajiager/entity）。
  *
- * 配置项 ConfigHuaji.Stands.knifeHeight（发射高度修正）未接入配置系统，
- * 此处以常量 KNIFE_HEIGHT 代替并取默认值 0.1F。
+ * 配置项 ConfigHuaji.Stands.knifeHeight（发射高度修正）已接入配置系统，
+ * 未装配置界面时使用 ConfigHuaji 内置默认值 -0.25F（对齐原版）。
  */
 public class ItemMultiKnife extends Item {
 
 	/** 发光（light）模式 NBT 标签， NBT.IS_LIGHT 语义。 */
 	private static final String TAG_LIGHT = "light";
-
-	/**  ConfigHuaji.Stands.knifeHeight 默认值。 */
-	private static final float KNIFE_HEIGHT = 0.1F;
 
 	public ItemMultiKnife() {
 		super(new Item.Settings().maxDamage(900)); // maxDamage() 内部已自动置 maxCount=1
@@ -67,7 +65,7 @@ public class ItemMultiKnife extends Item {
 			Vec3d v1 = player.getRotationVector();
 			float fn = MathHelper.sqrt((float) (v1.x * v1.x + v1.y * v1.y + v1.z * v1.z));
 			knife.setPosition(knife.getX() + v1.x / fn,
-					knife.getY() + KNIFE_HEIGHT + 0.1F + v1.y / fn,
+					knife.getY() + (float) ConfigHuaji.Stands.knifeHeight + 0.1F + v1.y / fn,
 					knife.getZ() + v1.z / fn);
 			knife.setRotation(MathHelper.wrapDegrees(-player.getYaw()));
 			knife.setKnifePitch(player.getPitch());
