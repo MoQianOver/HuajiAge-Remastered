@@ -60,19 +60,11 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	// Patchouli (Fabric) —— 决策 A2：仅保留 Patchouli，JEI/HWYLA 移除。
-	// 经 2026-09-14 排查：fabric.mod.json 中 Patchouli 已从 depends 降为 suggests（非强制前置），
-	// 未装载时由客户端 EventPlayerLoggedIn 向聊天栏提示（原版 EventPlayerLoggedIn 语义）；
-	// Java 代码无 Patchouli 类直接引用（仅资源与配方），故降为 modCompileOnly：
-	// 编译期可见、dev 运行时不强制加载，符合"可选依赖"定位。
 	modCompileOnly "vazkii.patchouli:Patchouli:1.20.1-80-FABRIC"
 
     modCompileOnly "mezz.jei:jei-1.20.1-fabric:15.28.1.170"
     modRuntimeOnly "mezz.jei:jei-1.20.1-fabric:15.28.1.170"
 
-	// Cloth Config + ModMenu —— 可选前置（suggests）：
-	// 编译期可见、dev 运行时不强制加载；fabric.mod.json 中仅声明 suggests，
-	// 未安装时由 FabricLoader.isModLoaded 分支跳过 Cloth 类加载，游戏正常启动。
 	modCompileOnly "me.shedaniel.cloth:cloth-config-fabric:11.1.136"
 	modCompileOnly "com.terraformersmc:modmenu:7.2.2"
 
