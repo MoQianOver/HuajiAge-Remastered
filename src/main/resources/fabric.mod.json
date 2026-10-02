@@ -9,8 +9,9 @@
 		"DragonGodSUN"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/MoQianOver",
+		"sources": "https://github.com/MoQianOver/HuajiAge-Remastered",
+		"issues": "https://github.com/MoQianOver/HuajiAge-Remastered/issues"
 	},
 	"license": "MIT",
 	"icon": "assets/huajiager/icon.png",
