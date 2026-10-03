@@ -43,12 +43,23 @@ public class ItemYinYangBall extends Item {
         // 诊断日志：定位"有球但没反应"到底卡在哪一步
         LOGGER.info("[HuajiAge] yin-yang ball useOnBlock: sneaking={}, filled={}, client={}",
                 player.isSneaking(), isBallFilled(stack), player.getWorld().isClient);
-        if (player.isSneaking()) {
-            return MaidBallHelper.becomeMaidStand(player, stack, pos)
-                    ? ActionResult.SUCCESS : ActionResult.PASS;
+        boolean ok = player.isSneaking()
+                ? MaidBallHelper.becomeMaidStand(player, stack, pos)
+                : MaidBallHelper.release(player, stack, pos);
+        if (!ok) {
+            return ActionResult.PASS;
         }
-        return MaidBallHelper.release(player, stack, pos)
-                ? ActionResult.SUCCESS : ActionResult.PASS;
+        // 传进来的 stack 在 1.20.1 里可能是副本，务必把结果写回玩家主手那只真实物品栈
+        syncToHand(player, context.getHand(), stack);
+        return ActionResult.SUCCESS;
+    }
+
+    /** 把（可能被改动过的）物品栈 NBT 同步回玩家手上那只真实物品栈。 */
+    private void syncToHand(PlayerEntity player, Hand hand, ItemStack stack) {
+        ItemStack held = player.getStackInHand(hand);
+        if (held != stack) {
+            held.setNbt(stack.getNbt() == null ? null : stack.getNbt().copy());
+        }
     }
 
     /** 物品提示：直接显示球里有没有女仆、是谁的，便于确认是否真的收进去了。 */
@@ -71,6 +82,8 @@ public class ItemYinYangBall extends Item {
         if (entity instanceof com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid maid
                 && MaidBallHelper.isCapturable(entity, user)
                 && MaidBallHelper.capture(user, maid, stack)) {
+            // 捕获写的是传进来的 stack，而它可能是副本：结果同步回主手，否则球看着还是空的
+            syncToHand(user, hand, stack);
             return ActionResult.SUCCESS;
         }
         return super.useOnEntity(stack, user, entity, hand);
