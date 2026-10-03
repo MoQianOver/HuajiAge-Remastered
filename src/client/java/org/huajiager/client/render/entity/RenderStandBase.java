@@ -22,6 +22,9 @@ import org.huajiager.client.render.model.ModelWhiteSnakePunch;
 import org.huajiager.client.render.model.StandAnimatedModel;
 import org.huajiager.capability.ExposedData;
 import org.huajiager.capability.IExposedData;
+import org.huajiager.config.ConfigHuaji;
+import org.huajiager.init.loaders.ParticleLoader;
+import org.huajiager.util.HAMathHelper;
 import org.huajiager.stand.StandStates;
 import org.huajiager.stand.StandUtil;
 import org.huajiager.init.loaders.StandLoader;
@@ -42,6 +45,8 @@ import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 
@@ -223,6 +228,41 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 	}
 
 	/**
+	 * 绿法皇攻击态水花：照原版 ModelHierophantGreen.effect —— 每帧 3 颗，位置取替身
+	 * 相对点(-0.55,-0.6) 叠加随机抖动、高度抬高 2.2，速度取朝向一半再叠随机抖动；
+	 * 另有约 1/10 概率补一颗白烟。开启 useHuajiSplash 时水花换成滑稽粒子。
+	 */
+	private void spawnHierophantSplash(EntityStandBase entity, boolean idle) {
+		StandBase stand = entity.getStand();
+		if (idle || stand == null || !StandLoader.HIEROPHANT_GREEN.getName().equals(stand.getName())) {
+			return;
+		}
+		if (entity.getWorld() == null) {
+			return;
+		}
+		Vec3d shootPoint = HAMathHelper.getPostionRelative2D(entity, -0.55f, -0.6f);
+		Vec3d forward = entity.getRotationVector();
+		float rf1 = entity.getWorld().random.nextFloat() * 2.0f - 1.0f;
+		float rf2 = entity.getWorld().random.nextFloat() * 2.0f - 1.0f;
+		float rf3 = entity.getWorld().random.nextFloat() * 2.0f - 1.0f;
+		double px = entity.getX() + shootPoint.x + rf2 / 5.0;
+		double py = entity.getY() + 2.2 + rf3 / 5.0;
+		double pz = entity.getZ() + shootPoint.z + rf1 / 5.0;
+		double vx = forward.x / 2.0 + rf1 / 5.0;
+		double vy = forward.y / 2.0 + rf2 / 5.0;
+		double vz = forward.z / 2.0 + rf3 / 5.0;
+		ParticleEffect splash = ConfigHuaji.Stands.useHuajiSplash
+				? ParticleLoader.HUAJI_SPLASH
+				: ParticleTypes.SPLASH;
+		for (int i = 0; i < 3; i++) {
+			entity.getWorld().addParticle(splash, px, py, pz, vx, vy, vz);
+		}
+		if (rf1 > 0.9f) {
+			entity.getWorld().addParticle(ParticleTypes.POOF, px, py, pz, vx, vy, vz);
+		}
+	}
+
+	/**
 	 * 兜底：本替身紧贴玩家（攻击态恒在正前方1格、拳头又上浮到眼睛高度），默认按可见盒
 	 * 做视锥剔除，行走/飞行的视角晃动会让极小可见盒频繁进出视锥，整颗实体一帧帧闪没。
 	 * 主修复在 EntityStandBase.getVisibilityBoundingBox() 已放大可见盒，此处再显式不剔除。
@@ -259,6 +299,7 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 			VertexConsumerProvider vcp, int light) {
 		matrices.push();
 		boolean idle = isIdle(entity);
+		spawnHierophantSplash(entity, idle);
 		// 攻击态 + 所属玩家本机第一人称：替身本体不可见，只渲染双手挥拳
 		// （对齐 ModelTheWorld.renderFirst —— 第一人称下玩家只见替身的拳头）。
 		// 实体本身位于玩家前方（攻击态按实体逻辑置于正前方同高），第一人称视野

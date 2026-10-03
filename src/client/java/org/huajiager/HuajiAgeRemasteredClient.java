@@ -106,6 +106,16 @@ public class HuajiAgeRemasteredClient implements ClientModInitializer {
 		EntityRendererRegistry.register(EntitySecondFoil.TYPE, RenderSecondFoil::new);
 		EntityRendererRegistry.register(EntityLordLuWing.TYPE, RenderLordLuWing::new);
 
+		// 誓约旗/无限耐久护身符的头戴图层（判定同原版 LayerCharmDisplay）
+		net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback.EVENT
+				.register((entityType, entityRenderer, helper, context) -> {
+					if (entityType == net.minecraft.entity.EntityType.PLAYER
+							&& entityRenderer instanceof net.minecraft.client.render.entity.PlayerEntityRenderer playerRenderer) {
+						helper.register(new org.huajiager.client.render.entity.CharmDisplayFeatureRenderer(
+								playerRenderer));
+					}
+				});
+
 		// 滑稽水花粒子工厂：useHuajiSplash 开启后 EmeraldBulletEntity 会发射
 		// ParticleLoader.HUAJI_SPLASH（贴图 particle/huaji.png，见 particles/huaji_splash.json）。
 		ParticleFactoryRegistry.getInstance().register(ParticleLoader.HUAJI_SPLASH,
