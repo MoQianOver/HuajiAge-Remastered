@@ -10,6 +10,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.network.NetworkHandler;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SpawnParticleMessage;
+import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityGarageKit;
 import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.MaidRayTraceHelper;
 
@@ -131,6 +132,34 @@ public final class MaidBallHelper {
         world.spawnEntity(kitEntity);
 
         ball.reset(stack);
+        return true;
+    }
+
+    /**
+     * 手办柜复活：对着装着女仆数据的车万手办柜用心智 disc，把她放回世界。
+     * 对齐原版：复活后血量 5、消耗 disc、柜子清空。
+     */
+    public static boolean reviveFromGarageKit(PlayerEntity player, ItemStack disc, BlockPos pos) {
+        World world = player.getWorld();
+        if (world.isClient || !(world instanceof ServerWorld serverWorld)) {
+            return false;
+        }
+        if (!(world.getBlockEntity(pos) instanceof TileEntityGarageKit kit)) {
+            return false;
+        }
+        NbtCompound data = kit.getExtraData();
+        if (data == null || data.isEmpty()) {
+            return false;
+        }
+        EntityMaid maid = new EntityMaid(serverWorld);
+        maid.readNbt(data);
+        maid.setHealth(5.0F);
+        maid.setPosition(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5);
+        serverWorld.spawnEntity(maid);
+        world.removeBlock(pos, false);
+        if (!player.isCreative()) {
+            disc.decrement(1);
+        }
         return true;
     }
 
