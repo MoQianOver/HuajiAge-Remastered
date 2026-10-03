@@ -173,7 +173,6 @@ public class ItemWaveKnife extends SwordItem {
         }
     }
 
-    /** 客户端：沿视线方向撒少量水花（简化实现，每 tick 只撒 1 粒） */
     private void spawnWaveParticles(World world, Entity entity) {
         Vec3d look = entity.getRotationVec(1.0f);
         double x = entity.getX() + look.x * 2.0;
@@ -182,7 +181,6 @@ public class ItemWaveKnife extends SwordItem {
         world.addParticle(ParticleTypes.SPLASH, x, y, z, -look.x, -look.y, -look.z);
     }
 
-    /** 服务端：对视线 120° 以内 2 格范围的实体施加基于角度的魔法伤害 */
     private void damageNearbyEntities(World world, Entity source) {
         Box box = source.getBoundingBox().expand(2.0);
         for (LivingEntity target : world.getEntitiesByClass(LivingEntity.class, box, e -> e != source)) {
@@ -267,7 +265,6 @@ public class ItemWaveKnife extends SwordItem {
         return TypedActionResult.success(stack);
     }
 
-    /** 彩虹名称：逐字循环着色（以系统毫秒近似维护循环下标） */
     @Override
     public Text getName(ItemStack stack) {
         String name = super.getName(stack).getString();
