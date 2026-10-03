@@ -11,14 +11,14 @@
 		{
 			"type": "spotlight",
 			"item": "huajiager:huaji_blender",
-			"title":"§l滚筒式滑稽之力灌注仪",
-			"text":"灌注滑稽之力的重要仪器。$(br2)$(li)$(l)$(l:items/material)滑稽灌注"
+			"title":"§l滚筒式滑稽之力混合仪",
+			"text":"混合滑稽之力的重要仪器：放入材料与滑稽类燃料，按配方混合出成品。$(br2)$(li)$(l)$(l:items/material)滑稽混合"
 	    },
 		{
 			"type": "spotlight",
 			"item": "huajiager:huaji_poly_furnace",
 			"title":"§e§l滑稽§d§l终极熔炼炉。",
-			"text":"聚合无尽之星的终极秘器$(br2)$(li)$(l)$(l:items/ultra_mat)究极聚合"
+			"text":"聚合无尽之星的终极秘器：放入材料与燃料，聚合池攒够「制作无尽之星所需星辰点数总量」即可产出无尽之星。$(br2)$(li)$(l)$(l:items/ultra_mat)究极聚合"
 	    },
 		{
 			"type": "crafting",

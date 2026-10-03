@@ -12,13 +12,13 @@
 			"type": "spotlight",
 			"item": "huajiager:huaji_blender",
 			"title":"§lHUAJI Blender",
-			"text":"An important instrument that infuses HUAJI power$(br2)$(li)$(l)$(l:items/material)HUAJI Perfusion"
+			"text":"An important instrument that blends HUAJI power: feed it materials and HUAJI-type fuel, then blend them by recipe.$(br2)$(li)$(l)$(l:items/material)HUAJI Blend"
 	    },
 		{
 			"type": "spotlight",
 			"item": "huajiager:huaji_poly_furnace",
 			"title":"§e§lHUAJI §d§lPolyfurnace。",
-			"text":"Assemble the ultimate secret instrument of Infinite Universe Star$(br2)$(li)$(l)$(l:items/ultra_mat)Infinite Polymerization"
+			"text":"Assemble the ultimate secret instrument of Infinite Universe Star: feed it materials and fuel, and once the pool reaches the configured HUAJI Star point total it produces the HUAJI Star.$(br2)$(li)$(l)$(l:items/ultra_mat)Infinite Polymerization"
 	    },
 		{
 			"type": "crafting",
