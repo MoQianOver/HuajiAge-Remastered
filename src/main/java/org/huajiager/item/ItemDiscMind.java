@@ -65,6 +65,22 @@ public class ItemDiscMind extends Item {
 		return ActionResult.PASS;
 	}
 
+	/** 手办柜复活：对着装着女仆数据的车万手办柜用心智 disc，把她放回世界。 */
+	@Override
+	public ActionResult useOnBlock(net.minecraft.item.ItemUsageContext context) {
+		PlayerEntity player = context.getPlayer();
+		if (player == null) {
+			return ActionResult.PASS;
+		}
+		// 强依赖车万的女仆方块实体，未安装该模组时整段跳过
+		if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("touhou_little_maid")
+				&& org.huajiager.compat.tlm.MaidBallHelper.reviveFromGarageKit(
+						player, context.getStack(), context.getBlockPos())) {
+			return ActionResult.SUCCESS;
+		}
+		return super.useOnBlock(context);
+	}
+
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
 		ItemStack stack = player.getStackInHand(hand);
