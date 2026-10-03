@@ -181,6 +181,8 @@ public class HuajiAgeRemasteredClient implements ClientModInitializer {
 
 		// Disc item model predicates (stand discs + command discs)
 		registerDiscPredicates();
+		// 主源码集不能引用客户端类：把 Shift 按键状态注入给物品 tooltip 用
+		org.huajiager.util.ClientKeyState.setSupplier(net.minecraft.client.gui.screen.Screen::hasShiftDown);
 
 		// 辣条剑形态切换：NBT "hot" -> 模型谓词 "burst"（与 huaji_latiao_sword.json overrides 保持一致）
 		ModelPredicateProviderRegistry.register(ItemLoader.huajiLatiaoSword,

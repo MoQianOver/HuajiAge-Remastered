@@ -66,11 +66,22 @@ public class ItemYinYangBall extends Item {
     @Override
     public void appendTooltip(ItemStack stack, World world, java.util.List<net.minecraft.text.Text> tooltip,
                               net.minecraft.client.item.TooltipContext context) {
-        if (isBallFilled(stack)) {
-            tooltip.add(net.minecraft.text.Text.translatable("item.huajiager.yin_yang_ball.filled",
-                    getMaidOwnerName(stack)));
-        } else {
-            tooltip.add(net.minecraft.text.Text.translatable("item.huajiager.yin_yang_ball.empty"));
+        // 对齐原版：第一行固定显示，按住 Shift 再展开"从者/御主"
+        tooltip.add(net.minecraft.text.Text.translatable("item.huajiager.yin_yang_ball.tooltips.1"));
+        if (org.huajiager.util.ClientKeyState.isShiftDown()) {
+            String customName = getMaidTag(stack).getString("CustomName").replace("\"", "");
+            net.minecraft.text.Text servant;
+            if (!isModelLoad(stack)) {
+                servant = net.minecraft.text.Text.translatable("item.huajiager.yin_yang_ball.empty");
+            } else if (customName.isEmpty()) {
+                servant = net.minecraft.text.Text.translatable("item.huajiager.yin_yang_ball.maid");
+            } else {
+                servant = net.minecraft.text.Text.literal(customName);
+            }
+            tooltip.add(net.minecraft.text.Text.translatable("item.huajiager.yin_yang_ball.tooltips.2", servant));
+            tooltip.add(net.minecraft.text.Text.translatable("item.huajiager.yin_yang_ball.tooltips.3",
+                    hasOwner(stack) ? net.minecraft.text.Text.literal(getMaidOwnerName(stack))
+                            : net.minecraft.text.Text.translatable("item.huajiager.yin_yang_ball.empty")));
         }
     }
 
