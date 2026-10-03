@@ -62,7 +62,7 @@ public final class VanillaStandModels {
         try {
             VanillaStandModel built = new VanillaStandModel(modelLoader.getModelPart(entry.layer()));
             BUILT.put(key, built);
-            LOGGER.info("[HuajiAge] Vanilla stand model borrowed: {}", key);
+            LOGGER.info("[HuajiAge] Vanilla stand model borrowed: {} (bones={})", key, built.boneCount());
             return built;
         } catch (Exception e) {
             LOGGER.error("[HuajiAge] Failed to borrow vanilla stand model: {}", key, e);

@@ -41,6 +41,7 @@ public class StandStateCustom extends StandStateBase {
         this.isHandPlay = stateInfo.isHand();
         this.stage = stateInfo.getStage();
         this.soundLoop = stateInfo.isSoundRepeat();
+        this.animations = stateInfo.getAnimations();
     }
 
     public StandStateInfo getStateInfo() {

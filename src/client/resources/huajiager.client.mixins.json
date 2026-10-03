@@ -5,6 +5,7 @@
 	"client": [
 		"ExampleClientMixin",
 		"MixinGameRenderer",
+		"ModelPartAccessor",
 		"PostEffectProcessorAccessor"
 	],
 	"injectors": {

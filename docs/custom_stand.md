@@ -27,6 +27,13 @@
   为模板——它本来就是配默认人形模型的兜底贴图。
 - **全新的模型造型**：资源包里放 `stand_model.json` + `models/entity/<path>.json`（基岩几何）+
   对应贴图，让 `modelId` 指向它 → 自定义替身就用这套新模型，见 2.5 节。
+- **借用原版实体模型**：`modelId` 直接写原版实体 id（目前支持 `minecraft:warden`），
+  不需要任何资源包；原版模型的部件会按名字（`head` / `left_arm` / `right_tendril` …）暴露给动画脚本，
+  所以也能动起来。
+- **骨骼动画**：在状态脚本里写 `animation: ["huajiager:animation/sway.js"]`（不写则用默认 8 个脚本），
+  工程自带一个通用摆动脚本 `sway.js` 可直接引用。
+- 完整可跑示例见 `docs/example_stand/`：`warden.json` + `warden_default.js`（攻击态，咆哮召唤音 +
+  心跳循环音 + 摆动骨骼 + 范围攻击）+ `warden_idle.js`（待机态，只让头部跟随视线）。
 
 ### 0.2 三步做出一个能用的替身
 

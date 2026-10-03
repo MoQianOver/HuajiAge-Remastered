@@ -57,6 +57,9 @@ public class RuntimeStandModel extends HAModelBase implements StandAnimatedModel
     /** 已经报过错的脚本，避免每帧刷屏。 */
     private final Set<Object> failedAnimations = new HashSet<>();
 
+    /** 当前生效的脚本路径列表（状态切换时重新取脚本）。 */
+    private List<String> currentScripts = List.of();
+
     private RuntimeStandModel(String modelId, int textureWidth, int textureHeight) {
         super(textureWidth, textureHeight);
         this.modelId = modelId;
@@ -196,6 +199,7 @@ public class RuntimeStandModel extends HAModelBase implements StandAnimatedModel
     @Override
     public void renderStand(MatrixStack matrices, VertexConsumer vertices, int light, int overlay,
             EntityStandBase entity, float ageTicks, float speed, float power) {
+        refreshAnimations(entity);
         applyAnimations(entity, ageTicks);
         matrices.push();
         applyNudge(matrices, ageTicks);
@@ -205,6 +209,16 @@ public class RuntimeStandModel extends HAModelBase implements StandAnimatedModel
             root.render(matrices, vertices, light, overlay);
         }
         matrices.pop();
+    }
+
+    /** 状态切换时按状态声明的动画列表重新取脚本（状态未声明则沿用模型条目声明的列表）。 */
+    private void refreshAnimations(EntityStandBase entity) {
+        List<String> declared = CustomAnimationLoader.stateAnimations(entity);
+        if (declared.isEmpty() || declared.equals(currentScripts)) {
+            return;
+        }
+        currentScripts = declared;
+        attach(info, CustomAnimationLoader.load(declared));
     }
 
     /** 逐帧调用动画脚本驱动骨骼角度；单个脚本首次出错时记录一次，不再重复刷屏。 */

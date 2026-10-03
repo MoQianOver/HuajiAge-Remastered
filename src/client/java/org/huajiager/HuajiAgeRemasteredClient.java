@@ -117,7 +117,10 @@ public class HuajiAgeRemasteredClient implements ClientModInitializer {
 
 					@Override
 					public void reload(net.minecraft.resource.ResourceManager manager) {
+						org.huajiager.client.model.custom.CustomAnimationLoader.bind(manager);
 						org.huajiager.client.model.custom.CustomModelLoader.reload(manager);
+						// 预热状态声明的动画脚本，语法/路径问题在重载期就暴露
+						org.huajiager.client.model.custom.CustomAnimationLoader.preloadStateScripts();
 						// 原版实体模型会在资源重载时重建，缓存的借用模型随之失效
 						org.huajiager.client.model.custom.VanillaStandModels.clear();
 					}

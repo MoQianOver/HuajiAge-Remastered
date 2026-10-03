@@ -28,6 +28,8 @@ public abstract class StandStateBase implements IStandState {
     protected int stage;
     protected boolean isHandPlay;
     protected boolean soundLoop;
+    /** 该状态声明的骨骼动画脚本列表（空表表示用模型条目声明 / 默认脚本）。 */
+    protected List<String> animations = new ArrayList<>();
 
     public StandStateBase() {
     }
@@ -114,6 +116,11 @@ public abstract class StandStateBase implements IStandState {
     @Override
     public boolean isSoundLoop() {
         return soundLoop;
+    }
+
+    /** 该状态的骨骼动画脚本列表；空表表示使用模型条目声明或默认脚本。 */
+    public List<String> getAnimations() {
+        return animations;
     }
 
     public void setSoundLoop(boolean soundLoop) {

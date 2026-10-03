@@ -263,6 +263,15 @@ public class StandResourceLoader {
             hand = Boolean.parseBoolean(String.valueOf(handObj));
         }
 
+        // 状态声明的骨骼动画脚本列表（空表表示用模型条目声明，再退回默认脚本）
+        List<String> animations = new ArrayList<>();
+        Object animationObj = scriptMaps.get(stateArgs.ANIMATION.getName());
+        if (animationObj instanceof List) {
+            for (Object o : (List<?>) animationObj) {
+                animations.add(String.valueOf(o));
+            }
+        }
+
         StandStateInfo info = new StandStateInfo();
         info.setStand(standId);
         info.setStateId(stateId);
@@ -272,6 +281,7 @@ public class StandResourceLoader {
         info.setStateTags(stateTags);
         info.setSoundRepeat(soundRepeat);
         info.setHand(hand);
+        info.setAnimations(animations);
         info.setStateObject(scriptObject);
         return info;
     }
@@ -284,6 +294,7 @@ public class StandResourceLoader {
         MODEL("modelId"),
         TAGS("stateTags"),
         SOUND_REPEAT("soundRepeat"),
+        ANIMATION("animation"),
         HAND("hand");
 
         private final String name;

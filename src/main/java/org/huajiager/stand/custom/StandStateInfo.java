@@ -18,6 +18,8 @@ public class StandStateInfo {
     private List<String> stateTags;
     private boolean soundRepeat;
     private boolean hand;
+    /** 该状态的骨骼动画脚本列表（空表表示用模型条目声明 / 默认脚本）。 */
+    private List<String> animations;
     /** eval JS 后得到的脚本对象（调用 update/timeOut/capability 用），不参与序列化 */
     private transient Object stateObject;
 
@@ -94,5 +96,13 @@ public class StandStateInfo {
 
     public void setHand(boolean hand) {
         this.hand = hand;
+    }
+
+    public List<String> getAnimations() {
+        return animations == null ? new ArrayList<>() : animations;
+    }
+
+    public void setAnimations(List<String> animations) {
+        this.animations = animations;
     }
 }
