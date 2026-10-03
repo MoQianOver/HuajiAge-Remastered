@@ -43,3 +43,6 @@ replay_*.log
 /src/main/resources/assets/huajiager/sounds/
 
 notes/
+
+# 本地文档：只保留在本地工作区，不提交到仓库
+docs/
