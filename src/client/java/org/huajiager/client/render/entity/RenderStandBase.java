@@ -418,6 +418,12 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 	public void render(EntityStandBase entity, float yaw, float tickDelta, MatrixStack matrices,
 			VertexConsumerProvider vcp, int light) {
 		matrices.push();
+		// 女仆替身：借用车万自己的女仆渲染器（模型与皮肤都取女仆本人），
+		// 取不到车万时继续走下面自带几何/贴图的流程
+		if (org.huajiager.client.compat.tlm.MaidStandRenderer.renderStand(entity, yaw, tickDelta, matrices, vcp, light)) {
+			matrices.pop();
+			return;
+		}
 		boolean idle = isIdle(entity);
 		spawnHierophantSplash(entity, idle);
 		// 攻击态 + 所属玩家本机第一人称：替身本体不可见，只渲染双手挥拳
