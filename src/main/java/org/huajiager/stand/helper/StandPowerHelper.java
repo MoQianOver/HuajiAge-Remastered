@@ -61,8 +61,8 @@ import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.gen.structure.StructureKeys;
 
 /**
- * 替身通用辅助（ 收尾版）。
- * <p> StandPowerHelper 共 871 行。 已落入 6 个状态类实际调用的方法：
+ * 替身通用辅助。
+ * <p>已落入 6 个状态类实际调用的方法：
  * {@link #MPCharge}、{@link #potionEffect}，并补全 various 拳击/飞行态依赖的
  * {@link #rangePunchAttack}（重型方法，1.20.1 口径与本工程 default 态连打一致，
  * damage source 用 playerAttack / fallingAnvil）。其余方法按语义补齐。</p>

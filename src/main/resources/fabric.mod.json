@@ -26,6 +26,9 @@
 		"jei_mod_plugin": [
 			"org.huajiager.compat.jei.HuajiJeiPlugin"
 		],
+		"jade": [
+			"org.huajiager.compat.jade.HuajiJadePlugin"
+		],
 		"modmenu": [
 			"org.huajiager.config.ModMenuIntegration"
 		],
@@ -50,6 +53,7 @@
 		"patchouli": ">=1.20.1-80-FABRIC",
 		"jei": ">=15.28.1.170",
 		"cloth-config": "*",
-		"modmenu": "*"
+		"modmenu": "*",
+		"jade": ">=11.13.3"
 	}
 }

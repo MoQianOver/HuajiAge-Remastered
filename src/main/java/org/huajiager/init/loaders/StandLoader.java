@@ -23,7 +23,7 @@ import org.huajiager.stand.instance.StandTheWorld;
  * Hierophant Green / Orga Requiem / Killer Queen）至 {@link #STAND_LIST}，{@link #reloadStands()}
  * 调用 HuajiAgeAPI.standClear / statesClear 后逐个 {@code registerStand} + {@code putInternalStandStates()}。
  * - 自定义替身（由 StandResourceLoader + StandCustom 加载）：reloadStands() 内
- *   loadCustomStand() 加载 4 个内置 JSON + 8 个 state JS，并一一注册进 HuajiAgeAPI 与 STAND_LIST。
+ *   loadCustomStand() 加载 3 个内置 JSON + 7 个 state JS，并一一注册进 HuajiAgeAPI 与 STAND_LIST。
  */
 public class StandLoader {
 
