@@ -61,6 +61,9 @@ public class StandResourceLoader {
         loadInternalStates();
         loadStand(CONFIG_FOLDER, ACCEPTED_STAND_SUFFIX);
         loadStandStates(CONFIG_STATE_FOLDER, ACCEPTED_STATE_SUFFIX);
+        // 加载结果打印一次：整合包作者据此确认 config 目录里的文件到底有没有被读到
+        LOGGER.info("[HuajiAge] Custom stands loaded: {} | custom states: {}",
+                CUSTOM_STAND_SERVER.keySet(), CUSTOM_STATE_SERVER.keySet());
     }
 
     /** 内部资源加载（硬编码三替身）。 */
