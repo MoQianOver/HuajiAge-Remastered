@@ -68,6 +68,9 @@ dependencies {
     // Jade（方块/实体信息显示）：仅编译期依赖，未安装时不加载 jade 入口点
     modCompileOnly "maven.modrinth:jade:11.13.3+fabric"
 
+    // 车万女仆（非官方 Fabric 移植 TLMO）：仅编译期依赖，未安装时完全不加载 compat 代码
+    modCompileOnly "maven.modrinth:touhoulittlemaid-orihime:0.8.2-forge1.5.3+mc1.20.1"
+
 	modCompileOnly "me.shedaniel.cloth:cloth-config-fabric:11.1.136"
 	modCompileOnly "com.terraformersmc:modmenu:7.2.2"
 

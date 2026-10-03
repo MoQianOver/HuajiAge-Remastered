@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "ACB",
+    "BBB"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:snow_block"
+    },
+    "B": {
+      "item": "minecraft:obsidian"
+    },
+    "C": {
+      "item": "huajiager:huaji_star"
+    }
+  },
+  "result": {
+    "item": "huajiager:yin_yang_ball",
+    "count": 1
+  }
+}

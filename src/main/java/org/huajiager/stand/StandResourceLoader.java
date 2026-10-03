@@ -28,7 +28,7 @@ import com.google.gson.reflect.TypeToken;
 
 /**
  * 自定义替身资源加载器。
- * <p>从 mod 内置资源 + 用户 config 目录加载自定义替身：
+ * <p>只从 mod 内置资源加载自定义替身（不扫描用户 config 目录）：
  * - standalone JSON（{@link #loadCustomStand()} → {@link StandCustomInfo}）注册进
  *   {@link #CUSTOM_STAND_SERVER}。 * - JS 状态脚本（custom_stand/states/*.js）经 {@link JsEngineHelper#ENGINE} eval 后
  *   {@code transObjectToEntry} 转成 {@link StandStateInfo} 注册进 {@link #CUSTOM_STATE_SERVER}，
@@ -45,24 +45,19 @@ public class StandResourceLoader {
     /** 自定义状态注册表（key = 替身注册名 + "_" + stateId） */
     public static final Map<String, StandStateInfo> CUSTOM_STATE_SERVER = new HashMap<>();
 
-    private static final Path CONFIG_FOLDER = Paths.get("config", HuajiAgeRemastered.MOD_ID, "custom_stand");
-    private static final Path CONFIG_STATE_FOLDER = Paths.get("config", HuajiAgeRemastered.MOD_ID, "custom_stand/states");
     private static final String RES_FOLDER = "/assets/" + HuajiAgeRemastered.MOD_ID + "/custom_stand";
     private static final String RES_STATE_FOLDER = "/assets/" + HuajiAgeRemastered.MOD_ID + "/custom_stand/states";
     private static final String ACCEPTED_STAND_SUFFIX = ".json";
     private static final String ACCEPTED_STATE_SUFFIX = ".js";
 
-    /** 重载入口：清理并加载全部（内部资源 + 用户 config）。 */
+    /** 重载入口：清理并加载全部内置资源。 */
     public static void loadCustomStand() {
         CUSTOM_STAND_SERVER.clear();
         CUSTOM_STATE_SERVER.clear();
-        checkStandFolder();
         loadInternalStands();
         loadInternalStates();
-        loadStand(CONFIG_FOLDER, ACCEPTED_STAND_SUFFIX);
-        loadStandStates(CONFIG_STATE_FOLDER, ACCEPTED_STATE_SUFFIX);
-        // 加载结果打印一次：整合包作者据此确认 config 目录里的文件到底有没有被读到
-        LOGGER.info("[HuajiAge] Custom stands loaded: {} | custom states: {}",
+        // 加载结果打印一次，便于确认内置资源是否完整
+        LOGGER.info("[HuajiAge] Built-in custom stands loaded: {} | states: {}",
                 CUSTOM_STAND_SERVER.keySet(), CUSTOM_STATE_SERVER.keySet());
     }
 
@@ -82,14 +77,6 @@ public class StandResourceLoader {
         loadInternalState("hermit_purple_overdrive");
         loadInternalState("white_snake_default");
         loadInternalState("white_snake_punch");
-    }
-
-    private static void checkStandFolder() {
-        try {
-            Files.createDirectories(CONFIG_STATE_FOLDER);
-        } catch (IOException e) {
-            LOGGER.warn("[HuajiAge] Cannot create custom_stand config folders", e);
-        }
     }
 
     private static void loadInternalStand(String json) {
@@ -122,60 +109,11 @@ public class StandResourceLoader {
         }
     }
 
-    private static void loadStand(Path path, String suffix) {
-        File[] files = path.toFile().listFiles();
-        if (files == null) {
-            return;
-        }
-        for (File file : files) {
-            if (file.getName().endsWith(suffix)) {
-                loadStand(file);
-            }
-        }
-    }
-
-    private static void loadStandStates(Path path, String suffix) {
-        File[] files = path.toFile().listFiles();
-        if (files == null) {
-            return;
-        }
-        for (File file : files) {
-            if (file.getName().endsWith(suffix)) {
-                loadStates(file);
-            }
-        }
-    }
-
-    private static void loadStand(File file) {
-        try {
-            InputStream stream = Files.newInputStream(file.toPath());
-            StandCustomInfo info = loadStand(stream);
-            CUSTOM_STAND_SERVER.put(info.getStand(), info);
-        } catch (IOException | RuntimeException e) {
-            // RuntimeException 覆盖 JSON 语法错误与缺字段造成的 NPE：
-            // 用户 config 目录里放坏文件时只跳过该文件并留下可定位日志，不中断整个重载。
-            LOGGER.error("[HuajiAge] Failed to load custom stand file: {}", file.getAbsolutePath(), e);
-        }
-    }
-
     private static StandCustomInfo loadStand(InputStream input) {
         StandCustomInfo info = GSON.fromJson(new InputStreamReader(input, StandardCharsets.UTF_8),
                 new TypeToken<StandCustomInfo>() {
                 }.getType());
         return info.decorate();
-    }
-
-    private static void loadStates(File file) {
-        try {
-            InputStream stream = Files.newInputStream(file.toPath());
-            StandStateInfo info = loadStates(stream);
-            if (info != null) {
-                CUSTOM_STATE_SERVER.put(info.getStand() + "_" + info.getStateId(), info);
-            }
-        } catch (IOException | RuntimeException e) {
-            // 同 loadStand(File)：坏脚本只跳过该文件并留日志，不中断整个重载
-            LOGGER.error("[HuajiAge] Failed to load custom state file: {}", file.getAbsolutePath(), e);
-        }
     }
 
     private static StandStateInfo loadStates(InputStream input) {
