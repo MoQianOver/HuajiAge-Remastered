@@ -40,14 +40,26 @@ public class ItemYinYangBall extends Item {
         }
         ItemStack stack = context.getStack();
         BlockPos pos = context.getBlockPos();
-        // 诊断日志：定位"有球但没反应"到底卡在哪一步
-        LOGGER.info("[HuajiAge] yin-yang ball useOnBlock: sneaking={}, filled={}, client={}",
-                player.isSneaking(), isBallFilled(stack), player.getWorld().isClient);
-        boolean ok = player.isSneaking()
+        boolean sneaking = player.isSneaking();
+        // 对齐原版：用别人的球、或对空球操作时给提示并中止
+        if (isBallFilled(stack) && hasOwner(stack) && !isOwner(stack, player)) {
+            player.sendMessage(net.minecraft.text.Text.translatable("message.huajiager.maid_ball.is_no_owner"), false);
+            return ActionResult.PASS;
+        }
+        if (!isBallFilled(stack)) {
+            player.sendMessage(net.minecraft.text.Text.translatable("message.huajiager.maid_ball.fail"), false);
+            return ActionResult.PASS;
+        }
+        boolean ok = sneaking
                 ? MaidBallHelper.becomeMaidStand(player, stack, pos)
                 : MaidBallHelper.release(player, stack, pos);
         if (!ok) {
             return ActionResult.PASS;
+        }
+        // 转替身成功时随机来一句原版台词
+        if (sneaking) {
+            player.sendMessage(net.minecraft.text.Text.translatable(
+                    "message.huajiager.maid_ball.stand_load_" + (1 + player.getRandom().nextInt(4))), false);
         }
         // 传进来的 stack 在 1.20.1 里可能是副本，务必把结果写回玩家主手那只真实物品栈
         syncToHand(player, context.getHand(), stack);
@@ -95,6 +107,8 @@ public class ItemYinYangBall extends Item {
                 && MaidBallHelper.capture(user, maid, stack)) {
             // 捕获写的是传进来的 stack，而它可能是副本：结果同步回主手，否则球看着还是空的
             syncToHand(user, hand, stack);
+            user.sendMessage(net.minecraft.text.Text.translatable(
+                    "message.huajiager.maid_ball.load", maid.getName()), false);
             return ActionResult.SUCCESS;
         }
         return super.useOnEntity(stack, user, entity, hand);
@@ -113,7 +127,14 @@ public class ItemYinYangBall extends Item {
     /** 原版在抓到女仆后是复用射线分支完成写入，这里保持一致。 */
     private boolean captureByRay(PlayerEntity player, ItemStack stack) {
         return MaidBallHelper.traceMaid(player)
-                .map(maid -> MaidBallHelper.capture(player, maid, stack))
+                .map(maid -> {
+                    if (MaidBallHelper.capture(player, maid, stack)) {
+                        player.sendMessage(net.minecraft.text.Text.translatable(
+                                "message.huajiager.maid_ball.load", maid.getName()), false);
+                        return true;
+                    }
+                    return false;
+                })
                 .orElse(false);
     }
 
