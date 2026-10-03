@@ -156,7 +156,13 @@ public final class MaidBallHelper {
         maid.setHealth(5.0F);
         maid.setPosition(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5);
         serverWorld.spawnEntity(maid);
-        world.removeBlock(pos, false);
+        // 清空柜子但**不要掉落**原本装着女仆的手办：removeBlock/breakBlock 默认会掉落，
+        // 那等于"有心智 disc 就能无限复活"，这里显式指定不掉落。
+        serverWorld.breakBlock(pos, false);
+        // 只回一个空手办：车万没有独立的"空手办"物品，不带 EntityInfo 的手办就是未装入女仆的状态
+        ItemEntity emptyKit = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                new ItemStack(InitItems.GARAGE_KIT));
+        world.spawnEntity(emptyKit);
         if (!player.isCreative()) {
             disc.decrement(1);
         }

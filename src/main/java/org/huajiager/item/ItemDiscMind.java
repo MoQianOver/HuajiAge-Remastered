@@ -74,11 +74,25 @@ public class ItemDiscMind extends Item {
 		}
 		// 强依赖车万的女仆方块实体，未安装该模组时整段跳过
 		if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("touhou_little_maid")
+				&& isMaidDiscOwner(context.getStack(), player)
 				&& org.huajiager.compat.tlm.MaidBallHelper.reviveFromGarageKit(
 						player, context.getStack(), context.getBlockPos())) {
 			return ActionResult.SUCCESS;
 		}
 		return super.useOnBlock(context);
+	}
+
+	/**
+	 * 复活前校验：disc 归属为该玩家，且是与女仆相关的心智 disc。
+	 * 不要求"精确对应"某只女仆，只要是女仆相关的心智 disc 即可复活。
+	 */
+	private static boolean isMaidDiscOwner(ItemStack stack, PlayerEntity player) {
+		String uuid = getOwnerUUID(stack);
+		if (uuid == null || uuid.isEmpty() || !uuid.equals(player.getUuid().toString())) {
+			return false;
+		}
+		net.minecraft.nbt.NbtCompound nbt = stack.getNbt();
+		return nbt != null && nbt.toString().contains("touhou_little_maid:");
 	}
 
 	@Override
