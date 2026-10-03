@@ -3,7 +3,7 @@ HuajiAge: Remastered — Unofficial Fabric Port
 
 本模组为 滑稽纪元：无尽星河 的非官方fabric移植版
 
->—— 原模组简介（作者：DragonGodSUN）——
+—— 原模组简介（作者：DragonGodSUN）——
 
 >这是个兴趣使然的模组
 
@@ -18,4 +18,5 @@ HuajiAge: Remastered — Unofficial Fabric Port
 >——DragonGodSUN
 
 注：由于本模组的部分鬼畜音效素材来源涉及版权问题，不符合MIT协议的要求，故不在此发布，不要将其从模组中提取并用于商业用途
+
 Warning: Some of the audio materials in this mod are not published because of copyright issues and do not meet the requirements of the MIT agreement.Do not use them for commercial purposes
