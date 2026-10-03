@@ -8,6 +8,110 @@
 
 ---
 
+## 0. 五分钟上手（先看这节）
+
+### 0.1 一句话结论：能改什么、不能改什么
+
+| 能改 | 不能改 |
+| --- | --- |
+| 替身名（lang key）、7 项属性、状态机逻辑（JS）、召唤音与循环音、HUD 左上角 disc 图标、作者行、是否进觉醒之箭随机池 | **模型与贴图**：自定义替身一律渲染成默认人形模型 + 世界贴图 |
+
+外观改不了的原因：模型与贴图在渲染器里**按替身名硬编码选择**
+（`src\client\java\org\huajiager\client\render\entity\RenderStandBase.java` 的 `pickModel` / `getTexture`），
+"按 model id 查表"的数据驱动管线尚未迁移，详见 2.4 节。
+
+### 0.2 三步做出一个能用的替身
+
+**第 1 步：放文件**（游戏根目录下；首次启动游戏会自动创建这套目录）
+
+```
+config/huajiager/custom_stand/my_stand.json
+config/huajiager/custom_stand/states/my_stand_default.js
+```
+
+文件名随意，但后缀必须是 `.json` / `.js`，且状态脚本必须放在 `states/` 子目录里——
+加载逻辑是遍历这两个目录下的全部文件（`StandResourceLoader.java:122-144`），不是名单匹配。
+
+**第 2 步：抄模板**
+
+`my_stand.json`：
+
+```json
+{
+  "stand": "mypack:my_stand",
+  "name": "stand.mypack.my_stand.name",
+  "states": ["default"],
+  "attributes": [1, 10, 200, 2, 60000, 50, 100000],
+  "sounds": ["huajiager:stand_the_world_1"],
+  "sounds_repeat": ["entity.player.attack.strong-0.7"],
+  "disc": "huajiager:disc/disc_mine",
+  "stand_tags": ["arrow"],
+  "author": "我"
+}
+```
+
+`states/my_stand_default.js`：
+
+```js
+var Helper = Java.type("org.huajiager.stand.helper.StandPowerHelper");
+
+Java.asJSONCompatible({
+    stand: "mypack:my_stand",      // 必须与 JSON 的 stand 一字不差
+    stateId: "default",            // 必须存在一个 default 状态
+    stateKey: "stand.mypack.my_stand.default",
+    hand: true,                    // 第一人称是否显示手臂
+    soundRepeat: true,             // 该状态是否算"循环音态"
+    stage: 0,                      // 解锁该状态所需的替身等级
+    update: function (worldWrapper, entityWrapper, dataWrapper) {
+        // 替身放出期间每 tick 调用
+    },
+    timeOut: function (worldWrapper, entityWrapper, dataWrapper) {
+        // 替身放出超时调用
+        Helper.potionDefaultOutOfTime(entityWrapper.getLivingBase());
+    }
+});
+```
+
+`update` / `timeOut` / `capability` **可以只写需要的**（缺的方法会自动跳过，但方法名打错同样会静默跳过）。
+内置 7 份脚本是最完整的范例：`assets/huajiager/custom_stand/states/`。
+
+**第 3 步：生效并拿到替身**
+
+- 生效：进世界后执行 `/reloadStand`（或切换世界 / 重启服务器）。日志会打印
+  `[HuajiAge] Custom stands loaded: [...]`，**你的替身出现在里面就说明加载成功**。
+  联机时以**服务端**的那份 `config` 目录为准。
+- 拿到替身，三种方式任选：
+  1. 配置界面（ModMenu → 滑稽纪元）把「觉醒之箭指定替身」填成 `mypack:my_stand`，再用觉醒之箭 → 必定觉醒该替身；
+  2. JSON 里写 `"stand_tags": ["arrow"]` → 进入觉醒之箭随机池（按住 Shift 看箭的 tooltip 可确认当前池子内容）；
+  3. `/give @s huajiager:disc{StandId:"mypack:my_stand",StandStage:0,StandModel:"empty"}`，然后右键使用。
+
+### 0.3 字段速查（哪些真生效）
+
+| JSON 字段 | 作用 | 备注 |
+| --- | --- | --- |
+| `stand` | 替身注册名 | **必填**；必须与 JS 里的 `stand` 完全一致，否则状态匹配不上 |
+| `states` | 状态 id 列表 | **必填**；必须包含 `default`；每个状态要有一份对应的 JS |
+| `attributes` | 7 个数：`[速度, 伤害, 持续时间, 距离, 消耗, 充能, 最大精神力]` | **少于 7 个则全部为 0**（`StandCustom.java:32-40`） |
+| `sounds` | 召唤音随机池 | 音效 id 必须已注册，如 `huajiager:stand_the_world_1`、`entity.player.attack.strong` |
+| `sounds_repeat` | 循环音 | 格式 `音效id-音量`，如 `entity.player.attack.strong-0.7`；受「是否需要替身的移动音效」开关控制 |
+| `disc` | HUD 左上角 disc 图标 | 路径 `textures/item/<path>.png`，**命名空间固定为 huajiager**，字段里的命名空间被忽略 |
+| `stand_tags` | 状态标签 | 写 `["arrow"]` 才会进觉醒之箭随机池 |
+| `author` | tooltip 作者行 | 可留空 |
+| `name` | 显示名 lang key | 需要自己在资源包里提供对应语言条目 |
+| `stages` / `gravity` | **当前没有任何消费者** | 写了不生效，不必花时间 |
+
+### 0.4 常见坑
+
+- **JSON 与 JS 的 `stand` 不一致** → 状态匹配不上，替身放出来没有状态（失配是静默的，排错先查这一条）。
+- **忘了 `default` 状态** → 替身无法正常放出/选择状态。
+- **音效 id 没注册** → 该条目被跳过（不是报错），听不到声音时先确认 id 写对。
+- **坏文件不会崩** → JSON 语法错、缺字段、脚本 eval 失败都只跳过该文件并在日志里留 ERROR
+  （`StandResourceLoader.java:146-176`），不会中断整次重载。
+- **语言与贴图建议放自己的命名空间**（如 `mypack:`）→ 资源包里同名文件会**整体覆盖**模组的语言文件，
+  用自己的命名空间可以避免把模组自带的 `zh_cn.json` 顶掉。
+
+---
+
 ## 1. 概述
 
 ### 1.1 自定义替身系统能做什么
