@@ -10,6 +10,5 @@
     "touhou_little_maid:maid.mode.danmaku_attack",
     "touhou_little_maid:maid.ai.find_target",
     "touhou_little_maid:maid.environment.snow"
-  ],
-  "author": "LH_Lshen"
+  ]
 }
