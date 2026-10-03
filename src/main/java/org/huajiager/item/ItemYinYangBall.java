@@ -46,10 +46,14 @@ public class ItemYinYangBall extends Item {
                 ? ActionResult.SUCCESS : ActionResult.PASS;
     }
 
-    /** 右击女仆本体：可抓（未驯服或属主是自己）就走捕捉。 */
+    /** 右击女仆本体：可抓（未驯服或属主是自己）就直接抓当前目标。 */
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (MaidBallHelper.isCapturable(entity, user) && captureByRay(user, stack)) {
+        // 原版此处复用射线分支，但车万女仆的射线只认"属于自己"的女仆，
+        // 会让"未驯服女仆也能抓"这条分支永远抓不到，因此改为直接抓当前目标
+        if (entity instanceof com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid maid
+                && MaidBallHelper.isCapturable(entity, user)
+                && MaidBallHelper.capture(user, maid, stack)) {
             return ActionResult.SUCCESS;
         }
         return super.useOnEntity(stack, user, entity, hand);
