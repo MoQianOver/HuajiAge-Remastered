@@ -194,6 +194,13 @@ public class EntityStandBase extends HorseEntity {
         return true;
     }
 
+    /** 女仆替身贴在玩家背后、与玩家位置重叠，必须不可碰撞，否则会把玩家顶开。 */
+    @Override
+    public boolean isCollidable() {
+        StandBase s = getStand();
+        return s == null || !"huajiager:maid".equals(s.getName());
+    }
+
     @Override
     public boolean isPushable() {
         // 替身是跟随展示实体：既不推挤玩家、也拒绝被撞离，
@@ -370,6 +377,13 @@ public class EntityStandBase extends HorseEntity {
                 if (stand != null && ("hermit_purple".equals(stand.getName())
                         || "huajiager:hermit_purple".equals(stand.getName()))) {
                     by = user.getY() + 2.2D;
+                }
+                // 女仆替身特判：站位在玩家背后 0.5 格、抬高 0.5 格（用户实测比对的原始站位）
+                if (stand != null && "huajiager:maid".equals(stand.getName())) {
+                    double rad = Math.toRadians(user.getYaw());
+                    bx = user.getX() + Math.sin(rad) * 0.5D;
+                    bz = user.getZ() - Math.cos(rad) * 0.5D;
+                    by = user.getY() + 0.5D;
                 }
                 this.setPosition(bx, by, bz);
                 float faceYaw = user.getYaw();
