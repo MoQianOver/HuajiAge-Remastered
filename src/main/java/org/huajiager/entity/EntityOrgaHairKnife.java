@@ -70,10 +70,10 @@ public class EntityOrgaHairKnife extends ProjectileEntity {
 	public static final EntityType<EntityOrgaHairKnife> TYPE = EntityType.Builder
 			.<EntityOrgaHairKnife>create((type, world) -> new EntityOrgaHairKnife(type, world), SpawnGroup.MISC)
 			.setDimensions(0.25f, 0.25f)
-			// 对齐原版 trackingRange=80/updateFrequency=3：Builder 默认 maxTrackingRange=5，
-			// 飞刀飞出 5 格外客户端实体即被服务器移除（视觉+碰撞箱消失），但服务端实体仍在
-			// 飞行并造成伤害，导致"看不见摸不着却被打"；显式扩大跟踪范围后全程可见。
-			.maxTrackingRange(80)
+			// 跟踪范围按满寿命直线射程取值：初速 1.5 格/tick、每 tick ×0.99、life 600，全程约 150 格；
+			// 单位是区块，默认 5 区块=80 格，飞刀越界后服务端停止跟踪并向客户端发销毁包，实体连同
+			// 碰撞箱一起消失而服务端仍在飞行结算伤害，故取 10 区块=160 格覆盖全程。
+			.maxTrackingRange(10)
 			.trackingTickInterval(3)
 			.build("huajiager:orga_hair_knife");
 

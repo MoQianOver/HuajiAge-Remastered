@@ -275,9 +275,9 @@ public class EntityRoadRoller extends ProjectileEntity {
 	}
 
 	/**
-	 * 爆炸结算：复刻原版 createExplosion 的实体伤害/击退公式（KEEP 不破坏方块），
-	 * 但在实体筛选中排除己方/友军（召唤者、翅膀、己方替身）。伤害源仍为爆炸默认伤害源
-	 * （causer=压路机自身），对敌人的伤害与击退与原版完全一致；随后发送爆炸 S2C 包
+	 * 爆炸结算：手工复算 createExplosion 的实体伤害/击退公式（KEEP 不破坏方块），
+	 * 但在实体筛选中排除己方/友军（召唤者、翅膀、己方替身）。伤害源为爆炸默认伤害源
+	 * （causer=压路机自身），对敌人的伤害与击退与标准爆炸一致；随后发送爆炸 S2C 包
 	 * 驱动客户端音效/爆炸粒子/预测击退（等效 ServerWorld.createExplosion 的客户端表现）。
 	 */
 	private void explodeExcludingFriendly() {

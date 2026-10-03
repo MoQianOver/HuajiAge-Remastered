@@ -152,9 +152,9 @@ public class ItemWaveKnife extends SwordItem {
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
 
-        // 自动回复：每 100 tick（5 秒）回复 1 点波澜点，满 10 点共需 50 秒，
-        // 与原版每 1000 tick 一次性回满（ticksExisted % 1000 == 0 时直接 setWavePoint(max)）的平均速率一致；
-        // 改为持续小步回复，避免一次性回满在客户端/服务端 NBT 同步竞态下出现"恢复不可见"（原版 50 秒内无任何变化）
+        // 自动回复：每 100 tick（5 秒）回复 1 点波澜点，满 10 点共需 50 秒，与"每 1000 tick 一次性回满"的
+        // 平均速率一致；改为持续小步回复，避免一次性回满在客户端/服务端 NBT 同步竞态下出现"恢复不可见"
+        // （一次性回满在 50 秒内看不到任何中间变化）。
         if (entity.age % 100 == 0 && getWavePoint(stack) < getWaveMax(stack)) {
             setWavePoint(stack, getWavePoint(stack) + 1);
         }

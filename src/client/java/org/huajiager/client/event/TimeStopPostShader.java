@@ -65,16 +65,15 @@ public final class TimeStopPostShader {
 
 	/**
 	 * 本次时停实例已渲染帧数（与 vanilla RenderTickEvent 同节奏，每渲染帧一次）。
-	 * 对齐原版 EventViewRender.TimeStopRenderTest 的 static ticks：
 	 * 时停激活期间每帧 ++、非激活清零。开场反色窗口以帧计数判定，
-	 * 避免把原版的"帧"误当"游戏 tick"，导致默认 1.5 的 150 帧被放大成
+	 * 单位为渲染帧而非游戏 tick，避免默认 1.5 的 150 帧被放大成
 	 * 150 tick（7.5 秒）——即反色持续过长、圆扩散变慢的根因。
 	 */
 	private static int ticks = 0;
 
 	/**
 	 * 开场反色过渡：总时长由配置 ConfigHuaji.Stands.timeStopEffect 决定
-	 * （对齐原版 EventViewRender：t0 = (int)(timeStopEffect*100) 渲染帧，反转在
+	 * （t0 = (int)(timeStopEffect*100) 渲染帧，反转在
 	 * ticks>10 且 ticks<t0 期间加载 invert 着色器，即反转持续 timeStopEffect*100-10 帧）。
 	 * 三段（扩散 / 保持 / 收缩）按 1:2:1 比例动态划分，见 {@link #openingTicks()}：
 	 */
@@ -120,7 +119,7 @@ public final class TimeStopPostShader {
 			return;
 		}
 
-		// 开场反色窗口以"本次时停实例渲染帧计数"锚定（对齐原版 EventViewRender：
+		// 开场反色窗口以"本次时停实例渲染帧计数"锚定（
 		// t0 = (int)(timeStopEffect*100) 帧，默认 1.5 → 150 帧 ≈ 2.5s@60fps），
 		// 灰色中段与最后 1s(20tick) 灰淡出仍由 remaining 相对 maxRemaining 锚定；
 		// 帧计数与时停剩余 tick 各自独立推进，互不干扰，且不依赖世界时钟与会话状态。
@@ -129,7 +128,7 @@ public final class TimeStopPostShader {
 			maxRemaining = remaining;
 		}
 		int total = Math.max(maxRemaining, 1);
-		ticks++; // 本次时停实例已渲染帧数（对齐原版 EventViewRender 的 static ticks）
+		ticks++; // 本次时停实例已渲染帧数
 		int openingTicks = openingTicks(); // 渲染帧（反色基础总长，来自配置）
 		int openingTotal = openingTicks + OPENING_EXTRA_FRAMES * 2; // 扩散/收缩各 +30 帧后的反色总时长
 		int openingExpand = Math.max(1, openingTicks / 4 + OPENING_EXTRA_FRAMES); // 扩散（+0.5s）
@@ -151,11 +150,11 @@ public final class TimeStopPostShader {
 
 	/**
 	 * 开场反色总时长（渲染帧）：读取 ConfigHuaji.Stands.timeStopEffect，
-	 * 按原版公式 t0 = (int)(timeStopEffect * 100) 换算，单位为渲染帧
-	 * （原版 EventViewRender.TimeStopRenderTest 在 RenderTickEvent 中逐帧累计，
+	 * 按公式 t0 = (int)(timeStopEffect * 100) 换算，单位为渲染帧
+	 * （在 RenderTickEvent 中逐渲染帧累计，
 	 * 反转窗口为 ticks>10 且 ticks<t0，即 t0-10 帧）。
 	 * 默认 1.5 → 150 帧：60fps 下开场约 2.5 秒（反转窗口 140 帧 ≈ 2.33 秒），
-	 * 扩散/收缩各 37 帧 ≈ 0.6 秒，符合原版节奏；在此基础上扩散与收缩再各延长
+	 * 扩散/收缩各 37 帧 ≈ 0.6 秒；在此基础上扩散与收缩再各延长
 	 * OPENING_EXTRA_FRAMES=30 帧（0.5 秒），即扩散 67 / 保持 75 / 收缩 67 帧，
 	 * 总反色时长 210 帧 ≈ 3.5s；用户调整配置时时长按比例变化（保持段随配置同步增长）。
 	 */

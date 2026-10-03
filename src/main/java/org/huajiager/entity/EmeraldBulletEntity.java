@@ -76,6 +76,10 @@ public class EmeraldBulletEntity extends ProjectileEntity {
     public static final EntityType<EmeraldBulletEntity> TYPE = EntityType.Builder
             .<EmeraldBulletEntity>create((type, world) -> new EmeraldBulletEntity(type, world), SpawnGroup.MISC)
             .setDimensions(0.25f, 0.25f)
+            // 跟踪范围按满寿命直线射程取值：初速 2.5 格/tick、每 tick ×0.99、life 360，全程约 240 格；
+            // 单位是区块，默认 5 区块=80 格，越界后服务端停止跟踪并向客户端发销毁包，翡翠弹连同碰撞箱
+            // 一起消失而服务端仍在飞行结算伤害，故取 16 区块=256 格覆盖全程。
+            .maxTrackingRange(16)
             .build("huajiager:emerald_bullet");
 
     public EmeraldBulletEntity(EntityType<EmeraldBulletEntity> type, World world) {

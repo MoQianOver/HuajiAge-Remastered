@@ -79,16 +79,16 @@ public final class EventTimeStopView {
 
 	private static void onHudRender(DrawContext context, float tickDelta) {
 		MinecraftClient mc = MinecraftClient.getInstance();
-		// allowMaskTimeStop 关闭时不绘制时停遮罩与齿轮（对照原版 EventViewRender 的
-		// RenderGameOverlayEvent.VIGNETTE 判定：ConfigHuaji.Stands.allowMaskTimeStop && flag）。
+		// allowMaskTimeStop 关闭时不绘制时停遮罩与齿轮（判定条件：
+		// ConfigHuaji.Stands.allowMaskTimeStop && 时停激活标志）。
 		if (!isTimeStopActive(mc) || !ConfigHuaji.Stands.allowMaskTimeStop) {
 			return;
 		}
 		int width = mc.getWindow().getScaledWidth();
 		int height = mc.getWindow().getScaledHeight();
 
-		// 齿轮尺寸照搬原版：贴图 512x512 按 0.25 * timeStopScale 缩放显示，
-		// 左上/右上角对齐（右上齿轮原版坐标 = width*4/scale-512）。
+		// 齿轮尺寸：贴图 512x512 按 0.25 * timeStopScale 缩放显示，
+		// 分别贴在左上、右上角（右上齿轮坐标 = width*4/scale-512）。
 		// 注意：timeStopEffect 只用于时停反转特效时长（见 TimeStopPostShader），
 		// 不参与此处齿轮/遮罩的透明度计算。
 
@@ -102,7 +102,7 @@ public final class EventTimeStopView {
 		context.drawTexture(TIME_STOP_VIEW, 0, 0, width, height, 0.0f, 0.0f, 256, 256, 256, 256);
 
 		// 齿轮：黑底贴图 + 乘法混合（ZERO / ONE_MINUS_SRC_COLOR，颜色 0.3,0.3,0.3,1.0），
-		// 完全照搬原版 EventViewRender.renderElement，黑色在乘法混合下等于透明，黑底自动透明。
+		// 黑色在乘法混合下等于透明，黑底自动隐去。
 		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 		// GL 常量：0=GL_ZERO, 1=GL_ONE, 0x0301=GL_ONE_MINUS_SRC_COLOR
 		RenderSystem.blendFuncSeparate(0, 0x0301, 1, 0);
@@ -110,14 +110,14 @@ public final class EventTimeStopView {
 
 		MatrixStack matrices = context.getMatrices();
 		float gearScale = (float) (0.25 * ConfigHuaji.Stands.timeStopScale);
-		// 左上齿轮（原版：x=0,y=0，绘制 512x512 区域后整体缩放）
+		// 左上齿轮（x=0,y=0，绘制 512x512 区域后整体缩放）
 		matrices.push();
 		matrices.scale(gearScale, gearScale, 1f);
 		matrices.translate(0f, 0f, 0f);
 		context.drawTexture(GEAR_1, 0, 0, 0.0f, 0.0f, 512, 512, 512, 512);
 		matrices.pop();
 
-		// 右上齿轮（原版：x=(width*4/scale)-512, y=(height*4/scale)-512）
+		// 右上齿轮（x=(width*4/scale)-512, y=(height*4/scale)-512）
 		matrices.push();
 		matrices.scale(gearScale, gearScale, 1f);
 		matrices.translate((float) (width * 4.0 / ConfigHuaji.Stands.timeStopScale) - 512f,

@@ -157,9 +157,8 @@ public record MessageStandUp(boolean isMoving) implements FabricPacket {
 					standUpSound = SoundLoader.THE_WORLD_STAND_UP;
 				}
 				// 召唤亮相音（替身主题乐）受配置 allowStandSound 控制：
-				// 关闭「替身音效」后召唤替身不再广播主题音效（对齐原版
-				// EventStandKey.isMovingMusic 语义；每次召唤实时读静态配置，
-				// cloth 配置保存后经 syncToStatic 即时生效，无需缓存刷新）。
+				// 关闭「替身音效」后召唤替身不再广播主题音效。每次召唤实时读静态配置，
+				// cloth 配置保存后经 syncToStatic 即时生效，无需缓存刷新。
 				if (ConfigHuaji.Stands.allowStandSound) {
 					HuajiSoundPlayer.playToNearbyClient(player, standUpSound, 1.0f);
 				}

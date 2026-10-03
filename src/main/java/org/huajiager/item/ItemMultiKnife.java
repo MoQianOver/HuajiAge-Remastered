@@ -25,7 +25,7 @@ import net.minecraft.world.World;
  * 右键发射已的 EntityMultiKnife 实体（工程 src/main/java/org/huajiager/entity）。
  *
  * 配置项 ConfigHuaji.Stands.knifeHeight（发射高度修正）已接入配置系统，
- * 未装配置界面时使用 ConfigHuaji 内置默认值 -0.25F（对齐原版）。
+ * 未装配置界面时使用 ConfigHuaji 内置默认值 -0.25F。
  */
 public class ItemMultiKnife extends Item {
 

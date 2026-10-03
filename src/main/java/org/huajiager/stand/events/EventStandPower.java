@@ -39,7 +39,7 @@ public final class EventStandPower {
 					if (stand != null) {
 						IStandState stateBase = StandStates.getStandState(data.getStand(), data.getState());
 						StatusEffectInstance standEffect = player.getStatusEffect(PotionLoader.potionStand);
-						// 超时判定（对齐原版 EventStand.standPotion）：替身在场标记
+						// 超时判定：替身在场标记
 						// potionStand 缺失或剩余 <=5 tick 时，触发当前状态机的
 						// doTaskOutOfTime（超时惩罚/闲置发光，方法内部读取
 						// ConfigHuaji.Stands.allowStandPunish / allowStandGlow 决定
