@@ -1,0 +1,15 @@
+{
+  "stand": "huajiager:maid",
+  "name": "stand.huajiager.maid.name",
+  "disc": "huajiager:disc/disc_maid",
+  "states": ["default"],
+  "attributes": [0.08, 5, 300, 5, 25000, 15, 30000],
+  "sounds": [
+    "touhou_little_maid:maid.mode.idle",
+    "touhou_little_maid:maid.mode.attack",
+    "touhou_little_maid:maid.mode.danmaku_attack",
+    "touhou_little_maid:maid.ai.find_target",
+    "touhou_little_maid:maid.environment.snow"
+  ],
+  "author": "LH_Lshen"
+}

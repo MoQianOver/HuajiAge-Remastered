@@ -66,6 +66,10 @@ public class StandResourceLoader {
         loadInternalStand("crazy_diamond");
         loadInternalStand("hermit_purple");
         loadInternalStand("white_snake");
+        // 女仆替身：音效与模型都来自车万女仆，未安装该模组时不注册（只做字符串判断，不引用其类）
+        if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("touhou_little_maid")) {
+            loadInternalStand("maid");
+        }
     }
 
     /** 内部状态资源加载（七状态脚本）。 */
@@ -77,6 +81,10 @@ public class StandResourceLoader {
         loadInternalState("hermit_purple_overdrive");
         loadInternalState("white_snake_default");
         loadInternalState("white_snake_punch");
+        // 女仆替身的状态：与 StandMaid 的注册条件保持一致
+        if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("touhou_little_maid")) {
+            loadInternalState("maid_default");
+        }
     }
 
     private static void loadInternalStand(String json) {
