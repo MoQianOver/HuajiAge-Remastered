@@ -58,7 +58,7 @@ public class StandLoader {
         // 避免 reloadStands() 多次调用导致 STAND_LIST 重复累计
         STAND_LIST.removeIf(StandCustom.class::isInstance);
 
-        // 自定义替身资源加载（4 JSON + 8 state JS，StandResourceLoader 内 eval + 注册 state 表）
+        // 自定义替身资源加载（3 JSON + 7 state JS，StandResourceLoader 内 eval + 注册 state 表）
         StandResourceLoader.loadCustomStand();
 
         for (StandBase stand : STAND_LIST) {

@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 
 /**
- * 命令唱片实体渲染器， RenderDiscCommand。面向相机渲染唱片贴图广告牌四边形。
+ * 命令disc实体渲染器， RenderDiscCommand。面向相机渲染 disc 贴图广告牌四边形。
  */
 public class RenderDiscCommand extends EntityRenderer<EntityDiscCommand> {
 

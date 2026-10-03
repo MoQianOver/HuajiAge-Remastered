@@ -547,7 +547,7 @@ public final class StandPowerHelper {
     }
 
     /**
-     * 给予玩家命令唱片，带当前使用者身份 + 命令类型。
+     * 给予玩家命令 disc，带当前使用者身份 + 命令类型。
      */
     public static void giveDisc(LivingEntity user, String type) {
         if (user == null || type == null || ItemLoader.discCommand == null

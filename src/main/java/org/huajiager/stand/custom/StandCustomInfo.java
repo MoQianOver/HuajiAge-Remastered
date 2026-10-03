@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 /**
  * 自定义替身 JSON 信息结构。
  * <p>对应 custom_stand/*.json 的 POJO：替身注册名 / 显示名（本地化 key）/ 状态列表 /
- * 唱片 id / 标签 / 阶段数 / 属性数组 / 音效等。字段用 {@code @SerializedName} 绑定
+ * disc id / 标签 / 阶段数 / 属性数组 / 音效等。字段用 {@code @SerializedName} 绑定
  * JSON 键（stand_tags / sounds_repeat 这类 snake_case 键必须显式绑定，否则读不进来）。
  * GSON 反序列化后调用 {@link #decorate()} 填充缺失字段默认值。</p>
  */
@@ -30,7 +30,7 @@ public class StandCustomInfo {
     /** 状态集合（映射 custom_stand/states/<stand>_<state>.js） */
     @SerializedName("states")
     private List<String> states;
-    /** 对应唱片 id */
+    /** 对应 disc id */
     @SerializedName("disc")
     private String disc;
     /** 标签（arrow / dark_core 等，供成就或创造标签页过滤） */
