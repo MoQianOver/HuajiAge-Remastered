@@ -1,1 +1,0 @@
-{"targets": ["swap"], "passes": [{"name": "timestop_saturatemask", "intarget": "minecraft:main", "outtarget": "swap", "uniforms": [{"name": "Saturation", "values": [0.45]}, {"name": "Radius", "values": [0.3]}]}, {"name": "blit", "intarget": "swap", "outtarget": "minecraft:main"}]}

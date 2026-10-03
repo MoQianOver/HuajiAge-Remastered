@@ -1,6 +1,5 @@
 package org.huajiager.client.event;
 
-import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 
@@ -8,6 +7,7 @@ import org.huajiager.capability.StandHandler;
 import org.huajiager.config.ConfigHuaji;
 import org.huajiager.init.HuajiConstant;
 import org.huajiager.mixin.client.MixinGameRenderer;
+import org.huajiager.mixin.client.PostEffectProcessorAccessor;
 import org.huajiager.stand.StandUtil;
 
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
@@ -226,8 +226,6 @@ public final class TimeStopPostShader {
 	/**
 	 * 向后处理链中所有 pass 下发动态 uniform。只对声明了对应 uniform 的 pass 生效
 	 * （blit 等无此 uniform 的 pass 自动跳过）。值先写入 Uniform 缓存，渲染时统一 flush。
-	 * PostEffectProcessor 的 passes 为私有字段且无公开 getter，经反射读取（yarn 字段名
-	 * "passes" 在运行时与编译时一致）。
 	 */
 	private static void setUniform(String name, float value) {
 		MinecraftClient mc = MinecraftClient.getInstance();
@@ -250,17 +248,14 @@ public final class TimeStopPostShader {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	/** 取后处理链的 pass 列表：经 @Accessor 读私有字段，字段名随构建 remap。 */
 	private static List<PostEffectPass> getPasses(PostEffectProcessor processor) {
-		try {
-			Field f = PostEffectProcessor.class.getDeclaredField("passes");
-			f.setAccessible(true);
-			return (List<PostEffectPass>) f.get(processor);
-		} catch (ReflectiveOperationException ex) {
-			// 反射失败时静默跳过 uniform 更新（滤镜仍按 json 静态值渲染，不崩溃）
-			LOGGER.warn("[TimeStopPostShader] cannot access post passes: {}", ex.toString());
-			return Collections.emptyList();
+		if (processor instanceof PostEffectProcessorAccessor accessor) {
+			return accessor.huajiager$getPasses();
 		}
+		// 访问器未生效（mixin 被禁用等）时退回空列表，滤镜仍按 json 静态值渲染，不崩溃
+		LOGGER.warn("[TimeStopPostShader] PostEffectProcessor accessor is not applied, uniforms are skipped");
+		return Collections.emptyList();
 	}
 
 	private static float lerp(float a, float b, float t) {
