@@ -119,9 +119,13 @@ public final class MaidBallHelper {
             temp.discard();
         }
 
-        // 带数据的手办柜：把球里那份实体数据原样塞进物品的 EntityInfo
+        // 带数据的手办柜：把球里那份实体数据塞进物品的 EntityInfo。
+        // Entity.writeNbt 等同于 saveWithoutId，不含实体 id；手办柜靠 id 判断该显示哪只女仆，
+        // 缺了就会显示成默认手办（猪）、放出来也是空的，所以这里必须补上。
         ItemStack kit = new ItemStack(InitItems.GARAGE_KIT);
-        kit.getOrCreateNbt().put(ENTITY_INFO, ball.getMaidTag(stack).copy());
+        NbtCompound maidData = ball.getMaidTag(stack).copy();
+        maidData.putString("id", "touhou_little_maid:maid");
+        kit.getOrCreateNbt().put(ENTITY_INFO, maidData);
         ItemEntity kitEntity = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, kit);
         kitEntity.setInvulnerable(true);
         world.spawnEntity(kitEntity);
