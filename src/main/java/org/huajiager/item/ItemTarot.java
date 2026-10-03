@@ -6,15 +6,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
+import org.huajiager.HuajiAgeRemastered;
 import org.huajiager.capability.ExposedData;
 import org.huajiager.capability.IExposedData;
 import org.huajiager.init.loaders.StandLoader;
 import org.huajiager.init.sound.HuajiSoundPlayer;
 import org.huajiager.stand.StandUtil;
+import org.huajiager.stand.custom.StandCustom;
 import org.huajiager.stand.instance.StandBase;
 import org.huajiager.util.NBTHelper;
 
@@ -137,6 +140,19 @@ public class ItemTarot extends Item {
         tooltip.add(Text.translatable("item.huajiager.tarot.tooltip.2").append(Text.literal(String.valueOf(stage))));
         if (!model.equals(DEFAULT_STAND_ID) && !model.isEmpty()) {
             tooltip.add(Text.translatable("item.huajiager.tarot.tooltip.3").append(Text.literal(model)));
+        }
+        // 自定义替身塔罗牌追加灰色作者行：作者取自替身 JSON 的 author 字段，未声明则不显示。
+        // 牌里存的名字可能是短名或带 huajiager: 前缀的完整 ID，两种形式都尝试解析。
+        StandBase standBase = StandLoader.getStand(stand);
+        if (standBase == null && !stand.contains(":")) {
+            standBase = StandLoader.getStand(HuajiAgeRemastered.MOD_ID + ":" + stand);
+        }
+        if (standBase instanceof StandCustom custom && custom.getInfo() != null) {
+            String author = custom.getInfo().getAuthor();
+            if (author != null && !author.isEmpty()) {
+                tooltip.add(Text.translatable("item.huajiager.tarot.tooltip.author")
+                        .append(Text.literal(author)).formatted(Formatting.GRAY));
+            }
         }
     }
 

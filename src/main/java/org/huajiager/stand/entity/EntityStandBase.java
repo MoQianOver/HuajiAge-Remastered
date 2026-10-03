@@ -430,9 +430,12 @@ public class EntityStandBase extends HorseEntity {
             SoundEvent picked = sounds.get(this.getWorld().random.nextInt(sounds.size()));
             HuajiSoundPlayer.playMovingSoundClient(this, picked, SoundCategory.NEUTRAL, 1.0f);
         }
-        for (StandUtil.RepeatSound repeat : StandUtil.getCustomStandRepeatSounds(stand)) {
-            HuajiSoundPlayer.playLoopingMovingSoundClient(this, repeat.sound(), SoundCategory.NEUTRAL,
-                    repeat.volume());
+        // 循环音（跟随实体持续播放）由「替身移动音效」开关控制；召唤音由「替身音效」控制
+        if (ConfigHuaji.Stands.allowStandMovingSound) {
+            for (StandUtil.RepeatSound repeat : StandUtil.getCustomStandRepeatSounds(stand)) {
+                HuajiSoundPlayer.playLoopingMovingSoundClient(this, repeat.sound(), SoundCategory.NEUTRAL,
+                        repeat.volume());
+            }
         }
     }
 

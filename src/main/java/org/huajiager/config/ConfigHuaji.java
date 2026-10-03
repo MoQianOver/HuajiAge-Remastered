@@ -29,6 +29,7 @@ public class ConfigHuaji {
         public boolean allowStandTip = true;
         public boolean allowStandLostTip = false;
         public boolean allowStandMovingSound = true;
+        /** 是否播放自定义替身声明在 sounds_repeat 里的跟随实体循环音。 */
         public boolean allowStandSound = true;
         public boolean allowMaskTimeStop = true;
         public boolean useTimeStopNoiseMask = true;
