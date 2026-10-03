@@ -58,6 +58,13 @@ public final class MaidStandRenderer {
         }
         // 摆到替身当前位置与朝向，再以本地坐标 (0,0,0) 交给车万渲染器
         dummy.setPosition(entity.getX(), entity.getY(), entity.getZ());
+        // 同步插值用的上一帧/上一渲染坐标，否则渲染位置会在旧坐标与现坐标之间插值（表现为"跟不上"）
+        dummy.prevX = entity.getX();
+        dummy.prevY = entity.getY();
+        dummy.prevZ = entity.getZ();
+        dummy.lastRenderX = entity.getX();
+        dummy.lastRenderY = entity.getY();
+        dummy.lastRenderZ = entity.getZ();
         dummy.prevYaw = entity.prevYaw;
         dummy.setYaw(entity.getYaw());
         dummy.prevBodyYaw = entity.prevBodyYaw;
