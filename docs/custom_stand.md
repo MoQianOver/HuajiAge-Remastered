@@ -1,7 +1,7 @@
 # 自定义替身制作指南
 
 本指南面向**整合包作者与玩家**：不改一行 Java 代码，仅靠两个文件（一份 JSON + 若干 JS 脚本），
-就能把自制的替身注册进本模组，供玩家通过觉醒之箭、替身唱片等方式获得。
+就能把自制的替身注册进本模组，供玩家通过觉醒之箭、替身disc等方式获得。
 
 文中所有 API、字段名、默认值和行为，均标注了实际源码位置 `文件:行号`，可逐条对照。
 凡是源码中读不到、无法确认的行为，一律标注"未验证"，不作猜测。
@@ -14,9 +14,9 @@
 
 一份自定义替身由两类资源组成：
 
-| 资源 | 作用 | 必需性 |
-| --- | --- | --- |
-| 替身定义 JSON | 声明替身注册名、显示名 lang key、可用状态列表、属性数值、唱片 id | 必需（至少要有一份 JSON，否则替身根本不存在） |
+| 资源 | 作用                                                                                               | 必需性 |
+| --- |--------------------------------------------------------------------------------------------------| --- |
+| 替身定义 JSON | 声明替身注册名、显示名 lang key、可用状态列表、属性数值、Disc id                                                         | 必需（至少要有一份 JSON，否则替身根本不存在） |
 | 状态脚本 JS | 声明每个状态（default / heal / idle / punch …）的模型、标签、阶段门槛，以及 `update` / `timeOut` / `capability` 三个行为函数 | 每个状态一个 JS；一个状态都没有的替身没有任何效果 |
 
 JSON 被解析成 `StandCustomInfo`（`src\main\java\org\huajiager\stand\custom\StandCustomInfo.java:20`），
@@ -91,27 +91,31 @@ private static final String ACCEPTED_STATE_SUFFIX = ".js";
 JSON 用一个原生 `Gson` 实例反序列化成 `StandCustomInfo`
 （`StandResourceLoader.java:41` 的 `new Gson()`；反序列化在 `StandResourceLoader.java:156-161`）。
 
-> **关键约定**：源码用的是**默认 Gson**，没有 `GsonBuilder`、没有 `FieldNamingPolicy`、
-> 也没有 `@SerializedName`（全工程检索 `FieldNamingPolicy|GsonBuilder|setFieldNaming` 无任何命中）。
-> Gson 默认按**字段名精确匹配**，因此 **JSON 的 key 必须与 Java 字段名逐字符一致（camelCase）**：
-> `standTags`、`soundsRepeat` 这样写才能生效；写成 `stand_tags`、`sounds_repeat` 会被 Gson **静默忽略**。
+> **关键约定**：源码用的是**默认 Gson**（`StandResourceLoader.java:41` 的 `new Gson()`），没有 `GsonBuilder`、
+> 没有 `FieldNamingPolicy`（全工程检索 `FieldNamingPolicy|GsonBuilder|setFieldNaming` 无任何命中），
+> 但 `StandCustomInfo` 的 11 个字段**全部带 `@SerializedName`**（`StandCustomInfo.java:25-56`），
+> 绑定的 JSON key 依次是 `stand` / `name` / `states` / `disc` / `stand_tags` / `stages` / `attributes`
+> / `sounds` / `sounds_repeat` / `gravity` / `author`。
+> 因此 **JSON 的 key 必须与注解绑定的名字逐字符一致**，多词字段要写 **snake_case**：
+> `stand_tags`、`sounds_repeat` 这样写才能生效；写成 `standTags`、`soundsRepeat` 会被 Gson **静默忽略**
+> （字段一旦带 `@SerializedName`，字段名本身不再参与匹配）。
 > 详见第 6.1 节与第 7 节第 1 条。
 
 字段一览（"默认值"一栏 = `decorate()` 里实际写入的值，或 Java 字段初始值）：
 
-| 字段名 | 类型 | 必填 | 默认值 | 含义 | 源码位置 |
-| --- | --- | --- | --- | --- | --- |
-| `stand` | string | **是** | 无（为空直接抛错） | 替身注册名，约定带命名空间，如 `huajiager:crazy_diamond` | 字段 `StandCustomInfo.java:23`；校验 `StandCustomInfo.java:101-103` |
-| `name` | string | 否 | `"stand." + stand.replace(':','.') + ".name"` | 显示名 **lang key**（客户端再翻译），赋给 `StandBase.localName` | 字段 `StandCustomInfo.java:25`；默认值 `StandCustomInfo.java:104-106`；使用 `StandCustom.java:31` |
-| `states` | string[] | 否 | `["default"]`，并强制包含 `"default"` | 本替身可用状态 id 列表；每个 id 对应 `custom_stand/states/<stand>_<id>.js` | 字段 `StandCustomInfo.java:27`；默认与补全 `StandCustomInfo.java:107-112`；使用 `StandCustom.java:43` |
-| `disc` | string | 否 | `"huajiager:disc/disc_huajiager_" + <stand 的 path 部分>` | 对应唱片 item 的 id | 字段 `StandCustomInfo.java:29`；默认值 `StandCustomInfo.java:113-117`；**消费点未找到**（见第 7 节） |
-| `standTags` | string[] | 否 | `[]`（空列表） | 替身级标签；目前源码只用 `arrow` 一个值，决定能否进觉醒之箭抽取池 | 字段 `StandCustomInfo.java:31`；默认值 `StandCustomInfo.java:118-120`；唯一消费点 `StandUtil.java:280-283` |
-| `stages` | int | 否 | `1`（`<= 0` 一律改成 `1`） | 阶段总数 | 字段 `StandCustomInfo.java:33`；默认值 `StandCustomInfo.java:121-123`；**消费点未找到**（见第 7 节） |
-| `attributes` | number[] | 否 | `[1.2, 10, 200, 2, 60000, 75, 100000]` | 属性数组，**必须恰好 7 个元素才会被采用**，下标含义见 2.2 | 字段 `StandCustomInfo.java:35`；默认值 `StandCustomInfo.java:124-126`；使用 `StandCustom.java:32-40` |
-| `sounds` | string[] | 否 | `[]` | 音效池 | 字段 `StandCustomInfo.java:37`；默认值 `StandCustomInfo.java:127-129`；**消费点未找到**（见第 7 节） |
-| `soundsRepeat` | string[] | 否 | `[]` | 循环音效列表 | 字段 `StandCustomInfo.java:39`；默认值 `StandCustomInfo.java:130-132`；**消费点未找到**（见第 7 节） |
-| `gravity` | boolean | 否 | `false`（Java 字段初始值，`decorate()` 不赋值） | 是否受重力 | 字段 `StandCustomInfo.java:41`；getter `StandCustomInfo.java:91-93`；**消费点未找到**（见第 7 节） |
-| `author` | string | 否 | `""`（Gson 反序列化时为 `null`，`decorate()` 兜成空串） | 作者 | 字段 `StandCustomInfo.java:43`；默认值 `StandCustomInfo.java:133-135`；**消费点未找到**（见第 7 节） |
+| 字段名 | 类型 | 必填 | 默认值 | 含义                                                           | 源码位置 |
+| --- | --- | --- | --- |--------------------------------------------------------------| --- |
+| `stand` | string | **是** | 无（为空直接抛错） | 替身注册名，约定带命名空间，如 `huajiager:crazy_diamond`                    | 字段 `StandCustomInfo.java:26`；校验 `StandCustomInfo.java:114-116` |
+| `name` | string | 否 | `"stand." + stand.replace(':','.') + ".name"` | 显示名 **lang key**（客户端再翻译），赋给 `StandBase.localName`            | 字段 `StandCustomInfo.java:28`；默认值 `StandCustomInfo.java:117-119`；使用 `StandCustom.java:31` |
+| `states` | string[] | 否 | `["default"]`，并强制包含 `"default"` | 本替身可用状态 id 列表；每个 id 对应 `custom_stand/states/<stand>_<id>.js` | 字段 `StandCustomInfo.java:32`；默认与补全 `StandCustomInfo.java:120-125`；使用 `StandCustom.java:43` |
+| `disc` | string | 否 | `"huajiager:disc/disc_huajiager_" + <stand 的 path 部分>` | 替身 HUD 信息块左上角**光碟图标**的贴图 id（只取它的 path 部分，命名空间被丢弃）                                             | 字段 `StandCustomInfo.java:35`；默认值 `StandCustomInfo.java:126-130`；消费点 `StandUtil.java:348-359`（`getDiscTex`）→ `EventStandHudRender.java:85-87` |
+| `stand_tags` | string[] | 否 | `[]`（空列表） | 替身级标签；目前源码只用 `arrow` 一个值（**精确匹配小写**），决定能否进觉醒之箭抽取池                        | 字段 `StandCustomInfo.java:38`；默认值 `StandCustomInfo.java:131-133`；唯一消费点 `StandUtil.java:281-292` |
+| `stages` | int | 否 | `1`（`<= 0` 一律改成 `1`） | 阶段总数                                                         | 字段 `StandCustomInfo.java:41`；默认值 `StandCustomInfo.java:134-136`；**消费点未找到**（真正的阶段门槛来自 JS 的 `stage`，见第 7 节第 5 条） |
+| `attributes` | number[] | 否 | `[1.2, 10, 200, 2, 60000, 75, 100000]` | 属性数组，**至少 7 个元素才会被采用**（少于 7 个时未提供的项保持 0，并在加载时打一条 WARN；多于 7 个时多余项被忽略），下标含义见 2.2                           | 字段 `StandCustomInfo.java:44`；默认值与警告 `StandCustomInfo.java:137-144`；使用 `StandCustom.java:32-40` |
+| `sounds` | string[] | 否 | `[]` | 召唤音池：未内置召唤音的自定义替身从中随机播一条（受配置「是否需要替身的音效」控制）                                                          | 字段 `StandCustomInfo.java:47`；默认值 `StandCustomInfo.java:145-147`；消费点 `StandUtil.java:304-317` → `MessageStandUp.java:157-170`、`EntityStandBase.java:225-230`、`420-440` |
+| `sounds_repeat` | string[] | 否 | `[]` | 循环音效列表，条目格式 `音效id-音量`（如 `entity.player.attack.strong-0.7`），随替身实体循环播放（受配置「是否需要替身的移动音效」控制）                                                       | 字段 `StandCustomInfo.java:50`；默认值 `StandCustomInfo.java:148-150`；消费点 `StandUtil.java:320-345` → `EntityStandBase.java:434-439` |
+| `gravity` | boolean | 否 | `false`（Java 字段初始值，`decorate()` 不赋值） | 是否受重力                                                        | 字段 `StandCustomInfo.java:53`；getter `StandCustomInfo.java:104-106`；**仍未消费**（`isGravity()` 无调用点） |
+| `author` | string | 否 | `""`（Gson 反序列化时为 `null`，`decorate()` 兜成空串） | 作者；非空时在替身 Disc / 塔罗牌 tooltip 追加一行灰字                                                           | 字段 `StandCustomInfo.java:56`；默认值 `StandCustomInfo.java:151-153`；消费点 `ItemDiscStand.java:135-141`、`ItemTarot.java:150-156` |
 
 JSON 里出现的、但不在上表内的 key 会被 Gson 静默丢弃（不报错、不警告）。
 
@@ -198,7 +202,7 @@ return transObjectToEntry(scriptObject);
 
 | JS 字段名 | 类型 | 必填 | 默认值 | 含义 | 源码位置 |
 | --- | --- | --- | --- | --- | --- |
-| `stand` | string | 建议必填 | `null` | 替身注册名；与 JSON 的 `stand` 一起决定注册 key。**缺失时 key 变成 `"null_<stateId>"`，该状态永远不会被匹配到** | `StandResourceLoader.java:201-202`；注册 key `115`、`168` |
+| `stand` | string | **必填** | 无（缺失即判无效） | 替身注册名；与 JSON 的 `stand` 一起决定注册 key。**缺失或空白时该脚本被判为无效、直接跳过，并打一条 ERROR 日志**（不再注册成 `null_<stateId>` 这类脏 key） | `StandResourceLoader.java:203-209` |
 | `stateId` | string | 否 | `"default"` | 状态 id；与 JSON `states` 里的 id 对应 | `StandResourceLoader.java:204-205` |
 | `stateKey` | string | 否 | `null` | 状态显示名 lang key，HUD 与切换提示用它 | `StandResourceLoader.java:207-208`；使用 `MessageStandModeSwitch.java:143-148`、`EventStandHudRender.java:96-103` |
 | `stage` | number / 数字字符串 | 否 | `0` | 该状态所需的替身阶段门槛；阶段不足时模式切换会跳过该状态 | `StandResourceLoader.java:210-220`；门槛判定 `MessageStandModeSwitch.java:167-171` |
@@ -344,7 +348,7 @@ update: function (worldWrapper, entityWrapper, dataWrapper) { /* ... */ }
 | `increaseStandTime(LivingEntity, int ticks)` | 延长替身在场时间 | `StandPowerHelper.java:393` |
 | `removeBadPotion(LivingEntity)` | 清除负面药水 | `StandPowerHelper.java:375` |
 | `addItemToplayer(LivingEntity, String itemId, int amount)` | 给玩家发物品 | `StandPowerHelper.java:532` |
-| `giveDisc(LivingEntity, String type)` | 发放命令唱片 | `StandPowerHelper.java:552` |
+| `giveDisc(LivingEntity, String type)` | 发放命令 disc | `StandPowerHelper.java:552` |
 | `telepathizeItem(LivingEntity, ItemStack)` | 念写定位结构 | `StandPowerHelper.java:586` |
 
 其余未在内置样例中出现的公开方法（`potionEffect`、`isStandSoundReady`、`playEvent`、
@@ -367,12 +371,12 @@ update: function (worldWrapper, entityWrapper, dataWrapper) { /* ... */ }
   "stand": "mypack:my_stand",
   "name": "stand.mypack.my_stand.name",
   "disc": "huajiager:disc/disc_huajiager_my_stand",
-  "standTags": ["arrow"],
+  "stand_tags": ["arrow"],
   "stages": 1,
   "states": ["default", "idle"],
   "attributes": [1, 12, 250, 2, 170000, 80, 180000],
   "sounds": ["huajiager:stand_crazy_diamond_1"],
-  "soundsRepeat": ["entity.player.attack.strong-0.7"],
+  "sounds_repeat": ["entity.player.attack.strong-0.7"],
   "gravity": false,
   "author": "你的名字"
 }
@@ -384,15 +388,15 @@ update: function (worldWrapper, entityWrapper, dataWrapper) { /* ... */ }
 | --- | --- | --- |
 | 2 | `stand` | 替身注册名，必须与 JS 里的 `stand` 完全一致；建议带你自己的命名空间 |
 | 3 | `name` | 显示名 lang key，需要你在自己的资源包/整合包语言文件里补 `stand.mypack.my_stand.name`（未验证整合包语言文件能否覆盖，默认回落显示原 key） |
-| 4 | `disc` | 唱片 id。**该字段目前没有消费点**，写了也不影响实际行为（见第 7 节） |
-| 5 | `standTags` | 注意是 camelCase。写 `arrow` 才能进觉醒之箭抽取池。写成 `stand_tags` 会被 Gson 忽略 |
+| 4 | `disc` | 替身 HUD 信息块左上角**光碟图标**的贴图 id（`StandUtil.java:348-359`，绘制见 `EventStandHudRender.java:85-87`）。**图标贴图要作者自备**：放在 `assets/huajiager/textures/item/<disc 的 path>.png`（命名空间恒为 `huajiager`，字段里写的命名空间不参与拼接）；它**不影响**创造模式 Disc 物品的生成（那走 `stand`，见第 7 节第 4 条） |
+| 5 | `stand_tags` | 注意是 snake_case。写 `arrow`（**精确匹配小写**）才能进觉醒之箭抽取池。写成 `standTags` 会被 Gson 忽略 |
 | 6 | `stages` | 阶段总数，`<= 0` 会被强制改成 `1` |
-| 7 | `states` | 状态 id 列表，**必须包含 `default`**（源码会自动补，`StandCustomInfo.java:110-112`）；这里声明几个，就要有对应的几个 JS |
-| 8 | `attributes` | 7 个数字，依次是 速度 / 伤害 / 持续时间 / 距离 / 消耗 / 充能 / 精神力上限；少于 7 个则全部为 0 |
-| 9 | `sounds` | 音效池。**该字段目前没有消费点** |
-| 10 | `soundsRepeat` | 也是 camelCase。**该字段目前没有消费点** |
-| 11 | `gravity` | **该字段目前没有消费点** |
-| 12 | `author` | **该字段目前没有消费点**，仅存放 |
+| 7 | `states` | 状态 id 列表，**必须包含 `default`**（源码会自动补，`StandCustomInfo.java:120-125`）；这里声明几个，就要有对应的几个 JS |
+| 8 | `attributes` | 7 个数字，依次是 速度 / 伤害 / 持续时间 / 距离 / 消耗 / 充能 / 精神力上限；少于 7 个则全部为 0，并在加载时打一条 WARN（`StandCustomInfo.java:139-144`） |
+| 9 | `sounds` | 召唤音池：未内置召唤音的自定义替身从中随机播一条，受配置「是否需要替身的音效」（`allowStandSound`）控制（`MessageStandUp.java:157-170`、`EntityStandBase.java:420-432`） |
+| 10 | `sounds_repeat` | 也是 snake_case。循环音效，条目格式 `音效id-音量`；随替身实体循环播放，受配置「是否需要替身的移动音效」（`allowStandMovingSound`）控制（`StandUtil.java:320-345`、`EntityStandBase.java:434-439`） |
+| 11 | `gravity` | **仍未消费**（`isGravity()` 无调用点，`StandCustomInfo.java:104-106`） |
+| 12 | `author` | 非空时在替身 Disc / 塔罗牌 tooltip 追加一行灰字（`ItemDiscStand.java:135-141`、`ItemTarot.java:150-156`） |
 
 ### 4.2 状态脚本 JS（default 态）
 
@@ -464,7 +468,7 @@ Java.asJSONCompatible({
 2. 否则从 `StandUtil.getArrowStands()` 抽取池里按索引取一个，并按
    `ConfigHuaji.Stands.chanceStandFail` 判定失败（`ItemArrowStand.java:75-77`）。
 
-抽取池的构成（`src\main\java\org\huajiager\stand\StandUtil.java:276-287`）：
+抽取池的构成（`src\main\java\org\huajiager\stand\StandUtil.java:281-292`）：
 
 ```java
 public static List<StandBase> getArrowStands() {
@@ -482,30 +486,32 @@ public static List<StandBase> getArrowStands() {
 ```
 
 - 固定白名单是 The World / Star Platinum / Hierophant Green / Killer Queen
-  （`StandUtil.java:271-273`）。
-- 标签常量：`private static final String ARROW_STAND_TAG = "arrow";`（`StandUtil.java:268`）。
-  即 **`standTags` 里包含字符串 `"arrow"` 的自定义替身会自动进入抽取池**。
+  （`StandUtil.java:276-278`）。
+- 标签常量：`private static final String ARROW_STAND_TAG = "arrow";`（`StandUtil.java:273`）。
+  即 **`stand_tags` 里包含字符串 `"arrow"`（精确匹配、区分大小写）的自定义替身会自动进入抽取池**。
 - 抽取索引是 `world.random.nextInt(100)` 再对池大小取模
-  （`ItemArrowStand.java:76`；取模在 `StandUtil.java:290-296`）。
+  （`ItemArrowStand.java:76`；取模在 `StandUtil.java:294-301`）。
 
 **所以，把自定义替身加入觉醒之箭抽取池的唯一配置动作是：**
 
 ```json
-"standTags": ["arrow"]
+"stand_tags": ["arrow"]
 ```
 
 以下三个坑会让这一步"看起来做了却无效"：
 
-1. 写成 `"stand_tags"` → Gson 静默忽略，`standTags` 在 `decorate()` 里被兜成空列表
-   （`StandCustomInfo.java:118-120`），`tags.contains("arrow")` 永远为 `false`。
+1. 写成 `"standTags"`（camelCase）→ Gson 静默忽略（key 由 `@SerializedName("stand_tags")` 绑定，
+   `StandCustomInfo.java:37-38`），`standTags` 在 `decorate()` 里被兜成空列表
+   （`StandCustomInfo.java:131-133`），`tags.contains("arrow")` 永远为 `false`。
 2. 在 `config/huajiager/custom_stand/states/` 里放 JSON → 不会被扫描（只读 `.js`，
    `StandResourceLoader.java:134-144`）。
 3. 加完标签没有 `/reloadStand` → 内存里的 `CUSTOM_STAND_SERVER` 还是旧数据
    （`StandLoader.STAND_LIST` 与 `HuajiAgeAPI` 只有重载时才重建，`StandLoader.java:53-76`）。
 
 > 另外：内置样例的三个 JSON 全部写的是 `"stand_tags"`（`crazy_diamond.json:5`、
-> `hermit_purple.json:5`、`white_snake.json:5`），而 Java 字段名是 `standTags`
-> （`StandCustomInfo.java:31`）。按 Gson 默认命名策略这条标签不会被读入，详见第 7 节。
+> `hermit_purple.json:5`、`white_snake.json:5`），与 `@SerializedName("stand_tags")`
+> （`StandCustomInfo.java:37-38`）一致，所以这三个替身**能**被读进觉醒之箭抽取池；
+> 反而写成 camelCase 的 `standTags` 会被忽略，详见第 7 节第 1 条。
 
 ---
 
@@ -525,14 +531,14 @@ public static List<StandBase> getArrowStands() {
 | JSON 缺 `sounds` / `soundsRepeat` | 补成空列表 | `StandCustomInfo.java:127-132` |
 | JSON 缺 `author` | 补成 `""` | `StandCustomInfo.java:133-135` |
 | JSON 缺 `gravity` | 保持 Java 默认 `false`（`decorate()` **不赋值**） | `StandCustomInfo.java:41`、`100-137` |
-| JS 缺 `stand` | `standId = null`，注册 key 变成 `"null_<stateId>"`，状态永远匹配不上，**且没有任何日志** | `StandResourceLoader.java:201-202`；注册 `115`、`168` |
+| JS 缺 `stand` | 该脚本被判无效、直接跳过，并打一条 ERROR 日志（不再注册成 `null_<stateId>` 这类脏 key） | `StandResourceLoader.java:203-209` |
 | JS 缺 `stateId` | 该字段落 `"default"` | `StandResourceLoader.java:204-205` |
 | JS 缺 `stateKey` | 保持 `null`；HUD 回落到 `"stand.state.huajiage." + stateId` | `StandResourceLoader.java:207-208`；回落 `EventStandHudRender.java:96-103` |
 | JS 缺 `modelId` | 保持 `null`，模型 id 回落父类生成的 `huajiager:<stand>_<stateId>` | `StandResourceLoader.java:222-229`；回落 `StandStateCustom.java:51-56` |
 | JS 缺 `stateTags` | 空列表 | `StandResourceLoader.java:231-237` |
 | JS 缺 `soundRepeat` | `false` | `StandResourceLoader.java:239-245` |
 | JS 缺 `hand` | `true` | `StandResourceLoader.java:247-253` |
-| JS 缺 `update` / `timeOut` / `capability` | 该方法的调用被静默吞掉（`NoSuchMethodException` 无日志） | `StandStateCustom.java:119-120` |
+| JS 缺 `update` / `timeOut` / `capability` | 该方法被跳过且**不记日志**——这些是可选方法，故意不打日志避免每 tick 刷屏；但方法名打错时同样静默，排错需自查 | `StandStateCustom.java:119-121` |
 
 ### 6.2 数组长度不足
 
@@ -540,8 +546,10 @@ public static List<StandBase> getArrowStands() {
   （`StandCustom.java:32-40`）。同时 `decorate()` 只在 `attributes` 为 `null` 或空数组时才填默认值
   （`StandCustomInfo.java:124-126`），所以 `[1,2,3]` 这种"填了一半"的写法**不会**得到默认值补全，
   而是照旧全 0。注意 `attributes` 多于 7 个时多余的会被忽略（只读下标 0~6）。
-- **`disc` / `sounds` / `soundsRepeat` / `standTags` 数组长度**：源码中没有基于长度的校验，
-  也没有任何消费点（除 `standTags` 的 `contains("arrow")`），长度不影响加载。
+- **`disc` / `sounds` / `sounds_repeat` / `stand_tags` 的长度**：源码中没有基于长度的校验，长度不影响加载
+  （`disc` 是单个字符串，本身没有长度上限校验）。其中 `stand_tags` 走 `contains("arrow")` **精确匹配**，
+  `sounds` / `sounds_repeat` 里的无效音效 id、解析失败的条目会被逐条跳过
+  （`StandUtil.java:304-345`）；四个字段的真实消费点见 2.1 字段表。
 - **JSON `states` 里有 id、但没有对应 JS**：该状态被静默跳过（`StandCustom.java:45-48`），
   不报错；结果是这个状态不在 `StandBase.states` 里，切换模式时取不到它。
 - **`stateTags` 里的标签名写错**：只是不生效，没有校验也没有日志。
@@ -571,7 +579,7 @@ public static List<StandBase> getArrowStands() {
 | JSON 语法错（`config` 下的文件） | **`JsonSyntaxException` 不在 `loadStand(File)` 的 `catch (IOException)` 范围内**（`StandResourceLoader.java:146-154`），会向上抛到 `reloadStands()` → `/reloadStand` 命令执行处。未验证游戏对命令执行期异常的最终处理（命令失败 / 断开连接），但**该路径不会产生本模组的日志**。 |
 | JSON 文件是空的 / 内容为 `null` | `GSON.fromJson` 返回 `null`，紧接着 `info.decorate()` 抛 `NullPointerException`（`StandResourceLoader.java:160`）。内置路径会捕获并记 `ERROR`（`StandResourceLoader.java:101-103`），**用户配置路径同样不在 `catch (IOException)` 范围内**，行为同上。 |
 | JSON 文件读不出来（IO 错） | `ERROR`：`[HuajiAge] Failed to load custom stand file: <绝对路径>` | `StandResourceLoader.java:151-153` |
-| JSON key 用了 snake_case（如 `stand_tags`） | Gson 静默忽略该 key，字段保持 `null`，随后被 `decorate()` 兜成默认值；**无任何警告** | 反序列化 `StandResourceLoader.java:41`、`156-161`；兜底 `StandCustomInfo.java:118-120` |
+| JSON key 写成 camelCase（如 `standTags` / `soundsRepeat`） | Gson 静默忽略该 key，字段保持 `null`，随后被 `decorate()` 兜成默认值；**无任何警告**。正确写法是 snake_case（`stand_tags` / `sounds_repeat`），其余单词字段名（`stand` / `name` / `states` / `disc` / `stages` / `attributes` / `sounds` / `gravity` / `author`）不受影响 | 反序列化 `StandResourceLoader.java:41`、`158-163`；key 绑定 `StandCustomInfo.java:37-38`、`49-50`；兜底 `StandCustomInfo.java:131-133`、`148-150` |
 
 ### 6.5 加载顺序与覆盖
 
@@ -590,86 +598,94 @@ public static List<StandBase> getArrowStands() {
 以下问题都是"读源码就能确认"的事实，附 `文件:行号`，供维护者参考；
 本文档正文中的"消费点未找到"也就是指这一节。
 
-1. **JSON 的 snake_case key 与 POJO 字段名不匹配（大概率是真实 bug）**
-   - 字段：`private List<String> standTags;`（`StandCustomInfo.java:31`）、
-     `private List<String> soundsRepeat;`（`StandCustomInfo.java:39`）。
-   - 源码用的是裸 `new Gson()`（`StandResourceLoader.java:41`），无 `FieldNamingPolicy`、
-     无 `@SerializedName`（全工程检索 `FieldNamingPolicy|GsonBuilder|setFieldNaming` 零命中）。
-   - Gson 默认按字段名精确匹配，因此 `"stand_tags"` / `"sounds_repeat"` **读不进来**；
-     而 3 份内置 JSON 恰恰写的就是 snake_case：`crazy_diamond.json:5,13`、
-     `hermit_purple.json:5`、`white_snake.json:5,12`。
-   - 后果：内置 3 个自定义替身的 `standTags` 实际为空列表，`StandUtil.getArrowStands()`
-     （`StandUtil.java:276-287`）不会把它们加进抽取池——与 `ItemArrowStand` 的注释
-     "从 StandUtil.getArrowStands() 抽取池"（`ItemArrowStand.java:31`）以及
-     配置项 Tooltip 的说法（`assets\huajiager\lang\zh_cn.json:676`）不一致。
-   - 文档处理：字段表按**实际可生效的 camelCase** 写（`standTags` / `soundsRepeat`），
-     并显式提示 snake_case 会被忽略。
+1. **JSON 的 snake_case key 与 POJO 字段名不匹配（已在 1.0.2 修复：补回 `@SerializedName`）**
+    - 字段：`private List<String> standTags;` 带 `@SerializedName("stand_tags")`
+      （`StandCustomInfo.java:37-38`）、`private List<String> soundsRepeat;` 带
+      `@SerializedName("sounds_repeat")`（`StandCustomInfo.java:49-50`）；
+      `StandCustomInfo` 的 11 个字段现在全部有 `@SerializedName`（`StandCustomInfo.java:25-56`）。
+    - 源码用的仍是裸 `new Gson()`（`StandResourceLoader.java:41`），无 `GsonBuilder`、
+      无 `FieldNamingPolicy`（全工程检索 `FieldNamingPolicy|GsonBuilder|setFieldNaming` 零命中）；
+      但因为注解已显式绑定 key，Gson 只按注解名匹配，**snake_case 现在能正常读入**
+      （本版本 `mod_version=1.0.2`，`gradle.properties:16`）。
+    - 3 份内置 JSON 写的正是 snake_case：`crazy_diamond.json:5`（`stand_tags`）、
+      `crazy_diamond.json:13`（`sounds_repeat`）、`hermit_purple.json:5`、`white_snake.json:5`、
+      `white_snake.json:12`，因此内置 3 个自定义替身的 `standTags` 会被读入，
+      `StandUtil.getArrowStands()`（`StandUtil.java:281-292`）能把它们加进抽取池——与
+      `ItemArrowStand` 的注释"从 StandUtil.getArrowStands() 抽取池"（`ItemArrowStand.java:31`）
+      以及配置项 Tooltip 的说法（`assets\huajiager\lang\zh_cn.json:675`）一致。
+    - 文档处理：字段表按**实际生效的 snake_case** 写（`stand_tags` / `sounds_repeat`），
+      并显式提示 camelCase（`standTags` / `soundsRepeat`）会被忽略。
 
-2. **`loadStand(File)` / `loadStates(File)` 的异常覆盖面偏窄，用户配置出错可能无日志且冒泡**
-   - `loadStand(File)` 只 `catch (IOException)`（`StandResourceLoader.java:146-154`），
-     但 `loadStand(InputStream)` 里会抛 `JsonSyntaxException`（`StandCustomInfo.java:102`）
-     与 `NullPointerException`（`StandResourceLoader.java:160` 的 `info.decorate()`）。
-     内置路径显式捕获了这两类（`StandResourceLoader.java:101`），用户路径没有。
-   - 同一问题存在于 `loadStates(File)`：只 `catch IOException`（`StandResourceLoader.java:163-173`），
-     而脚本 `eval` 失败产生的 `null` 已经被 `loadStates(InputStream)` 内部吞掉，风险小于 JSON 侧。
-   - 影响：整合包作者写错一份 JSON，`/reloadStand` 可能直接抛异常而非给出可读日志。
+2. **`loadStand(File)` / `loadStates(File)` 的异常覆盖面（已在 1.0.2 修复）**
+    - 原实现只 `catch (IOException)`，而 `loadStand(InputStream)` 会抛 `JsonSyntaxException`
+      （`StandCustomInfo.java` 的 `decorate()` 入口一带）与 `NullPointerException`（`info.decorate()`），
+      用户配置目录里放一份坏 JSON 会直接把异常抛到 `/reloadStand` 执行处。
+    - 现在两处都是 `catch (IOException | RuntimeException e)` 并记 ERROR 日志
+      （`StandResourceLoader.java:151`、`172`）：坏文件只跳过该文件，不中断整次重载。
 
-3. **`transObjectToEntry` 返回 `null` 时用户路径静默**
-   - `loadInternalState` 有 `if (info != null)`（`StandResourceLoader.java:114-116`），
-     用户路径 `loadStates(File)` 也有（`StandResourceLoader.java:167-169`），
-     但两条路径在 `info == null` 时都**不再补任何日志**。
-   - 而 JS 缺 `stand` 恰恰会走到这条静默分支（`StandResourceLoader.java:201-202` 得到 `null`），
-     排错时"脚本文件明明在，就是不生效、日志里什么都没有"。
+3. **`transObjectToEntry` 返回 `null` 的分支（已在 1.0.2 修复）**
+    - JS 缺 `stand` 字段原本会走到静默分支，注册成 `null_<stateId>` 且日志空白。
+    - 现在缺 `stand`（或为空白）直接判该脚本无效、`return null`，并打一条 ERROR
+      （`StandResourceLoader.java:203-209`）；`loadStates(File)` 侧对 `info == null` 也不再注册。
 
-4. **`StandCustomInfo` 多个字段被反序列化但从未被消费**
-   - `getDisc()`（`StandCustomInfo.java:60`）、`getStages()`（`68`）、
-     `getSounds()`（`83`）、`getSoundsRepeat()`（`87`）、`isGravity()`（`91`）、
-     `getAuthor()`（`95`）：全工程除了 `StandCustomInfo` 自身与 `decorate()` 之外**没有任何调用点**
-     （检索 `getDisc()|getStages()|getSounds()|getSoundsRepeat()|isGravity()|getAuthor()` 的命中
-     全部落在 `StandCustomInfo.java` 内部）。
-   - 其中 `sounds` / `soundsRepeat` / `gravity` / `author` 在 `decorate()` 里还有专门的默认值逻辑
-     （`StandCustomInfo.java:127-135`），说明原设计打算消费它们。
-   - `disc` 在 `ItemLoader` 里生成唱片时是遍历 `StandLoader.STAND_LIST` 现拼的
-     （`src\main\java\org\huajiager\init\loaders\ItemLoader.java:351-356`），并未读取该字段，
-     所以自定义替身的 `disc` 配置**不影响**实际发放的唱片。
+4. **`StandCustomInfo` 各字段的消费状态（1.0.2 现状）**
+    - `disc`：被 `StandUtil.getDiscTex`（`StandUtil.java:348-359`）消费，用于替身 HUD 信息块
+      左上角的光碟图标（绘制点 `EventStandHudRender.java:85-87`）。图标贴图要作者自备，路径是
+      `assets/huajiager/textures/item/<disc 的 path>.png`——`Identifier.of` 的命名空间恒为 `huajiager`
+      （`StandUtil.java:356`），字段里写的命名空间被丢弃，只取 path 部分。
+    - `sounds`：被 `StandUtil.getCustomStandSounds`（`StandUtil.java:304-317`）消费，调用点为
+      `MessageStandUp.java:157-170`（未内置召唤音的自定义替身，从池里随机播一条）与
+      `EntityStandBase.java:420-440`（客户端播放，首次 tick 触发见 `EntityStandBase.java:225-230`）；
+      受配置「是否需要替身的音效」（`ConfigHuaji.Stands.allowStandSound`，`zh_cn.json:668`）控制。
+    - `soundsRepeat`：被 `StandUtil.getCustomStandRepeatSounds`（`StandUtil.java:320-345`）+
+      `EntityStandBase.java:434-439` 消费，播成跟随实体的循环音，条目格式 `音效id-音量`
+      （如 `entity.player.attack.strong-0.7`）；受配置「是否需要替身的移动音效」
+      （`ConfigHuaji.Stands.allowStandMovingSound`，`zh_cn.json:667`）控制。
+    - `author`：被 `ItemDiscStand.appendTooltip`（`ItemDiscStand.java:135-141`）与
+      `ItemTarot.appendTooltip`（`ItemTarot.java:150-156`）消费，字段非空时追加一行灰字。
+    - `standTags`：仍由 `StandUtil.getArrowStands` 消费（`StandUtil.java:281-292`），
+      精确匹配小写 `arrow`。
+    - `gravity`：**仍未消费**（`isGravity()` 无调用点，`StandCustomInfo.java:104-106`）。
+    - `stages`：**仍未消费**，真正的阶段门槛来自 JS 的 `stage`（见本节第 5 条）。
+    - `attributes`：少于 7 个时未提供的项**仍为 0**（行为没变），但现在会在加载时打一条 WARN
+      （`StandCustomInfo.java:139-144`）。
+    - `disc` 与创造模式 Disc 物品无关：`ItemLoader` 的 ItemGroup 变体是遍历 `StandLoader.STAND_LIST`，
+      用 `ItemDiscStand.createDisc(...)` 把替身名写进 NBT 生成的（`ItemLoader.java:350-357`、
+      `ItemDiscStand.java:169-175`），Disc 物品本身只有 `huajiager:disc_stand` 一个注册名
+      （`ItemLoader.java:272`），全程不读 `disc` 字段。
 
 5. **`stages` 字段与实际阶段门槛机制脱节**
-   - JSON 的 `stages`（`StandCustomInfo.java:33`）无消费点（见第 7 节第 4 条）。
-   - 真正的阶段门槛来自 JS 的 `stage`，经 `StandStateInfo.setStage`（`StandResourceLoader.java:259`）
-     → `StandStateCustom` 构造器（`StandStateCustom.java:42`）→ `StandStateBase.getStage()`
-     → 模式切换时的 `base.getStage() <= data.getStage()` 判定（`MessageStandModeSwitch.java:167-171`）。
-   - 也就是说 `stages` 是个"写了没用"的字段。
+    - JSON 的 `stages`（`StandCustomInfo.java:33`）无消费点（见第 7 节第 4 条）。
+    - 真正的阶段门槛来自 JS 的 `stage`，经 `StandStateInfo.setStage`（`StandResourceLoader.java:259`）
+      → `StandStateCustom` 构造器（`StandStateCustom.java:42`）→ `StandStateBase.getStage()`
+      → 模式切换时的 `base.getStage() <= data.getStage()` 判定（`MessageStandModeSwitch.java:167-171`）。
+    - 也就是说 `stages` 是个"写了没用"的字段。
 
-6. **`StandResourceLoader` 类头注释与实际 hardcode 名单数量不符**
-   - 注释写"七状态脚本"（`StandResourceLoader.java:73`）但 `loadInternalStates()` 列了 7 个调用
-     （`StandResourceLoader.java:75-81`），这一条本身对得上；
-     但 `StandLoader` 类头注释写"加载 4 个内置 JSON + 8 个 state JS"
-     （`StandLoader.java:25-26`），实际是 3 个 JSON（`StandResourceLoader.java:68-70`）
-     与 7 个 JS（`StandResourceLoader.java:75-81`）。纯注释滞后，不影响行为。
+6. **资源数量注释（已在 1.0.2 修正）**
+    - `StandLoader` 类头与 `reloadStands()` 行内注释原先都写"4 个内置 JSON + 8 个 state JS"，
+      现已统一为实际数量：3 个 JSON 与 7 个 state JS（见 `StandResourceLoader` 的
+      `loadInternalStands()` / `loadInternalStates()` 两份硬编码名单）。
 
-7. **`EventStandHudRender` 的注释与 `EventStandUpgrade` 的实际逻辑互相矛盾**
-   - 注释称"当前实现无 stage 推进机制（stage 恒为 0）"（`src\client\java\org\huajiager\client\event\EventStandHudRender.java:114`）。
-   - 但 `EventStandUpgrade.upgradeTick` 明确在特异点标记剩 3 时执行
-     `StandUtil.setStandStage(player, 1)`（`src\main\java\org\huajiager\stand\events\EventStandUpgrade.java:58-59`），
-     且 `EventStandKey.performSkill` 用 `data.getStage() <= 0` 拦截技能
-     （`EventStandKey.java:105`）。注释与实际相反，容易误导后来者。
+7. **`EventStandHudRender` 的注释与 `EventStandUpgrade` 的逻辑（已在 1.0.2 修正）**
+    - 原注释称"当前实现无 stage 推进机制（stage 恒为 0）"，与事实相反：
+      `EventStandUpgrade.upgradeTick` 在特异点标记剩 3 时执行 `StandUtil.setStandStage(player, 1)`
+      （`EventStandUpgrade.java:58-59`），且 `EventStandKey.performSkill` 用 `data.getStage() <= 0` 拦截技能
+      （`EventStandKey.java:105`）。注释现已改为与实现一致。
 
 8. **`db`/命名一致性风险：状态 key 依赖 `stand` 字符串完全一致**
-   - 匹配逻辑是字符串拼接 + 二次 `equals`（`StandCustom.java:44-46`），
-     JSON 写 `huajiager:crazy_diamond` 而 JS 写 `crazy_diamond` 就会静默失配。
-   - 没有大小写归一化、没有命名空间补全，也没有任何"状态清单对不上"的警告日志。
+    - 匹配逻辑是字符串拼接 + 二次 `equals`（`StandCustom.java:44-46`），
+      JSON 写 `huajiager:crazy_diamond` 而 JS 写 `crazy_diamond` 就会静默失配。
+    - 没有大小写归一化、没有命名空间补全，也没有任何"状态清单对不上"的警告日志。
 
 9. **`StandStateCustom.getModelID()` 的 `%custom` 分支行为未在样例中出现**
-   - 源码支持 `stateId` 含 `%custom` 时不对 `modelId` 追加后缀
-     （`StandResourceLoader.java:226-228`），但 7 份内置脚本没有一个使用该后缀，
-     该分支的预期用法**未验证**。
+    - 源码支持 `stateId` 含 `%custom` 时不对 `modelId` 追加后缀
+      （`StandResourceLoader.java:226-228`），但 7 份内置脚本没有一个使用该后缀，
+      该分支的预期用法**未验证**。
 
 10. **`EntityLivingBaseWrapper.getSpeed()` 里的魔数 `0.784`**
     - 有替身实体时返回 `替身速度模长 - 0.784`（`EntityLivingBaseWrapper.java:53-56`），
       无注释解释该常数的来源；负值未做钳制（**未验证**是否会在脚本里返回负数）。
 
-11. **两处类头注释的行数与实际不符**
-    - `StandPowerHelper` 类头写"共 871 行"（`StandPowerHelper.java:65`），实际文件为 **756 行**。
-    - `StandLoader` 类头写"4 个内置 JSON + 8 个 state JS"（`StandLoader.java:25-26`），
-      实际硬编码名单是 3 份 JSON（`StandResourceLoader.java:67-71`）
-      与 7 份 JS（`StandResourceLoader.java:74-82`）。
+11. **类头行数断言（已在 1.0.2 修正）**
+    - `StandPowerHelper` 类头原先写"共 871 行"（与实际不符），该断言与一处损坏的"（ 收尾版）"
+      片段已删除；本文档也不再引用具体行数，因为行数会随改动漂移。
