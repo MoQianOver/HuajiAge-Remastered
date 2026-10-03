@@ -107,6 +107,11 @@ public class TileEntityHuajiBlender extends BlockEntity implements Inventory {
 				}
 			}
 			if (be.litTime > 0) {
+				// 新放置/未持久化的 TileEntity 首次 tick 时 processingTotalTime 为 0，
+				// 若不先初始化会导致 processingProgress(1) >= 0 立即误烧一次（第一次混合瞬间完成）
+				if (be.processingTotalTime <= 0) {
+					be.processingTotalTime = be.getCookTotalTime(recipe);
+				}
 				be.processingProgress++;
 				dirty = true;
 				if (be.processingProgress >= be.processingTotalTime) {
