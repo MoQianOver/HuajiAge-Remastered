@@ -836,6 +836,19 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 
 	@Override
 	public Identifier getTexture(EntityStandBase entity) {
+		// 女仆替身：用车万女仆本人那张皮肤（我们自带的 maid 贴图只是 Blockbench UV 模板）
+		if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("touhou_little_maid")) {
+			StandBase s = entity.getStand();
+			if (s != null && org.huajiager.compat.tlm.MaidBallHelper.MAID_STAND.equals(s.getName())) {
+				org.huajiager.capability.IExposedData data =
+						org.huajiager.stand.StandUtil.getStandData(entity.getUser());
+				Identifier skin = org.huajiager.client.compat.tlm.MaidSkinTextures
+						.resolve(data == null ? null : data.getModel());
+				if (skin != null) {
+					return skin;
+				}
+			}
+		}
 		// ORGA_REQUIEM 飞行态（fly）用 ModelOrgaFly 专属贴图（64x64  UV）
 		if (isFly(entity)) {
 			StandBase s = entity.getStand();
