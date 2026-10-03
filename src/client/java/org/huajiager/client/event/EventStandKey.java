@@ -84,8 +84,6 @@ public final class EventStandKey {
 		ClientPlayNetworking.send(new MessageStandUp(true));
 		// 收回/召唤替身时停止未播完的镇魂曲 BGM：收回即停止，召唤后再按技能键会重新触发
 		stopBgm();
-		// 收回/召唤替身时停止镇魂曲飞行态鞘翅循环音（防止替身已收回/未召唤时声音残留）
-		HuajiSoundPlayer.stopStandLoop();
 	}
 
 	/**

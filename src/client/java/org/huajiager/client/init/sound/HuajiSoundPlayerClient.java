@@ -55,19 +55,6 @@ public class HuajiSoundPlayerClient implements HuajiSoundPlayer.IClientSoundPlay
         }
     }
 
-    /** 替身飞行态循环音实例（playStandLoop 持有，stopStandLoop 需同一实例引用）。 */
-    private static SoundInstance currentStandLoop;
-
-    /** 替身飞行态循环音：PLAYERS 分类、repeat=true，2D 无衰减跟随玩家
-     *  （修复 8 参 3D 构造器播放在世界原点听不见的问题）。 */
-    private static final class LoopingStandSound extends PositionedSoundInstance {
-        LoopingStandSound(SoundEvent sound) {
-            super(sound.getId(), SoundCategory.PLAYERS, 1.0F, 1.0F,
-                    net.minecraft.util.math.random.Random.create(),
-                    true, 0, SoundInstance.AttenuationType.NONE, 0.0D, 0.0D, 0.0D, true);
-        }
-    }
-
     @Override
     public void playMusic(SoundEvent sound) {
         SoundManager soundManager = MinecraftClient.getInstance().getSoundManager();
@@ -102,24 +89,6 @@ public class HuajiSoundPlayerClient implements HuajiSoundPlayer.IClientSoundPlay
     }
 
     @Override
-    public void playStandLoop(SoundEvent sound) {
-        SoundManager soundManager = MinecraftClient.getInstance().getSoundManager();
-        // 重复触发前先停旧实例，避免状态重复同步时多个循环音叠加
-        stopStandLoop();
-        currentStandLoop = new LoopingStandSound(sound);
-        soundManager.play(currentStandLoop);
-    }
-
-    @Override
-    public void stopStandLoop() {
-        SoundManager soundManager = MinecraftClient.getInstance().getSoundManager();
-        if (currentStandLoop != null) {
-            soundManager.stop(currentStandLoop);
-            currentStandLoop = null;
-        }
-    }
-
-    @Override
     public void playMovingSoundClient(LivingEntity target, SoundEvent sound, SoundCategory category, float volume) {
         MinecraftClient.getInstance().getSoundManager()
                 .play(new HuajiMovingSound(target, sound, category).setVolume(volume));
@@ -130,6 +99,13 @@ public class HuajiSoundPlayerClient implements HuajiSoundPlayer.IClientSoundPlay
                                              float volume) {
         MinecraftClient.getInstance().getSoundManager()
                 .play(new HuajiMovingSound(target, sound, category).setLoopVolume(volume));
+    }
+
+    @Override
+    public void playStateLoopMovingSoundClient(LivingEntity target, SoundEvent sound, SoundCategory category) {
+        // 不加音量锁：音量由 HuajiMovingSound.tick 按当前状态的 soundLoop 决定 0.7 / 0
+        MinecraftClient.getInstance().getSoundManager()
+                .play(new HuajiMovingSound(target, sound, category).setLoop());
     }
 
     @Override

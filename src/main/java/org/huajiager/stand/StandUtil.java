@@ -344,6 +344,30 @@ public final class StandUtil {
         return result;
     }
 
+    /**
+     * 内置替身的持续循环音：世界 / 白金之星 / 杀手皇后为连续打击声，法皇为雨声，
+     * 奥尔加镇魂曲为鞘翅声；其余替身与自定义替身返回 null（自定义走 JSON sounds_repeat）。
+     * 音量不在此处定，由 HuajiMovingSound 按当前状态的 soundLoop 联动。
+     */
+    public static SoundEvent getBuiltInRepeatSound(StandBase stand) {
+        if (stand == null) {
+            return null;
+        }
+        String name = stand.getName();
+        if (StandLoader.THE_WORLD.getName().equals(name)
+                || StandLoader.STAR_PLATINUM.getName().equals(name)
+                || StandLoader.KILLER_QUEEN.getName().equals(name)) {
+            return net.minecraft.sound.SoundEvents.ENTITY_PLAYER_ATTACK_STRONG;
+        }
+        if (StandLoader.HIEROPHANT_GREEN.getName().equals(name)) {
+            return net.minecraft.sound.SoundEvents.WEATHER_RAIN;
+        }
+        if (StandLoader.ORGA_REQUIEM.getName().equals(name)) {
+            return net.minecraft.sound.SoundEvents.ITEM_ELYTRA_FLYING;
+        }
+        return null;
+    }
+
     /** 替身碟片贴图：自定义替身走 JSON 的 disc 字段，原生替身走 textures/item/disc/disc_<name>.png。 */
     public static Identifier getDiscTex(StandBase stand) {
         if (stand == null) {

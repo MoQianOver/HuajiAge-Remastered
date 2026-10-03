@@ -416,25 +416,32 @@ public class EntityStandBase extends HorseEntity {
         return StandLoader.getStand(this.dataTracker.get(TYPE));
     }
 
-    /** 客户端播放自定义替身的召唤音（sounds 随机一条）与循环音（sounds_repeat，按 JSON 音量）。 */
+    /**
+     * 客户端播放替身的音效：召唤音（自定义替身 sounds 随机一条）与持续循环音
+     * （自定义替身 sounds_repeat 按 JSON 音量；内置替身按替身种类取循环音，
+     * 音量交给 HuajiMovingSound 按当前状态的 soundLoop 联动）。
+     */
     private void playCustomStandSounds() {
-        if (!ConfigHuaji.Stands.allowStandSound) {
-            return;
-        }
         StandBase stand = getStand();
         if (stand == null) {
             return;
         }
-        List<SoundEvent> sounds = StandUtil.getCustomStandSounds(stand);
-        if (!sounds.isEmpty()) {
-            SoundEvent picked = sounds.get(this.getWorld().random.nextInt(sounds.size()));
-            HuajiSoundPlayer.playMovingSoundClient(this, picked, SoundCategory.NEUTRAL, 1.0f);
+        if (ConfigHuaji.Stands.allowStandSound) {
+            List<SoundEvent> sounds = StandUtil.getCustomStandSounds(stand);
+            if (!sounds.isEmpty()) {
+                SoundEvent picked = sounds.get(this.getWorld().random.nextInt(sounds.size()));
+                HuajiSoundPlayer.playMovingSoundClient(this, picked, SoundCategory.NEUTRAL, 1.0f);
+            }
         }
         // 循环音（跟随实体持续播放）由「替身移动音效」开关控制；召唤音由「替身音效」控制
         if (ConfigHuaji.Stands.allowStandMovingSound) {
             for (StandUtil.RepeatSound repeat : StandUtil.getCustomStandRepeatSounds(stand)) {
                 HuajiSoundPlayer.playLoopingMovingSoundClient(this, repeat.sound(), SoundCategory.NEUTRAL,
                         repeat.volume());
+            }
+            SoundEvent builtInLoop = StandUtil.getBuiltInRepeatSound(stand);
+            if (builtInLoop != null) {
+                HuajiSoundPlayer.playStateLoopMovingSoundClient(this, builtInLoop, SoundCategory.NEUTRAL);
             }
         }
     }

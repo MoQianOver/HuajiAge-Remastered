@@ -113,22 +113,15 @@ public class HuajiSoundPlayer {
     }
 
     /**
-     * 播放替身飞行态循环音（客户端专属；委托给 client 实现）。
-     * 镇魂曲替身状态机切进 "fly" 时播放鞘翅飞行循环声，切出飞行态/收回替身时
-     * 由 stopStandLoop 停止；仅本机玩家自己的状态同步驱动。
+     * 播放内置替身的持续循环音层（客户端专属；委托给 client 实现）。
+     * 音量不锁定：由 HuajiMovingSound 按当前状态的 soundLoop 联动
+     * （循环态 0.7、非循环态 0），对应世界/白金之星/杀手皇后的连续打击声、
+     * 法皇的雨声、奥尔加镇魂曲的鞘翅声。
      */
-    public static void playStandLoop(SoundEvent sound) {
+    public static void playStateLoopMovingSoundClient(LivingEntity target, SoundEvent sound,
+                                                      SoundCategory category) {
         if (clientSoundPlayer != null) {
-            clientSoundPlayer.playStandLoop(sound);
-        }
-    }
-
-    /**
-     * 停止替身飞行态循环音（客户端专属；委托给 client 实现，幂等）。
-     */
-    public static void stopStandLoop() {
-        if (clientSoundPlayer != null) {
-            clientSoundPlayer.stopStandLoop();
+            clientSoundPlayer.playStateLoopMovingSoundClient(target, sound, category);
         }
     }
 
@@ -158,9 +151,7 @@ public class HuajiSoundPlayer {
 
         void playLoopingMovingSoundClient(LivingEntity target, SoundEvent sound, SoundCategory category, float volume);
 
-        void playStandLoop(SoundEvent sound);
-
-        void stopStandLoop();
+        void playStateLoopMovingSoundClient(LivingEntity target, SoundEvent sound, SoundCategory category);
 
         void playClient(World world, double x, double y, double z, SoundEvent sound,
                         SoundCategory category, float volume, float pitch);

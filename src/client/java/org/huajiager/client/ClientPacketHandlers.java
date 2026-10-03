@@ -187,26 +187,15 @@ public final class ClientPacketHandlers {
 					// 会导致同步静默丢弃（EventStandKey 判定替身失败、召唤键无响应）。
 					IExposedData data = target.getAttachedOrCreate(Attachments.STAND_DATA);
 					if (data != null) {
-						// 飞行循环音启停判定：记录 setState 前的旧状态（只对本地玩家自己的同步生效）
-						boolean wasFly = "fly".equals(data.getState());
 						data.setStand(payload.stand());
 						data.setStage(payload.stage());
 						data.setTrigger(payload.trigger());
 						data.setHandDisplay(payload.hand());
 						data.setState(payload.state());
 						data.setModel(payload.model());
-						// 镇魂曲替身飞行态鞘翅循环音（SoundEvents.ITEM_ELYTRA_FLYING）：
-						// 切进 "fly"（召唤中 + 镇魂曲 + fly 态）播放，切出/收回替身（trigger=false
-						// 或状态离开 fly）停止，避免切出飞行/收回替身后鞘翅循环声残留。
-						if (target == self) {
-							boolean orgaRequiem = StandLoader.ORGA_REQUIEM.getName().equals(payload.stand());
-							boolean nowFly = payload.trigger() && orgaRequiem && "fly".equals(payload.state());
-							if (nowFly && !wasFly) {
-								HuajiSoundPlayer.playStandLoop(SoundEvents.ITEM_ELYTRA_FLYING);
-							} else if (!nowFly && wasFly) {
-								HuajiSoundPlayer.stopStandLoop();
-							}
-						}
+						// 镇魂曲的鞘翅循环音不在这里单独启停：它已由召唤时创建的替身循环音层
+						// 承担（音量按当前状态 soundLoop 门控，default 与 fly 都是循环态），
+						// 两处都播会叠成双份鞘翅声。
 					}
 				});
 	}
