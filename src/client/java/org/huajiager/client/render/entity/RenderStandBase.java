@@ -126,6 +126,10 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 
 	public RenderStandBase(EntityRendererFactory.Context ctx) {
 		super(ctx);
+		// 原版实体模型借用表需要模型加载器，才能在用到时构建对应的模型树
+		org.huajiager.client.model.custom.VanillaStandModels.bind(ctx.getModelLoader());
+		// 借用表自检：确认已登记的原版模型确实能取到（失败只在日志留痕，不影响内置替身）
+		org.huajiager.client.model.custom.VanillaStandModels.find("minecraft:warden_default");
 		this.defaultModel = new ModelStandDefault();
 		this.standModels = new HashMap<>();
 		// THE_WORLD 启用模型：ModelTheWorld 即 Blockbench 正立悬浮盘腿造型
@@ -316,6 +320,12 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 						org.huajiager.client.model.custom.CustomModelLoader.find(stateBase.getModelID());
 				if (custom != null) {
 					return custom;
+				}
+				// 再问原版实体模型借用表（modelId 写 minecraft:warden 这类）
+				org.huajiager.client.model.custom.VanillaStandModel vanilla =
+						org.huajiager.client.model.custom.VanillaStandModels.find(stateBase.getModelID());
+				if (vanilla != null) {
+					return vanilla;
 				}
 			}
 		}
@@ -876,6 +886,11 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 				return borrowed;
 			}
 			Identifier own = stateBase.getTex();
+			Identifier vanillaTex = org.huajiager.client.model.custom.VanillaStandModels
+					.texture(stateBase.getModelID());
+			if (vanillaTex != null) {
+				return vanillaTex;
+			}
 			if (own != null) {
 				return own;
 			}

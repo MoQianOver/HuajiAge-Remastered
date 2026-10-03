@@ -1,0 +1,9 @@
+{
+  "stand": "huajiager:warden",
+  "name": "entity.minecraft.warden",
+  "states": ["default"],
+  "attributes": [1, 15, 300, 2, 60000, 60, 120000],
+  "stand_tags": ["arrow"],
+  "disc": "huajiager:disc/disc_the_world",
+  "author": "test"
+}
