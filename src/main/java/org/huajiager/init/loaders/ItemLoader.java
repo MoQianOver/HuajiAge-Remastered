@@ -216,6 +216,12 @@ public class ItemLoader {
 		blanceHelmet = new ItemBlancedHelmet();
 		exglutenbur = new ItemExglutenbur();
 
+		// 阴阳玉（车万女仆联动）：装了该模组才注册，未安装时不加载它的类
+		if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("touhou_little_maid")) {
+			Item yinYangBall = new org.huajiager.item.ItemYinYangBall();
+			Registry.register(Registries.ITEM, Identifier.of(modId, "yin_yang_ball"), yinYangBall);
+		}
+
 		Registry.register(Registries.ITEM, Identifier.of(modId, "disc_command"), discCommand);
 		Registry.register(Registries.ITEM, Identifier.of(modId, "second_foil"), secondFoil);
 		Registry.register(Registries.ITEM, Identifier.of(modId, "second_foil_entity"), secondFoilEntity);
