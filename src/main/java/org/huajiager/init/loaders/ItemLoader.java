@@ -291,7 +291,11 @@ public class ItemLoader {
 				.icon(() -> new ItemStack(huaji))
 				.displayName(Text.translatable("itemGroup.huajiager.huaji"))
 				.entries((context, entries) -> {
-					entries.add(secondFoil);
+					// 阴阳玉（车万女仆联动）：装了该模组才出现在创造栏（物品本身也是那时才注册）
+			if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("touhou_little_maid")) {
+				entries.add(net.minecraft.registry.Registries.ITEM.get(Identifier.of(modId, "yin_yang_ball")));
+			}
+			entries.add(secondFoil);
 					entries.add(expendedView);
 					entries.add(huaji);
 					entries.add(huajiFragment);
