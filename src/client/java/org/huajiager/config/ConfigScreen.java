@@ -6,13 +6,6 @@ import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.ActionResult;
 
-/**
- * Cloth Config 集成（可选前置）。
- * 仅当 FabricLoader.isModLoaded("cloth-config") 为真时才由
- * HuajiAgeRemasteredClient 调用 {@link #register()}；未安装 cloth-config 时
- * 本类不会被加载，避免 NoClassDefFoundError。已安装时，配置值（含界面修改保存）
- * 通过 load/save 监听同步回 ConfigHuaji 静态字段，业务代码读取点无需改动。
- */
 public final class ConfigScreen {
 
     private ConfigScreen() {
