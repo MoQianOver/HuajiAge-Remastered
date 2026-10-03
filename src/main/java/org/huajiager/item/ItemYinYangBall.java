@@ -1,24 +1,75 @@
 package org.huajiager.item;
 
+import org.huajiager.compat.tlm.MaidBallHelper;
 import org.huajiager.util.NBTHelper;
 
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 /**
  * 阴阳玉（带师球）：捕捉/放出女仆，潜行右击方块可把女仆转成女仆替身。
  *
- * <p>本类只负责物品自身的数据层（NBT 读写与状态判断），键名与原版一致：
- * {@code model} / {@code data} / {@code owner} / {@code owner_name}。
- * 捕捉、放出、转替身这些会调用车万女仆 API 的行为放在
- * {@code org.huajiager.compat.tlm} 下，保证未安装该模组时不触碰它的类。</p>
+ * <p>本类只做物品自身的数据层与三个入口的分支判断（键名与原版一致：
+ * {@code model} / {@code data} / {@code owner} / {@code owner_name}），
+ * 真正调用车万女仆 API 的行为在 {@code com.huajiager.compat.tlm.MaidBallHelper}。
+ * 物品只在该模组存在时才注册，因此未安装时不会加载到它的类。</p>
  */
 public class ItemYinYangBall extends Item {
 
     public ItemYinYangBall() {
         super(new Settings().maxCount(1));
+    }
+
+    /** 潜行右击方块转女仆替身，否则把球里的女仆放回方块上方。 */
+    @Override
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        PlayerEntity player = context.getPlayer();
+        if (player == null) {
+            return ActionResult.PASS;
+        }
+        ItemStack stack = context.getStack();
+        BlockPos pos = context.getBlockPos();
+        if (player.isSneaking()) {
+            return MaidBallHelper.becomeMaidStand(player, stack, pos)
+                    ? ActionResult.SUCCESS : ActionResult.PASS;
+        }
+        return MaidBallHelper.release(player, stack, pos)
+                ? ActionResult.SUCCESS : ActionResult.PASS;
+    }
+
+    /** 右击女仆本体：可抓（未驯服或属主是自己）就走捕捉。 */
+    @Override
+    public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
+        if (MaidBallHelper.isCapturable(entity, user) && captureByRay(user, stack)) {
+            return ActionResult.SUCCESS;
+        }
+        return super.useOnEntity(stack, user, entity, hand);
+    }
+
+    /** 对着空气右击：射线找 8 格内属于该玩家的女仆并捕捉。 */
+    @Override
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        ItemStack stack = user.getStackInHand(hand);
+        if (captureByRay(user, stack)) {
+            return TypedActionResult.success(stack);
+        }
+        return super.use(world, user, hand);
+    }
+
+    /** 原版在抓到女仆后是复用射线分支完成写入，这里保持一致。 */
+    private boolean captureByRay(PlayerEntity player, ItemStack stack) {
+        return MaidBallHelper.traceMaid(player)
+                .map(maid -> MaidBallHelper.capture(player, maid, stack))
+                .orElse(false);
     }
 
     /** 球里是否装着一只女仆（模型与实体数据都在）。 */

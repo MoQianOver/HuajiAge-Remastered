@@ -108,6 +108,16 @@ public final class MaidBallHelper {
         data.setModel(modelId + "_default");
         data.setTrigger(false);
 
+        // 对齐原版：先按球里的数据临时还原一只女仆，把她的背包掉在原地再移除，
+        // 这样转替身后女仆身上的东西不会凭空消失
+        if (world instanceof ServerWorld serverWorld) {
+            EntityMaid temp = new EntityMaid(serverWorld);
+            temp.readNbt(ball.getMaidTag(stack));
+            temp.setPosition(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5);
+            dropMaidItems(temp);
+            temp.discard();
+        }
+
         // 带数据的手办柜：把球里那份实体数据原样塞进物品的 EntityInfo
         ItemStack kit = new ItemStack(InitItems.GARAGE_KIT);
         kit.getOrCreateNbt().put(ENTITY_INFO, ball.getMaidTag(stack).copy());
