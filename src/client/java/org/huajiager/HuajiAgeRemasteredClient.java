@@ -122,6 +122,13 @@ public class HuajiAgeRemasteredClient implements ClientModInitializer {
 				spriteProvider -> (parameters, world, x, y, z, vx, vy, vz) ->
 						new HuajiSplashParticle(world, x, y, z, vx, vy, vz, spriteProvider));
 
+		// 绿宝石水花粒子工厂：法皇攻击态从翡翠弹发射点外喷的绿色水花
+		// （贴图取原版 particle/splash_0..3，见 particles/emerald_splash.json）。
+		ParticleFactoryRegistry.getInstance().register(ParticleLoader.EMERALD_SPLASH,
+				spriteProvider -> (parameters, world, x, y, z, vx, vy, vz) ->
+						new org.huajiager.client.particle.EmeraldSplashParticle(world, x, y, z, vx, vy, vz,
+								spriteProvider));
+
 		ClientPacketHandlers.register();
 
 		KeyLoader.register();

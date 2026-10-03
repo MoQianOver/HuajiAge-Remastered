@@ -60,10 +60,9 @@ public class CharmDisplayFeatureRenderer
         }
 
         matrices.push();
-        // 挂在头部：跟玩家模型 head 部件的位姿走（物品用 HEAD 展示变换）
+        // 挂在头部：跟玩家模型 head 部件的位姿走（物品用 HEAD 展示变换，原版观感约一格大小）
         this.getContextModel().head.rotate(matrices);
         matrices.translate(0.0, -0.25, 0.0);
-        matrices.scale(0.55f, 0.55f, 0.55f);
         MinecraftClient.getInstance().getItemRenderer().renderItem(player, shown,
                 ModelTransformationMode.HEAD, false, matrices, vertexConsumers, player.getWorld(), light,
                 OverlayTexture.DEFAULT_UV, player.getId());

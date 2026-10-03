@@ -228,37 +228,39 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 	}
 
 	/**
-	 * 绿法皇攻击态水花：照原版 ModelHierophantGreen.effect —— 每帧 3 颗，位置取替身
-	 * 相对点(-0.55,-0.6) 叠加随机抖动、高度抬高 2.2，速度取朝向一半再叠随机抖动；
-	 * 另有约 1/10 概率补一颗白烟。开启 useHuajiSplash 时水花换成滑稽粒子。
+	 * 绿法皇攻击态水花：位置取翡翠弹的发射点（玩家 + 相对点(-0.55,-0.6)、高度 +2.2，
+	 * 与 StateHierophantGreenDefault 发弹处同口径），每帧 3 颗、速度沿玩家朝向一半
+	 * 再叠随机抖动；用重力为 0 的绿色水花粒子，因此是往外喷而不是往下掉。
+	 * 另有约 1/10 概率补一颗白烟。开启 useHuajiSplash 时换成滑稽粒子。
 	 */
 	private void spawnHierophantSplash(EntityStandBase entity, boolean idle) {
 		StandBase stand = entity.getStand();
 		if (idle || stand == null || !StandLoader.HIEROPHANT_GREEN.getName().equals(stand.getName())) {
 			return;
 		}
-		if (entity.getWorld() == null) {
+		LivingEntity user = entity.getUser();
+		if (user == null || user.getWorld() == null) {
 			return;
 		}
-		Vec3d shootPoint = HAMathHelper.getPostionRelative2D(entity, -0.55f, -0.6f);
-		Vec3d forward = entity.getRotationVector();
-		float rf1 = entity.getWorld().random.nextFloat() * 2.0f - 1.0f;
-		float rf2 = entity.getWorld().random.nextFloat() * 2.0f - 1.0f;
-		float rf3 = entity.getWorld().random.nextFloat() * 2.0f - 1.0f;
-		double px = entity.getX() + shootPoint.x + rf2 / 5.0;
-		double py = entity.getY() + 2.2 + rf3 / 5.0;
-		double pz = entity.getZ() + shootPoint.z + rf1 / 5.0;
+		Vec3d shootPoint = HAMathHelper.getPostionRelative2D(user, -0.55f, -0.6f);
+		double px = user.getX() + shootPoint.x;
+		double py = user.getY() + 2.2;
+		double pz = user.getZ() + shootPoint.z;
+		Vec3d forward = user.getRotationVector();
+		float rf1 = user.getWorld().random.nextFloat() * 2.0f - 1.0f;
+		float rf2 = user.getWorld().random.nextFloat() * 2.0f - 1.0f;
+		float rf3 = user.getWorld().random.nextFloat() * 2.0f - 1.0f;
 		double vx = forward.x / 2.0 + rf1 / 5.0;
 		double vy = forward.y / 2.0 + rf2 / 5.0;
 		double vz = forward.z / 2.0 + rf3 / 5.0;
 		ParticleEffect splash = ConfigHuaji.Stands.useHuajiSplash
 				? ParticleLoader.HUAJI_SPLASH
-				: ParticleTypes.SPLASH;
+				: ParticleLoader.EMERALD_SPLASH;
 		for (int i = 0; i < 3; i++) {
-			entity.getWorld().addParticle(splash, px, py, pz, vx, vy, vz);
+			user.getWorld().addParticle(splash, px, py, pz, vx, vy, vz);
 		}
 		if (rf1 > 0.9f) {
-			entity.getWorld().addParticle(ParticleTypes.POOF, px, py, pz, vx, vy, vz);
+			user.getWorld().addParticle(ParticleTypes.POOF, px, py, pz, vx, vy, vz);
 		}
 	}
 

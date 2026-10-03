@@ -1,0 +1,8 @@
+{
+  "textures": [
+    "minecraft:particle/splash_0",
+    "minecraft:particle/splash_1",
+    "minecraft:particle/splash_2",
+    "minecraft:particle/splash_3"
+  ]
+}
