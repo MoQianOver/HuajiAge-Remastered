@@ -1,7 +1,7 @@
 # 滑稽纪元：重制 [Fabric非官方移植]
 HuajiAge: Remastered — Unofficial Fabric Port
 
-本模组为 滑稽纪元：无尽星河 的非官方fabric移植版
+本模组为 滑稽纪元：无尽星河 的非官方Fabric移植版。
 
 —— 原模组简介（作者：DragonGodSUN）——
 
