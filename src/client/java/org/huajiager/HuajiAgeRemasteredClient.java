@@ -197,6 +197,16 @@ public class HuajiAgeRemasteredClient implements ClientModInitializer {
 				Identifier.of("minecraft", "burst"),
 				(stack, world, entity, seed) -> ItemHuajiStarSword.isOpen(stack) ? 1.0f : 0.0f);
 
+		// 阴阳玉装配态切换：是否装着女仆 -> 模型谓词 "data"（yin_yang_ball.json overrides 0/1）
+		// 物品只在装了车万女仆时注册，未装时这里整段跳过
+		if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("touhou_little_maid")) {
+			net.minecraft.item.Item yinYangBall = net.minecraft.registry.Registries.ITEM
+					.get(Identifier.of("huajiager", "yin_yang_ball"));
+			ModelPredicateProviderRegistry.register(yinYangBall, Identifier.of("minecraft", "data"),
+					(stack, world, entity, seed) ->
+							((org.huajiager.item.ItemYinYangBall) yinYangBall).isBallFilled(stack) ? 1.0f : 0.0f);
+		}
+
 		// EX面筋棒 flavor 切换：NBT "flavor"(0~3) -> 模型谓词 flavor_1/2/3（0/1 布尔）
 		// 1.20.1 override 匹配为"谓词值 >= override 值即命中第一个"，若用单一递增谓词
 		// flavor=1/2/3，则 flavor=2/3 会误命中 flavor=1 的 override，贴图停在第一形态。		// 改独立布尔谓词精确匹配（exglutenbur.json overrides 同步为 flavor_1/2/3 -> exglutenbur_1/2/3）

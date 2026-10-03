@@ -256,9 +256,9 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 				}
 			}
 		}
-		// 诊断日志：确认替身模型最终命中的注册 key（null 表示落到默认人形）
+		// 排查用：确认替身模型最终命中的注册 key（null 表示落到默认人形），平时只在 debug 输出
 		if (LOGGED_MODEL_KEYS.add(modelId + " -> " + resolved)) {
-			org.slf4j.LoggerFactory.getLogger("huajiager").info(
+			org.slf4j.LoggerFactory.getLogger("huajiager").debug(
 					"[HuajiAge] stand model key: {} -> {}", modelId, resolved);
 		}
 		return resolved;
