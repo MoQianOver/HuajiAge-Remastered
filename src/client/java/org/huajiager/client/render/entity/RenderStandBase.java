@@ -232,23 +232,36 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 	 * 先原样查，再剔除状态后缀（加载器会把 modelId 拼成 &lt;id&gt;_&lt;stateId&gt;），
 	 * 最后按去掉命名空间的 path 短名再查一遍。查不到返回 null（按默认人形/自带贴图处理）。
 	 */
+	/** 诊断用：已打印过的模型键，避免渲染每帧刷屏。 */
+	private static final java.util.Set<String> LOGGED_MODEL_KEYS = java.util.concurrent.ConcurrentHashMap.newKeySet();
+
 	private String resolveModelKey(String modelId) {
 		if (modelId == null || modelId.isEmpty()) {
 			return null;
 		}
+		String resolved = null;
 		for (String candidate : new String[] { modelId, stripStateSuffix(modelId) }) {
 			if (standModels.containsKey(candidate)) {
-				return candidate;
+				resolved = candidate;
+				break;
 			}
 		}
-		int colon = modelId.indexOf(':');
-		String path = colon >= 0 ? modelId.substring(colon + 1) : modelId;
-		for (String candidate : new String[] { path, stripStateSuffix(path) }) {
-			if (standModels.containsKey(candidate)) {
-				return candidate;
+		if (resolved == null) {
+			int colon = modelId.indexOf(':');
+			String path = colon >= 0 ? modelId.substring(colon + 1) : modelId;
+			for (String candidate : new String[] { path, stripStateSuffix(path) }) {
+				if (standModels.containsKey(candidate)) {
+					resolved = candidate;
+					break;
+				}
 			}
 		}
-		return null;
+		// 诊断日志：确认替身模型最终命中的注册 key（null 表示落到默认人形）
+		if (LOGGED_MODEL_KEYS.add(modelId + " -> " + resolved)) {
+			org.slf4j.LoggerFactory.getLogger("huajiager").info(
+					"[HuajiAge] stand model key: {} -> {}", modelId, resolved);
+		}
+		return resolved;
 	}
 
 	/** 剔除状态后缀：注册 key 都是不带状态后缀的替身名。 */
