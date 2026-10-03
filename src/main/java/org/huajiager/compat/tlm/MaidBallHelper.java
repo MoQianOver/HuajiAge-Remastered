@@ -105,7 +105,10 @@ public final class MaidBallHelper {
         String modelId = ball.getMaidModel(stack);
         data.setStand(MAID_STAND);
         data.setStage(1);
-        data.setModel(modelId + "_default");
+        // 替身几何/贴图我们只带了 huajiager:maid_01 与 maid_x 两套；
+        // 女仆自己的 model id 属于车万那边的 geckolib 模型，本管线没有对应资源，
+        // 直接拿它当替身模型会出现"没有贴图"的人形，因此非本模组的 id 一律落到 maid_01
+        data.setModel(modelId.startsWith("huajiager:") ? modelId + "_default" : "huajiager:maid_01_default");
         data.setTrigger(false);
 
         // 对齐原版：先按球里的数据临时还原一只女仆，把她的背包掉在原地再移除，
