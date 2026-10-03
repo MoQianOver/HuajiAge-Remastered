@@ -36,7 +36,7 @@ import net.minecraft.world.World;
  * 波澜怒涛之刃（Wave Knife）。
  *
  * - 继承 SwordItem，自定义 ToolMaterial（等级3/耐久600/效率16.0/附魔20，修复材料波澜结晶）
- * - NBT 波澜机制：wave / wave_point / wave_max / wave_charge，随时间回满、命中增长、右键消耗冲刺
+ * - NBT 波澜机制：wave / wave_point / wave_max / wave_charge，随时间持续自动回复（每 100 tick +1）、命中增长、右键消耗冲刺
  * - 右键「冲浪」：消耗 1 点波澜点，进入 wave 状态并向前冲刺
  * - wave 状态：范围内小于 120° 的实体受到基于角度的魔法伤害，客户端沿视线撒水花
  * - 命中：附加魔法伤害、自身加速II+跳跃提升、波澜点 +（charge）
@@ -147,13 +147,16 @@ public class ItemWaveKnife extends SwordItem {
 
     // ==================== 实例行为 ====================
 
-    /** 物品每 tick 结算：每 1000 tick 回满波澜点、wave 状态逐 tick 递减（粒子/伤害） */
+    /** 物品每 tick 结算：每 100 tick（5 秒）自动回复 1 点波澜点、wave 状态逐 tick 递减（粒子/伤害） */
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
 
-        if (entity.age % 1000 == 0 && getWavePoint(stack) < getWaveMax(stack)) {
-            setWavePoint(stack, getWaveMax(stack));
+        // 自动回复：每 100 tick（5 秒）回复 1 点波澜点，满 10 点共需 50 秒，
+        // 与原版每 1000 tick 一次性回满（ticksExisted % 1000 == 0 时直接 setWavePoint(max)）的平均速率一致；
+        // 改为持续小步回复，避免一次性回满在客户端/服务端 NBT 同步竞态下出现"恢复不可见"（原版 50 秒内无任何变化）
+        if (entity.age % 100 == 0 && getWavePoint(stack) < getWaveMax(stack)) {
+            setWavePoint(stack, getWavePoint(stack) + 1);
         }
 
         if (isWave(stack)) {
@@ -234,7 +237,7 @@ public class ItemWaveKnife extends SwordItem {
 
     /**
      * 右键「冲浪」：消耗 1 点波澜点，进入 wave 状态并向前冲刺。
-     * 波澜点不足时同样按 SUCCESS 处理不落空物品（波澜点依赖 inventoryTick 每 1000 tick 回满），
+     * 波澜点不足时同样按 SUCCESS 处理不落空物品（波澜点依赖 inventoryTick 每 100 tick 自动回复 1 点），
      * 并额外补摆臂 + 服务端提示消息，让波澜点不足这一状态可感知，避免"右键无反应"被误解为 bug。
      */
     @Override
