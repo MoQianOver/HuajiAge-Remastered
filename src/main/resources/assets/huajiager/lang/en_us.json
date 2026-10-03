@@ -301,6 +301,7 @@
   "item.huajiager.yin_yang_ball": "Yin-Yang Ball",
   "item.huajiager.yin_yang_ball.filled": "§dCaptured: %s",
   "stand.huajiager.maid.name": "§d§lMaid",
+  "item.huajiager.yin_yang_ball.empty": "§7(Empty)",
   "stand.huajiager.maid.default": "§d§lMaid",
   "stand.huajiager.skill.huajiager.crazy_diamond.start": "§b§lCrazy Diamond! Durararararararararara!!!",
   "stand.huajiager.crazy_diamond.default": "Default",

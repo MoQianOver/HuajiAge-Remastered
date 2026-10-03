@@ -25,6 +25,8 @@ import net.minecraft.world.World;
  */
 public class ItemYinYangBall extends Item {
 
+    private static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger("huajiager");
+
     public ItemYinYangBall() {
         super(new Settings().maxCount(1));
     }
@@ -38,12 +40,27 @@ public class ItemYinYangBall extends Item {
         }
         ItemStack stack = context.getStack();
         BlockPos pos = context.getBlockPos();
+        // 诊断日志：定位"有球但没反应"到底卡在哪一步
+        LOGGER.info("[HuajiAge] yin-yang ball useOnBlock: sneaking={}, filled={}, client={}",
+                player.isSneaking(), isBallFilled(stack), player.getWorld().isClient);
         if (player.isSneaking()) {
             return MaidBallHelper.becomeMaidStand(player, stack, pos)
                     ? ActionResult.SUCCESS : ActionResult.PASS;
         }
         return MaidBallHelper.release(player, stack, pos)
                 ? ActionResult.SUCCESS : ActionResult.PASS;
+    }
+
+    /** 物品提示：直接显示球里有没有女仆、是谁的，便于确认是否真的收进去了。 */
+    @Override
+    public void appendTooltip(ItemStack stack, World world, java.util.List<net.minecraft.text.Text> tooltip,
+                              net.minecraft.client.item.TooltipContext context) {
+        if (isBallFilled(stack)) {
+            tooltip.add(net.minecraft.text.Text.translatable("item.huajiager.yin_yang_ball.filled",
+                    getMaidOwnerName(stack)));
+        } else {
+            tooltip.add(net.minecraft.text.Text.translatable("item.huajiager.yin_yang_ball.empty"));
+        }
     }
 
     /** 右击女仆本体：可抓（未驯服或属主是自己）就直接抓当前目标。 */
