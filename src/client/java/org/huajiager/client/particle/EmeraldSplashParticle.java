@@ -23,7 +23,9 @@ public class EmeraldSplashParticle extends SpriteBillboardParticle {
 		this.red = 0.62f;
 		this.green = 1.0f;
 		this.blue = 0.62f;
-		this.scale = 0.75f;
+		// 尺寸口径：1.12 的 particleScale 渲染时乘 0.1，1.20.1 的 getSize() 直接返回 scale
+		// （单位=格），所以原版的 0.75 在 1.20.1 对应约 0.075 格；取 0.1 保证可见又不糊脸。
+		this.scale = 0.1f;
 		this.gravityStrength = 0.0f;
 		this.maxAge = (int) (8.0 / (this.random.nextFloat() * 0.8f + 0.2f)) + 4;
 		this.setSpriteForAge(spriteProvider);
