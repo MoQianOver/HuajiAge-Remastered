@@ -182,6 +182,82 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 	}
 
 	/**
+	 * 借用表：自定义替身用 JS 的 modelId 借内置模型时，同步借用的默认贴图。
+	 * key 与 {@link #register} 使用的替身名一致（短名与带命名空间两种 key 都登记）。
+	 */
+	private static final Map<String, Identifier> BORROW_TEXTURES = new HashMap<>();
+	static {
+		BORROW_TEXTURES.put(StandLoader.THE_WORLD.getName(), nativeTex(StandLoader.THE_WORLD));
+		BORROW_TEXTURES.put(StandLoader.STAR_PLATINUM.getName(), nativeTex(StandLoader.STAR_PLATINUM));
+		BORROW_TEXTURES.put(StandLoader.HIEROPHANT_GREEN.getName(), nativeTex(StandLoader.HIEROPHANT_GREEN));
+		BORROW_TEXTURES.put(StandLoader.KILLER_QUEEN.getName(), nativeTex(StandLoader.KILLER_QUEEN));
+		BORROW_TEXTURES.put(StandLoader.ORGA_REQUIEM.getName(), nativeTex(StandLoader.ORGA_REQUIEM));
+		BORROW_TEXTURES.put("crazy_diamond", CRAZY_DIAMOND_TEXTURE);
+		BORROW_TEXTURES.put("huajiager:crazy_diamond", CRAZY_DIAMOND_TEXTURE);
+		BORROW_TEXTURES.put("hermit_purple", HERMIT_PURPLE_TEXTURE);
+		BORROW_TEXTURES.put("huajiager:hermit_purple", HERMIT_PURPLE_TEXTURE);
+		BORROW_TEXTURES.put("white_snake", WHITE_SNAKE_TEXTURE);
+		BORROW_TEXTURES.put("huajiager:white_snake", WHITE_SNAKE_TEXTURE);
+	}
+
+	/** 原生替身的贴图路径转 Identifier（texPath 形如 textures/entity/xxx.png）。 */
+	private static Identifier nativeTex(StandBase stand) {
+		String path = stand == null ? null : stand.getTexPath();
+		return path == null || path.isEmpty()
+				? null
+				: Identifier.of(org.huajiager.HuajiAgeRemastered.MOD_ID, path);
+	}
+
+	/** 当前状态：由宿主玩家的替身数据取，与其余状态判定（isIdle / isPunch / isFly）同源。 */
+	private static StandStateBase currentState(EntityStandBase entity) {
+		LivingEntity user = entity.getUser();
+		if (user == null) {
+			return null;
+		}
+		IExposedData data = StandUtil.getStandData(user);
+		if (data == null) {
+			return null;
+		}
+		return StandStates.getStandState(data.getStand(), data.getState()) instanceof StandStateBase base
+				? base
+				: null;
+	}
+
+	/**
+	 * 把状态声明的 modelId 归一到 {@link #standModels} 的注册 key：
+	 * 先原样查，再剔除状态后缀（加载器会把 modelId 拼成 &lt;id&gt;_&lt;stateId&gt;），
+	 * 最后按去掉命名空间的 path 短名再查一遍。查不到返回 null（按默认人形/自带贴图处理）。
+	 */
+	private String resolveModelKey(String modelId) {
+		if (modelId == null || modelId.isEmpty()) {
+			return null;
+		}
+		for (String candidate : new String[] { modelId, stripStateSuffix(modelId) }) {
+			if (standModels.containsKey(candidate)) {
+				return candidate;
+			}
+		}
+		int colon = modelId.indexOf(':');
+		String path = colon >= 0 ? modelId.substring(colon + 1) : modelId;
+		for (String candidate : new String[] { path, stripStateSuffix(path) }) {
+			if (standModels.containsKey(candidate)) {
+				return candidate;
+			}
+		}
+		return null;
+	}
+
+	/** 剔除状态后缀：注册 key 都是不带状态后缀的替身名。 */
+	private static String stripStateSuffix(String id) {
+		for (String suffix : new String[] { "_default", "_idle", "_heal", "_punch", "_overdrive", "_fly" }) {
+			if (id.endsWith(suffix)) {
+				return id.substring(0, id.length() - suffix.length());
+			}
+		}
+		return id;
+	}
+
+	/**
 	 * 按替身名取模型并处理闲置态：THE_WORLD / STAR_PLATINUM 闲置时切换各自独立
 	 * 抱拳盘腿闲置模型（ModelTheWorldIdle / ModelStarPlatinumIdle），
 	 * 其余替身无独立闲置模型时回落其 default 模型（power=0 收手）。
@@ -222,6 +298,16 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 			HAModelBase m = standModels.get(s.getName());
 			if (m != null) {
 				return m;
+			}
+			// 自定义替身：名字查不到时按状态声明的 modelId 借内置模型
+			// （JS 里写 modelId: "huajiager:crazy_diamond" 即可复用该模型与贴图）。
+			StandStateBase stateBase = currentState(entity);
+			String modelKey = stateBase == null ? null : resolveModelKey(stateBase.getModelID());
+			if (modelKey != null) {
+				HAModelBase byId = standModels.get(modelKey);
+				if (byId != null) {
+					return byId;
+				}
 			}
 		}
 		return defaultModel;
@@ -768,6 +854,22 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 		}
 		if (stand != null && stand.getTexPath() != null && !stand.getTexPath().isEmpty()) {
 			return Identifier.of("huajiager", stand.getTexPath());
+		}
+		// 自定义替身（没有 texPath）：按状态声明的 modelId 取贴图——
+		// 命中内置模型时同步借用该模型的贴图；否则用状态推导的路径
+		// （StandStateCustom.getTex()：textures/entity/<modelId 的 path>.png，去掉 _default 后缀），
+		// 于是资源包可以给自定义替身放自己的贴图。
+		StandStateBase stateBase = currentState(entity);
+		if (stateBase != null) {
+			String modelKey = resolveModelKey(stateBase.getModelID());
+			Identifier borrowed = modelKey == null ? null : BORROW_TEXTURES.get(modelKey);
+			if (borrowed != null) {
+				return borrowed;
+			}
+			Identifier own = stateBase.getTex();
+			if (own != null) {
+				return own;
+			}
 		}
 		return FALLBACK_TEXTURE;
 	}

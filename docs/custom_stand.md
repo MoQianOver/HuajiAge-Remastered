@@ -12,13 +12,20 @@
 
 ### 0.1 一句话结论：能改什么、不能改什么
 
-| 能改 | 不能改 |
+| 能改 | 仍不能改 |
 | --- | --- |
-| 替身名（lang key）、7 项属性、状态机逻辑（JS）、召唤音与循环音、HUD 左上角 disc 图标、作者行、是否进觉醒之箭随机池 | **模型与贴图**：自定义替身一律渲染成默认人形模型 + 世界贴图 |
+| 替身名（lang key）、7 项属性、状态机逻辑（JS）、召唤音与循环音、HUD 左上角 disc 图标、作者行、是否进觉醒之箭随机池 | **全新的几何造型**：只能"借用"模组已内置的模型，不能自定义一套新模型 |
 
-外观改不了的原因：模型与贴图在渲染器里**按替身名硬编码选择**
-（`src\client\java\org\huajiager\client\render\entity\RenderStandBase.java` 的 `pickModel` / `getTexture`），
-"按 model id 查表"的数据驱动管线尚未迁移，详见 2.4 节。
+**外观能改到什么程度**（细节见 2.4 节）：
+
+- JS 里写 `modelId: "huajiager:crazy_diamond"` → 这个自定义替身就**复用该内置替身的模型 + 贴图**。
+  可借用的名字：`the_world`、`star_platinum`、`hierophant_green`、`killer_queen`、`orga_requiem`、
+  `crazy_diamond`、`hermit_purple`、`white_snake`（带不带命名空间都认）。
+- 想用自己的贴图：把 `modelId` 写成你自己的 id（如 `mypack:my_skin`），再把 PNG 放进资源包
+  `assets/mypack/textures/entity/my_skin.png`（`_default` 后缀会被自动去掉）。
+  这种情况模型仍是默认人形，贴图 UV 请以 `assets/huajiager/textures/entity/entity_the_world_default.png`
+  为模板——它本来就是配默认人形模型的兜底贴图。
+- 想做**全新的模型造型**（基岩几何 + JS 骨骼动画）需要等模型管线迁移，见 2.4 节末。
 
 ### 0.2 三步做出一个能用的替身
 
@@ -58,6 +65,7 @@ var Helper = Java.type("org.huajiager.stand.helper.StandPowerHelper");
 Java.asJSONCompatible({
     stand: "mypack:my_stand",      // 必须与 JSON 的 stand 一字不差
     stateId: "default",            // 必须存在一个 default 状态
+    modelId: "huajiager:crazy_diamond",   // 借内置模型；不写则用默认人形（见 0.1 / 2.4）
     stateKey: "stand.mypack.my_stand.default",
     hand: true,                    // 第一人称是否显示手臂
     soundRepeat: true,             // 该状态是否算"循环音态"
@@ -266,15 +274,17 @@ JSON 里出现的、但不在上表内的 key 会被 Gson 静默丢弃（不报�
   去掉该后缀，再拼成 `textures/entity/<path>.png`（`StandStateCustom.java:64-78`）。
   例：`modelId = "huajiager:crazy_diamond_default"` → `huajiager:textures/entity/crazy_diamond.png`。
   若 `modelId` 不是合法 Identifier，回落父类贴图（`StandStateCustom.java:69-72`）。
-- **客户端渲染的实际取贴图路径不同**：`RenderStandBase.getTexture` 对疯狂钻石 / 隐者之紫 / 白蛇三个
-  自定义替身做了**按替身名硬编码**的贴图分支（`src\client\java\org\huajiager\client\render\entity\RenderStandBase.java:708-725`），
-  自定义替身 `StandCustom` 从不设置 `texPath`（`StandCustom` 构造器未赋值，`StandBase.getTexPath()` 因此为 `null`），
-  所以**新做的自定义替身会一路兜底到 `FALLBACK_TEXTURE`（世界贴图）**
-  （`RenderStandBase.java:726-729`，注释见 `708-710`）。想让新替身有独立贴图，只能改客户端代码，
-  纯配置路径下未验证可行方案。
-- 模型造型同样是硬编码注册表：`RenderStandBase` 只注册了原生 5 替身 + 3 个自定义替身的模型 key
-  （`RenderStandBase.java:128-164`），`pickModel` 查不到就回落 `defaultModel`
-  （`RenderStandBase.java:217-222`）。**新自定义替身会用默认人形模型。**
+- **内置替身仍按替身名走硬编码分支**（`RenderStandBase.getTexture` 里疯狂钻石 / 隐者之紫 / 白蛇，
+  以及五个原生替身的闲置 / 攻击 / 飞行态），这些分支优先于下面的 modelId 逻辑。
+- **自定义替身（`StandCustom` 不设置 `texPath`）按 JS 的 `modelId` 取模型与贴图**：
+  - `modelId` 归一化（剔除 `_default` 这类状态后缀、再去掉命名空间试一次）后命中内置模型注册表时，
+    模型复用该内置模型（`pickModel` 的 modelId 分支），贴图同步借用该模型的默认贴图（`BORROW_TEXTURES` 表）。
+  - 未命中内置模型时：模型回落 `defaultModel`（默认人形），贴图用 `StandStateCustom.getTex()` 推导的
+    `textures/entity/<modelId 的 path>.png`（`_default` 后缀自动去掉）——资源包把 PNG 放在该路径即可生效；
+    文件不存在时表现为缺失贴图，这是有意的显式反馈。
+- **仍缺**：运行时基岩几何（`stand_model.json` + `models/entity/*.json`）与 JS 骨骼动画沙箱，
+  也就是"完全自定义一套新模型"这条路还没通，对应 `ModelStandJson` / `CustomResourceLoader` /
+  `CustomJsAnimationManger` 等尚未迁移的类。
 
 ---
 
