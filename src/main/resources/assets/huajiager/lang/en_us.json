@@ -512,6 +512,7 @@
   "text.autoconfig.huajiager.option.Huaji.point_star": "The Points Needed for Making Universe Star",
   "text.autoconfig.huajiager.option.Stands.roadRolerExplosion": "The Terrain destruction of the big explosion created by road roller",
   "text.autoconfig.huajiager.option.Stands.allowTimeStopPlayer": "Can THE WORLD stop the time of players?",
+  "text.autoconfig.huajiager.option.Stands.delayTimeStop": "Delay the start of time stop?",
   "text.autoconfig.huajiager.option.Stands.allowTheWorldDestory": "Can THE WORLD Destory blocks?",
   "text.autoconfig.huajiager.option.Stands.allowCrazyDiamondBlock": "Can CRAZY DIAMOND Change the structure of blocks?",
   "text.autoconfig.huajiager.option.Stands.allowStandPunish": "To punish the stand users who out of time",

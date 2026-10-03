@@ -658,6 +658,7 @@
   "text.autoconfig.huajiager.option.Huaji.point_star": "制作无尽之星所需星辰点数总量",
   "text.autoconfig.huajiager.option.Stands.roadRolerExplosion": "是否允许压路机的爆炸破坏地形",
   "text.autoconfig.huajiager.option.Stands.allowTimeStopPlayer": "是否允许咋瓦鲁多暂停玩家时间",
+  "text.autoconfig.huajiager.option.Stands.delayTimeStop": "是否延迟时停开始",
   "text.autoconfig.huajiager.option.Stands.allowTheWorldDestory": "是否允许替身摧毁方块",
   "text.autoconfig.huajiager.option.Stands.allowCrazyDiamondBlock": "是否允许疯狂钻石改变方块结构",
   "text.autoconfig.huajiager.option.Stands.allowStandPunish": "是否惩罚使用替身超时的玩家",
