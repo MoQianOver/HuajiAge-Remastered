@@ -29,8 +29,37 @@ public final class JsEngineHelper {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JsEngineHelper.class);
 
-	/** 全局共享的 JS 引擎实例。 */
-	public static final ScriptEngine ENGINE = createEngine();
+	/**
+	 * 每个线程一份引擎：GraalJS 的 Context 有线程归属，跨线程调用会抛
+	 * "Multi threaded access requested by thread ... but is not allowed for language(s) js"。
+	 * 资源重载线程与渲染线程各自持有一份即可（加锁无法解决，Context 不允许换线程）。
+	 */
+	private static final ThreadLocal<ScriptEngine> THREAD_ENGINES =
+			ThreadLocal.withInitial(JsEngineHelper::createEngine);
+
+	/** 全局共享的 JS 引擎入口：实际按调用线程分派到该线程自己的引擎。 */
+	public static final ScriptEngine ENGINE = (ScriptEngine) java.lang.reflect.Proxy.newProxyInstance(
+			JsEngineHelper.class.getClassLoader(),
+			new Class<?>[] { ScriptEngine.class },
+			JsEngineHelper::invokeThreadEngine);
+
+	/** 把 ScriptEngine 的调用转发到当前线程的引擎实例。 */
+	private static Object invokeThreadEngine(Object proxy, java.lang.reflect.Method method, Object[] args)
+			throws Throwable {
+		if (method.getDeclaringClass() == Object.class) {
+			return switch (method.getName()) {
+				case "toString" -> "ThreadLocalScriptEngine";
+				case "hashCode" -> System.identityHashCode(proxy);
+				case "equals" -> proxy == args[0];
+				default -> null;
+			};
+		}
+		try {
+			return method.invoke(THREAD_ENGINES.get(), args);
+		} catch (java.lang.reflect.InvocationTargetException e) {
+			throw e.getCause();
+		}
+	}
 
 	/** 引擎兼容层初始化脚本：开启行为的 polyfill 统一在此注入。 */
 	private static final String COMPAT_BOOT_SCRIPT =
