@@ -283,8 +283,18 @@ JSON 里出现的、但不在上表内的 key 会被 Gson 静默丢弃（不报�
   - 未命中内置模型时：模型回落 `defaultModel`（默认人形），贴图用 `StandStateCustom.getTex()` 推导的
     `textures/entity/<modelId 的 path>.png`（`_default` 后缀自动去掉）——资源包把 PNG 放在该路径即可生效；
     文件不存在时表现为缺失贴图，这是有意的显式反馈。
-- **仍缺**：`transfer` / `rotation`（模型相对替身的位移与朝向修正）、骨骼 JS 动画（`animation/*.js`）、
-  `no_float` 的上下浮动，以及资源包热重载后不重启就生效的验证。几何与贴图本身已经能用了。
+- **已支持**：`transfer` / `rotation`（模型相对替身的位移与朝向修正，在模型自身矩阵里先旋转后平移）、
+  `no_float`（关闭时每帧叠加 `sin(ageTicks / 20) * 0.1` 格的上下浮动）、骨骼 JS 动画
+  （条目声明的 `animation` 列表；未声明时用默认 8 个脚本：head / flash_frames / flash_frames_fast /
+  rotation_yaw / ro_arms / ro_hands / ro_hit_hands / wheel）。
+  脚本契约：`Java.asJSONCompatible({ animation: function(player, limbSwing, limbSwingAmount, ageInTicks,
+  netHeadYaw, headPitch, scale, modelMap) {...} })`；`modelMap.get("<骨骼名>")` 取到的骨骼可
+  `setRotateAngleX/Y/Z`、`getRotateAngleX/Z`、`setHidden`，`player` 提供 `getSpeed()` /
+  `getSwingProgress()` / `isSwingLeftHand()` / `getRotationFactorFirst()`。
+- 第一人称下只渲染 `viewFirst` 与 `firstOnly` 两根骨骼（与内置替身的 renderFirst 同口径）；
+  借用原版实体模型（如 `minecraft:warden`）走烘焙静态姿势，不套用 transfer 与浮动。
+- `assets/huajiager/animation/ro_hit_hands.js` 里的 `Java.type` 包名原先是不存在的旧路径，
+  已修正为 `org.huajiager.util.HAMathHelper.CommonMath`（该脚本此前从未真正生效）。
 
 ### 2.5 资源包自定义几何（新模型）
 

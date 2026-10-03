@@ -48,6 +48,7 @@ public final class CustomModelLoader {
         INFOS.clear();
         MODELS.clear();
         FAILED.clear();
+        CustomAnimationLoader.clear();
 
         int declared = 0;
         int packs = 0;
@@ -84,9 +85,10 @@ public final class CustomModelLoader {
             if (built == null) {
                 FAILED.add(info.key());
             } else {
+                built.attach(info, CustomAnimationLoader.load(info, manager));
                 MODELS.put(info.key(), built);
-                LOGGER.info("[HuajiAge] Custom stand model built: {} (bones={}, boxes={})",
-                        info.key(), built.bones().size(), built.boxCount());
+                LOGGER.info("[HuajiAge] Custom stand model built: {} (bones={}, boxes={}, animations={})",
+                        info.key(), built.bones().size(), built.boxCount(), built.animationCount());
             }
         }
         LOGGER.info("[HuajiAge] Custom stand models declared: {} entries in {} packs, built {} models",
