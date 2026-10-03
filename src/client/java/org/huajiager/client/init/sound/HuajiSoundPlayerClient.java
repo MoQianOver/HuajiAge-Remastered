@@ -126,6 +126,13 @@ public class HuajiSoundPlayerClient implements HuajiSoundPlayer.IClientSoundPlay
     }
 
     @Override
+    public void playLoopingMovingSoundClient(LivingEntity target, SoundEvent sound, SoundCategory category,
+                                             float volume) {
+        MinecraftClient.getInstance().getSoundManager()
+                .play(new HuajiMovingSound(target, sound, category).setLoopVolume(volume));
+    }
+
+    @Override
     public void playClient(World world, double x, double y, double z, SoundEvent sound,
                            SoundCategory category, float volume, float pitch) {
         if (world instanceof ClientWorld clientWorld) {

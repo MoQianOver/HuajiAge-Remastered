@@ -1,7 +1,7 @@
 {
   "stand": "huajiager:white_snake",
   "name": "stand.huajiager.white_snake.name",
-  "disc": "huajiager:disc/disc_huajiager_white_snake",
+  "disc": "huajiager:disc/disc_huajiage_white_snake",
   "stand_tags": ["arrow","dark_core"],
   "stages": 1,
   "states":["default","punch"],

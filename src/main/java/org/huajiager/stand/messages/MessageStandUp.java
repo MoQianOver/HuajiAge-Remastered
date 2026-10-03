@@ -25,6 +25,7 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -154,7 +155,12 @@ public record MessageStandUp(boolean isMoving) implements FabricPacket {
 						break;
 					}
 				} else {
-					standUpSound = SoundLoader.THE_WORLD_STAND_UP;
+					// 未内置召唤音的自定义替身：改用其 JSON sounds 池随机一条（无效音效 id 自动跳过），
+					// 池为空时才回退到世界召唤音
+					List<SoundEvent> customSounds = StandUtil.getCustomStandSounds(stand);
+					standUpSound = customSounds.isEmpty()
+							? SoundLoader.THE_WORLD_STAND_UP
+							: customSounds.get(player.getRandom().nextInt(customSounds.size()));
 				}
 				// 召唤亮相音（替身主题乐）受配置 allowStandSound 控制：
 				// 关闭「替身音效」后召唤替身不再广播主题音效。每次召唤实时读静态配置，

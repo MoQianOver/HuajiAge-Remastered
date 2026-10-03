@@ -31,6 +31,9 @@ public class HuajiMovingSound extends MovingSoundInstance {
     /** 播放完成标志：Fabric MovingSoundInstance 无 setDonePlaying，以 done + isDone() 实现停止。 */
     private boolean done;
 
+    /** 音量锁定标记：true 时不再被替身状态联动改写（自定义替身 JSON 循环音用）。 */
+    private boolean fixedVolume;
+
     public HuajiMovingSound(Entity target, SoundEvent sound, SoundCategory category) {
         // Fabric 1.20.1 MovingSoundInstance 构造需 net.minecraft.util.math.random.Random（节奏抖动用）
         super(sound, category, Random.create());
@@ -45,6 +48,17 @@ public class HuajiMovingSound extends MovingSoundInstance {
 
     public HuajiMovingSound setLoop() {
         this.repeat = true;
+        return this;
+    }
+
+    /**
+     * 循环播放并锁定音量：用于自定义替身 JSON sounds_repeat 声明的音量，
+     * 播放期间不被下面的替身状态联动改写。
+     */
+    public HuajiMovingSound setLoopVolume(float volume) {
+        this.repeat = true;
+        this.fixedVolume = true;
+        this.volume = volume;
         return this;
     }
 
@@ -72,7 +86,7 @@ public class HuajiMovingSound extends MovingSoundInstance {
                 IExposedData data = StandUtil.getStandData(user);
                 IStandState state = data == null ? null
                         : StandStates.getStandState(data.getStand(), data.getState());
-                if (this.repeat && state != null) {
+                if (this.repeat && state != null && !this.fixedVolume) {
                     this.volume = state.isSoundLoop() ? 0.7f : 0.0f;
                 }
                 if (state == null) {

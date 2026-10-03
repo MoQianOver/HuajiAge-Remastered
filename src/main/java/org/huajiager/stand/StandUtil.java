@@ -1,13 +1,19 @@
 package org.huajiager.stand;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.Identifier;
 
+import org.huajiager.HuajiAgeRemastered;
 import org.huajiager.attachment.Attachments;
 import org.huajiager.capability.ExposedData;
 import org.huajiager.capability.IExposedData;
@@ -15,6 +21,8 @@ import org.huajiager.capability.StandHandler;
 import org.huajiager.init.loaders.PotionLoader;
 import org.huajiager.init.loaders.StandLoader;
 import org.huajiager.network.StandNetWorkHandler;
+import org.huajiager.stand.custom.StandCustom;
+import org.huajiager.stand.custom.StandCustomInfo;
 import org.huajiager.stand.entity.EntityStandBase;
 import org.huajiager.stand.instance.StandBase;
 import org.huajiager.stand.messages.SyncExposedStandDataMessage;
@@ -24,9 +32,9 @@ import org.huajiager.stand.states.StandStateBase;
  * 替身通用工具类。
  *
  * 已按依赖就绪情况迁入常用方法（getType / getStandData / getStandHandler /
- * standEffectLoad / getTypeWithIndex 等）；重型方法（getCustomStands / getTagStands /
- * getDiscTex / getArrowStands / getStandByEntity 等）依赖客户端资源加载与
- * StandCustom，当前未提供。
+ * standEffectLoad / getTypeWithIndex / getArrowStands 等）；其余重型方法
+ * （getCustomStands / getTagStands / getDiscTex / getStandByEntity 等）
+ * 依赖客户端资源加载与 StandCustom，当前未提供。
  */
 public final class StandUtil {
 
@@ -261,19 +269,105 @@ public final class StandUtil {
         }
     }
 
-    /**
-     * 按索引获取替身。
-     * 通过 getArrowStands() 取「可由觉醒之箭抽到的替身列表」再按下标取替身。     * 此处以 STAND_LIST（已注册替身池）作为等价取替身池，index 按池大小取模映射。
-     */
-    public static StandBase getTypeWithIndex(int index) {
-        //  getArrowStands().get(index % getArrowStands().size())。
-        //  getArrowStands() 依赖 StandResourceLoader 加载「觉醒之箭可抽到的
-        // 替身列表」（含自定义替身）。此处以 STAND_LIST（已注册替身池）作为等价
-        // 取替身池，index 按池大小取模映射（独立编写），使觉醒成功分支真正能写入替身。
-        if (StandLoader.STAND_LIST == null || StandLoader.STAND_LIST.isEmpty()) {
-            return null;
+    /** 自定义替身用来声明「可被觉醒之箭抽到」的 standTags 标签名。 */
+    private static final String ARROW_STAND_TAG = "arrow";
+
+    /** 觉醒之箭默认可抽到的原生替身：镇魂曲只能由奥尔加进化路线获得，不入抽取池。 */
+    private static final List<StandBase> ARROW_STANDS_NATIVE = List.of(
+            StandLoader.THE_WORLD, StandLoader.STAR_PLATINUM,
+            StandLoader.HIEROPHANT_GREEN, StandLoader.KILLER_QUEEN);
+
+    /** 觉醒之箭抽取池：原生白名单 + standTags 声明 {@link #ARROW_STAND_TAG} 的自定义替身。 */
+    public static List<StandBase> getArrowStands() {
+        List<StandBase> pool = new ArrayList<>(ARROW_STANDS_NATIVE);
+        for (StandBase stand : StandLoader.STAND_LIST) {
+            if (stand instanceof StandCustom custom && custom.getInfo() != null) {
+                List<String> tags = custom.getInfo().getStandTags();
+                if (tags != null && tags.contains(ARROW_STAND_TAG)) {
+                    pool.add(stand);
+                }
+            }
         }
-        return StandLoader.STAND_LIST.get(Math.floorMod(index, StandLoader.STAND_LIST.size()));
+        return pool;
     }
 
+    /** 按索引在觉醒之箭抽取池里取替身，index 按池大小取模。 */
+    public static StandBase getTypeWithIndex(int index) {
+        List<StandBase> pool = getArrowStands();
+        if (pool.isEmpty()) {
+            return null;
+        }
+        return pool.get(Math.floorMod(index, pool.size()));
+    }
+
+    /** 自定义替身召唤音池：JSON sounds 里能解析成已注册音效的条目（无效 id 跳过）。 */
+    public static List<SoundEvent> getCustomStandSounds(StandBase stand) {
+        List<SoundEvent> result = new ArrayList<>();
+        StandCustomInfo info = customInfoOf(stand);
+        if (info == null || info.getSounds() == null) {
+            return result;
+        }
+        for (String id : info.getSounds()) {
+            SoundEvent sound = resolveSound(id);
+            if (sound != null) {
+                result.add(sound);
+            }
+        }
+        return result;
+    }
+
+    /** 自定义替身循环音池：JSON sounds_repeat 的「音效id-音量」条目。 */
+    public static List<RepeatSound> getCustomStandRepeatSounds(StandBase stand) {
+        List<RepeatSound> result = new ArrayList<>();
+        StandCustomInfo info = customInfoOf(stand);
+        if (info == null || info.getSoundsRepeat() == null) {
+            return result;
+        }
+        for (String entry : info.getSoundsRepeat()) {
+            if (entry == null) {
+                continue;
+            }
+            int split = entry.lastIndexOf('-');
+            if (split <= 0 || split == entry.length() - 1) {
+                continue;
+            }
+            SoundEvent sound = resolveSound(entry.substring(0, split));
+            if (sound == null) {
+                continue;
+            }
+            try {
+                result.add(new RepeatSound(sound, Float.parseFloat(entry.substring(split + 1))));
+            } catch (NumberFormatException ignored) {
+                // 音量解析失败的条目跳过，不影响其余音效
+            }
+        }
+        return result;
+    }
+
+    /** 替身碟片贴图：自定义替身走 JSON 的 disc 字段，原生替身走 textures/item/disc/disc_<name>.png。 */
+    public static Identifier getDiscTex(StandBase stand) {
+        if (stand == null) {
+            return Identifier.of(HuajiAgeRemastered.MOD_ID, "textures/item/disc/disc_null.png");
+        }
+        StandCustomInfo info = customInfoOf(stand);
+        if (info != null && info.getDisc() != null && !info.getDisc().isEmpty()) {
+            Identifier disc = Identifier.tryParse(info.getDisc());
+            String path = disc != null ? disc.getPath() : info.getDisc();
+            return Identifier.of(HuajiAgeRemastered.MOD_ID, "textures/item/" + path + ".png");
+        }
+        return Identifier.of(HuajiAgeRemastered.MOD_ID, "textures/item/disc/disc_" + stand.getName() + ".png");
+    }
+
+    private static StandCustomInfo customInfoOf(StandBase stand) {
+        return stand instanceof StandCustom custom ? custom.getInfo() : null;
+    }
+
+    private static SoundEvent resolveSound(String id) {
+        Identifier identifier = Identifier.tryParse(id == null ? "" : id);
+        return identifier == null ? null : Registries.SOUND_EVENT.get(identifier);
+    }
+
+    /** 自定义替身循环音条目：音效 + JSON 里声明的音量。 */
+    public record RepeatSound(SoundEvent sound, float volume) {
+    }
 }

@@ -1,13 +1,16 @@
 package org.huajiager.stand.entity;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 
 import org.huajiager.capability.ExposedData;
 import org.huajiager.capability.IExposedData;
+import org.huajiager.config.ConfigHuaji;
 import org.huajiager.init.loaders.StandLoader;
+import org.huajiager.init.sound.HuajiSoundPlayer;
 import org.huajiager.stand.StandUtil;
 import org.huajiager.stand.instance.StandBase;
 
@@ -27,6 +30,7 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.server.world.ServerWorld;
@@ -53,6 +57,9 @@ public class EntityStandBase extends HorseEntity {
 
 
     private final String noUser = "8fdd0799-16c2-49d9-bdea-e75a07b9ec04";
+
+    /** 自定义替身的召唤音/循环音是否已播放：客户端每个替身实体实例只播一次。 */
+    private boolean customSoundPlayed;
 
     private static final String TAG_TYPE = "type";
     private static final String TAG_USER = "user";
@@ -214,6 +221,13 @@ public class EntityStandBase extends HorseEntity {
     @Override
     public void tick() {
         super.tick();
+
+        if (this.getWorld().isClient && !customSoundPlayed) {
+            // 客户端首次 tick（替身在本地出现）时播该替身的自定义音效：
+            // sounds 随机一条 + sounds_repeat 按 JSON 音量常驻循环
+            customSoundPlayed = true;
+            playCustomStandSounds();
+        }
 
         if (!this.getWorld().isClient) {
             LivingEntity user = getUser();
@@ -400,6 +414,26 @@ public class EntityStandBase extends HorseEntity {
 
     public StandBase getStand() {
         return StandLoader.getStand(this.dataTracker.get(TYPE));
+    }
+
+    /** 客户端播放自定义替身的召唤音（sounds 随机一条）与循环音（sounds_repeat，按 JSON 音量）。 */
+    private void playCustomStandSounds() {
+        if (!ConfigHuaji.Stands.allowStandSound) {
+            return;
+        }
+        StandBase stand = getStand();
+        if (stand == null) {
+            return;
+        }
+        List<SoundEvent> sounds = StandUtil.getCustomStandSounds(stand);
+        if (!sounds.isEmpty()) {
+            SoundEvent picked = sounds.get(this.getWorld().random.nextInt(sounds.size()));
+            HuajiSoundPlayer.playMovingSoundClient(this, picked, SoundCategory.NEUTRAL, 1.0f);
+        }
+        for (StandUtil.RepeatSound repeat : StandUtil.getCustomStandRepeatSounds(stand)) {
+            HuajiSoundPlayer.playLoopingMovingSoundClient(this, repeat.sound(), SoundCategory.NEUTRAL,
+                    repeat.volume());
+        }
     }
 
     private StandBase getStandBase() {

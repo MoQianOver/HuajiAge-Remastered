@@ -102,6 +102,17 @@ public class HuajiSoundPlayer {
     }
 
     /**
+     * 播放随实体移动的循环音效（客户端专属；委托给 client 实现）。
+     * volume 取自定义替身 JSON sounds_repeat 里声明的音量，播放期间不被替身状态联动改写。
+     */
+    public static void playLoopingMovingSoundClient(LivingEntity target, SoundEvent sound,
+                                                    SoundCategory category, float volume) {
+        if (clientSoundPlayer != null) {
+            clientSoundPlayer.playLoopingMovingSoundClient(target, sound, category, volume);
+        }
+    }
+
+    /**
      * 播放替身飞行态循环音（客户端专属；委托给 client 实现）。
      * 镇魂曲替身状态机切进 "fly" 时播放鞘翅飞行循环声，切出飞行态/收回替身时
      * 由 stopStandLoop 停止；仅本机玩家自己的状态同步驱动。
@@ -144,6 +155,8 @@ public class HuajiSoundPlayer {
         void stopAllSounds();
 
         void playMovingSoundClient(LivingEntity target, SoundEvent sound, SoundCategory category, float volume);
+
+        void playLoopingMovingSoundClient(LivingEntity target, SoundEvent sound, SoundCategory category, float volume);
 
         void playStandLoop(SoundEvent sound);
 

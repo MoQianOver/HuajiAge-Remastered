@@ -148,7 +148,9 @@ public class StandResourceLoader {
             InputStream stream = Files.newInputStream(file.toPath());
             StandCustomInfo info = loadStand(stream);
             CUSTOM_STAND_SERVER.put(info.getStand(), info);
-        } catch (IOException e) {
+        } catch (IOException | RuntimeException e) {
+            // RuntimeException 覆盖 JSON 语法错误与缺字段造成的 NPE：
+            // 用户 config 目录里放坏文件时只跳过该文件并留下可定位日志，不中断整个重载。
             LOGGER.error("[HuajiAge] Failed to load custom stand file: {}", file.getAbsolutePath(), e);
         }
     }
@@ -167,7 +169,8 @@ public class StandResourceLoader {
             if (info != null) {
                 CUSTOM_STATE_SERVER.put(info.getStand() + "_" + info.getStateId(), info);
             }
-        } catch (IOException e) {
+        } catch (IOException | RuntimeException e) {
+            // 同 loadStand(File)：坏脚本只跳过该文件并留日志，不中断整个重载
             LOGGER.error("[HuajiAge] Failed to load custom state file: {}", file.getAbsolutePath(), e);
         }
     }
@@ -199,7 +202,12 @@ public class StandResourceLoader {
         Map<String, Object> scriptMaps = new HashMap<>((Map<String, Object>) scriptObject);
 
         Object standObj = scriptMaps.get(stateArgs.STAND.getName());
-        String standId = standObj == null ? null : String.valueOf(standObj);
+        if (standObj == null || String.valueOf(standObj).isBlank()) {
+            // 缺 stand 字段的脚本定位不到替身，直接判为无效；不注册成 "null_default" 这类脏 key
+            LOGGER.error("[HuajiAge] Custom state script is missing the 'stand' field, skipped");
+            return null;
+        }
+        String standId = String.valueOf(standObj);
 
         Object stateIdObj = scriptMaps.get(stateArgs.STATE_ID.getName());
         String stateId = stateIdObj == null ? "default" : String.valueOf(stateIdObj);

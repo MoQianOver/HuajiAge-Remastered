@@ -2,8 +2,10 @@ package org.huajiager.item;
 
 import java.util.List;
 
+import org.huajiager.HuajiAgeRemastered;
 import org.huajiager.capability.IExposedData;
 import org.huajiager.config.ConfigHuaji;
+import org.huajiager.init.loaders.StandLoader;
 import org.huajiager.init.sound.HuajiSoundPlayer;
 import org.huajiager.stand.StandUtil;
 import org.huajiager.stand.instance.StandBase;
@@ -24,13 +26,14 @@ import net.minecraft.world.World;
  * 觉醒之箭（独立编写）。
  *
  * 行为（服务端右键）：若玩家尚未拥有替身（StandData 为空替身），
- * 随机抽取 0~99 号替身，按 ConfigHuaji.Stands.chanceStandFail 概率判定觉醒：
- *   - 成功：写入替身名，向附近客户端播放升级音效，提示 mesage.huajiager.stand.gain。 *   - 失败：施加缓慢/失明/虚弱/反胃/凋零多项负面效果，播放凋灵受伤音效，
- *     提示 mesage.huajiager.stand.fail。 * 无论觉醒成败均消耗一支觉醒之箭。
- * 若玩家已拥有替身，提示 message.huajiager.tarot.stand.fail_load。
- *
- * getTypeWithIndex 已在 StandUtil 侧按语义以 STAND_LIST（已注册原生替身）
- * 取模实现，觉醒成功即可真正写入替身；type==null 守卫仅作防御（替身池为空时）。
+ * 授予口径由 ConfigHuaji.Stands.arrowStand 决定：
+ *   - 已配置且注册名有效：直接授予该替身，不判失败概率；
+ *   - 留空或名字无效：从 StandUtil.getArrowStands() 抽取池取随机索引，
+ *     按 ConfigHuaji.Stands.chanceStandFail 概率判定觉醒失败。
+ * 成功：写入替身名、向附近客户端播放升级音效、提示 mesage.huajiager.stand.gain。
+ * 失败：施加缓慢/失明/虚弱/反胃/凋零多项负面效果，播放凋灵受伤音效，
+ * 提示 mesage.huajiager.stand.fail。
+ * 无论觉醒成败均消耗一支觉醒之箭；玩家已拥有替身时提示 message.huajiager.tarot.stand.fail_load。
  *
  * tooltip：main 源集（splitEnvironmentSourceSets）不含 client 屏幕类，无法直接
  * 调用 Screen.hasShiftDown()，故此处仅提供文本工厂 {@link #createDetailedTooltip()}，
@@ -67,10 +70,11 @@ public class ItemArrowStand extends Item {
             IExposedData data = StandUtil.getOrCreateStandData(player);
             if (data != null && StandUtil.getType(player) == null) {
 
-                double chance = Math.random();
-                int standNumber = world.random.nextInt(100);
-                StandBase type = StandUtil.getTypeWithIndex(standNumber);
-                if (chance >= ConfigHuaji.Stands.chanceStandFail) {
+                // 配置指定替身时直接授予（不判失败概率）；留空或名字无效则按抽取池随机 + 失败概率判定。
+                StandBase fixed = resolveConfiguredStand();
+                StandBase type = fixed != null ? fixed
+                        : StandUtil.getTypeWithIndex(world.random.nextInt(100));
+                if (fixed != null || Math.random() >= ConfigHuaji.Stands.chanceStandFail) {
                     if (type != null) {
                         data.setStand(type.getName());
                         HuajiSoundPlayer.playToNearbyClient(player, SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0f);
@@ -99,5 +103,20 @@ public class ItemArrowStand extends Item {
             }
         }
         return TypedActionResult.success(player.getStackInHand(hand));
+    }
+
+    /** 读取配置指定的替身注册名；未配置、空白或名字无效时返回 null（走抽取池随机）。 */
+    private static StandBase resolveConfiguredStand() {
+        String name = ConfigHuaji.Stands.arrowStand;
+        if (name == null || name.isBlank()) {
+            return null;
+        }
+        String key = name.trim();
+        StandBase stand = StandLoader.getStand(key);
+        if (stand == null) {
+            HuajiAgeRemastered.LOGGER.warn(
+                    "[HuajiAgeRemastered] 配置的觉醒替身 '{}' 未注册，本次回退到觉醒之箭抽取池", key);
+        }
+        return stand;
     }
 }

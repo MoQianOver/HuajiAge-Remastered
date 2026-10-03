@@ -12,12 +12,14 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
+import org.huajiager.HuajiAgeRemastered;
 import org.huajiager.capability.IExposedData;
 import org.huajiager.capability.StandHandler;
 import org.huajiager.init.loaders.ItemLoader;
 import org.huajiager.init.loaders.StandLoader;
 import org.huajiager.init.sound.HuajiSoundPlayer;
 import org.huajiager.stand.StandUtil;
+import org.huajiager.stand.custom.StandCustom;
 import org.huajiager.stand.instance.StandBase;
 import org.huajiager.util.NBTHelper;
 
@@ -124,12 +126,18 @@ public class ItemDiscStand extends Item {
         if (!model.equals(DEFAULT_STAND_ID) && !model.isEmpty()) {
             tooltip.add(Text.translatable("item.huajiager.disc.tooltip.3").append(Text.literal(model)));
         }
-        // 自定义替身（紫色隐者/疯狂钻石/白蛇）Disc 追加灰色作者行：
-        // getStandId 可能存短名或带 huajiager: 前缀的完整 ID，两种形式都兼容判断。
-        String shortId = stand.startsWith("huajiager:") ? stand.substring("huajiager:".length()) : stand;
-        if (shortId.equals("hermit_purple") || shortId.equals("crazy_diamond") || shortId.equals("white_snake")) {
-            tooltip.add(Text.translatable("item.huajiager.disc.tooltip.author")
-                    .append(Text.literal("LH_Lshen")).formatted(Formatting.GRAY));
+        // 自定义替身 Disc 追加灰色作者行：作者取自替身 JSON 的 author 字段，未声明则不显示。
+        // StandId 可能存短名或带 huajiager: 前缀的完整 ID，两种形式都尝试解析。
+        StandBase standBase = StandLoader.getStand(stand);
+        if (standBase == null && !stand.contains(":")) {
+            standBase = StandLoader.getStand(HuajiAgeRemastered.MOD_ID + ":" + stand);
+        }
+        if (standBase instanceof StandCustom custom && custom.getInfo() != null) {
+            String author = custom.getInfo().getAuthor();
+            if (author != null && !author.isEmpty()) {
+                tooltip.add(Text.translatable("item.huajiager.disc.tooltip.author")
+                        .append(Text.literal(author)).formatted(Formatting.GRAY));
+            }
         }
     }
 

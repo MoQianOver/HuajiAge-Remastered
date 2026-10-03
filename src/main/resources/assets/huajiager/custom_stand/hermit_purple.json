@@ -1,7 +1,7 @@
 {
   "stand": "huajiager:hermit_purple",
   "name": "stand.huajiager.hermit_purple.name",
-  "disc": "huajiager:disc/disc_huajiager_hermit_purple",
+  "disc": "huajiager:disc/disc_huajiage_hermit_purple",
   "stand_tags": ["arrow"],
   "stages": 1,
   "states":["default","overdrive"],
