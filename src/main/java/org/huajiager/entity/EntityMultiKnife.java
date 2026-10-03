@@ -58,6 +58,11 @@ public class EntityMultiKnife extends ProjectileEntity {
 	public static final EntityType<EntityMultiKnife> TYPE = EntityType.Builder
 			.<EntityMultiKnife>create((type, world) -> new EntityMultiKnife(type, world), SpawnGroup.MISC)
 			.setDimensions(0.25f, 0.25f)
+			// 对齐原版 trackingRange=100/updateFrequency=3：Builder 默认 maxTrackingRange=5，
+			// 多刃飞刀飞出 5 格外客户端实体即被移除（视觉+碰撞箱消失）但服务端仍在造成伤害，
+			// 显式扩大跟踪范围后与头屑飞刀同步修复。
+			.maxTrackingRange(100)
+			.trackingTickInterval(3)
 			.build("huajiager:multi_knife");
 
 	public EntityMultiKnife(EntityType<EntityMultiKnife> type, World world) {
