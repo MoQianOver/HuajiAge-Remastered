@@ -106,6 +106,21 @@ public class HuajiAgeRemasteredClient implements ClientModInitializer {
 		EntityRendererRegistry.register(EntitySecondFoil.TYPE, RenderSecondFoil::new);
 		EntityRendererRegistry.register(EntityLordLuWing.TYPE, RenderLordLuWing::new);
 
+		// 自定义替身模型：随客户端资源重载扫描所有命名空间的 stand_model.json 与几何文件
+		net.fabricmc.fabric.api.resource.ResourceManagerHelper
+				.get(net.minecraft.resource.ResourceType.CLIENT_RESOURCES)
+				.registerReloadListener(new net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener() {
+					@Override
+					public net.minecraft.util.Identifier getFabricId() {
+						return net.minecraft.util.Identifier.of("huajiager", "custom_stand_models");
+					}
+
+					@Override
+					public void reload(net.minecraft.resource.ResourceManager manager) {
+						org.huajiager.client.model.custom.CustomModelLoader.reload(manager);
+					}
+				});
+
 		// 誓约旗/无限耐久护身符的头戴图层（判定同原版 LayerCharmDisplay）
 		net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback.EVENT
 				.register((entityType, entityRenderer, helper, context) -> {

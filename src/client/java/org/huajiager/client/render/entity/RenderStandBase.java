@@ -309,6 +309,15 @@ public class RenderStandBase extends EntityRenderer<EntityStandBase> {
 					return byId;
 				}
 			}
+			// 仍取不到时问资源包声明的模型（stand_model.json + models/entity/*.json）：
+			// 第三方替身在这里拿到自己的几何造型。
+			if (stateBase != null) {
+				org.huajiager.client.model.custom.RuntimeStandModel custom =
+						org.huajiager.client.model.custom.CustomModelLoader.find(stateBase.getModelID());
+				if (custom != null) {
+					return custom;
+				}
+			}
 		}
 		return defaultModel;
 	}

@@ -14,18 +14,19 @@
 
 | 能改 | 仍不能改 |
 | --- | --- |
-| 替身名（lang key）、7 项属性、状态机逻辑（JS）、召唤音与循环音、HUD 左上角 disc 图标、作者行、是否进觉醒之箭随机池 | **全新的几何造型**：只能"借用"模组已内置的模型，不能自定义一套新模型 |
+| 替身名（lang key）、7 项属性、状态机逻辑（JS）、召唤音与循环音、HUD 左上角 disc 图标、作者行、是否进觉醒之箭随机池、**模型与贴图** | 骨骼 JS 动画、模型的位移/朝向修正（`transfer` / `rotation`）、`no_float` 浮动 |
 
-**外观能改到什么程度**（细节见 2.4 节）：
+**外观能改到什么程度**（细节见 2.4 / 2.5 节）：
 
-- JS 里写 `modelId: "huajiager:crazy_diamond"` → 这个自定义替身就**复用该内置替身的模型 + 贴图**。
+- **借用内置模型**：JS 里写 `modelId: "huajiager:crazy_diamond"` → 这个自定义替身就**复用该内置替身的模型 + 贴图**。
   可借用的名字：`the_world`、`star_platinum`、`hierophant_green`、`killer_queen`、`orga_requiem`、
   `crazy_diamond`、`hermit_purple`、`white_snake`（带不带命名空间都认）。
-- 想用自己的贴图：把 `modelId` 写成你自己的 id（如 `mypack:my_skin`），再把 PNG 放进资源包
+- **用自己的贴图**：把 `modelId` 写成你自己的 id（如 `mypack:my_skin`），再把 PNG 放进资源包
   `assets/mypack/textures/entity/my_skin.png`（`_default` 后缀会被自动去掉）。
   这种情况模型仍是默认人形，贴图 UV 请以 `assets/huajiager/textures/entity/entity_the_world_default.png`
   为模板——它本来就是配默认人形模型的兜底贴图。
-- 想做**全新的模型造型**（基岩几何 + JS 骨骼动画）需要等模型管线迁移，见 2.4 节末。
+- **全新的模型造型**：资源包里放 `stand_model.json` + `models/entity/<path>.json`（基岩几何）+
+  对应贴图，让 `modelId` 指向它 → 自定义替身就用这套新模型，见 2.5 节。
 
 ### 0.2 三步做出一个能用的替身
 
@@ -65,7 +66,7 @@ var Helper = Java.type("org.huajiager.stand.helper.StandPowerHelper");
 Java.asJSONCompatible({
     stand: "mypack:my_stand",      // 必须与 JSON 的 stand 一字不差
     stateId: "default",            // 必须存在一个 default 状态
-    modelId: "huajiager:crazy_diamond",   // 借内置模型；不写则用默认人形（见 0.1 / 2.4）
+    modelId: "huajiager:crazy_diamond",   // 借内置模型，或你自己的资源包模型（见 0.1 / 2.5）
     stateKey: "stand.mypack.my_stand.default",
     hand: true,                    // 第一人称是否显示手臂
     soundRepeat: true,             // 该状态是否算"循环音态"
@@ -282,9 +283,35 @@ JSON 里出现的、但不在上表内的 key 会被 Gson 静默丢弃（不报�
   - 未命中内置模型时：模型回落 `defaultModel`（默认人形），贴图用 `StandStateCustom.getTex()` 推导的
     `textures/entity/<modelId 的 path>.png`（`_default` 后缀自动去掉）——资源包把 PNG 放在该路径即可生效；
     文件不存在时表现为缺失贴图，这是有意的显式反馈。
-- **仍缺**：运行时基岩几何（`stand_model.json` + `models/entity/*.json`）与 JS 骨骼动画沙箱，
-  也就是"完全自定义一套新模型"这条路还没通，对应 `ModelStandJson` / `CustomResourceLoader` /
-  `CustomJsAnimationManger` 等尚未迁移的类。
+- **仍缺**：`transfer` / `rotation`（模型相对替身的位移与朝向修正）、骨骼 JS 动画（`animation/*.js`）、
+  `no_float` 的上下浮动，以及资源包热重载后不重启就生效的验证。几何与贴图本身已经能用了。
+
+### 2.5 资源包自定义几何（新模型）
+
+想让自定义替身**用一套全新的模型**（不只是借内置模型），在资源包里放两个东西：
+
+```
+assets/<命名空间>/stand_model.json              声明 model_id → 几何文件
+assets/<命名空间>/models/entity/<path>[_<状态>].json   基岩几何
+assets/<命名空间>/textures/entity/<path>[_<状态>].png  对应贴图
+```
+
+`stand_model.json` 的 `model_list` 每一项：
+
+| 键 | 作用 |
+| --- | --- |
+| `model_id` | **必填**，`命名空间:路径`；几何与贴图都按这个 path 去找 |
+| `state` | 该条目对应的状态 id，缺省 `default`；非 default 时几何/贴图文件名带 `_<state>` 后缀 |
+| `transfer` / `rotation` | 模型相对替身实体的位移（格）与朝向修正，**当前版本尚未消费** |
+| `no_float` | 关闭模型上下浮动，**当前版本尚未消费** |
+| `animation` | 骨骼动画脚本列表，**当前版本尚未消费** |
+| `tags` | 自定义标签，供资源包按用途筛选 |
+
+几何文件格式：基岩 `format_version 1.10.0` 的 `"geometry.model"`（`texturewidth`/`textureheight`
+**无下划线**）+ `bones`（`name`/`parent`/`pivot`/`rotation`/`mirror`/`cubes`）+ 方块
+（`origin`/`size`/`uv`[箱子 UV 起点]/`inflate`/`mirror`）。坐标换算与工程内既有模型同口径，
+支持骨级/方块级 `mirror` 与 `inflate`；**per-face UV（`"uv": {…}`）不支持**，这类文件会被跳过并留日志。
+`format_version` 不再强制等于 1.10.0（其他版本会尝试解析，失败则跳过该条目）。
 
 ---
 
