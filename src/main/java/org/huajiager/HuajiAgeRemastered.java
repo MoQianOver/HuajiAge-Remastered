@@ -77,6 +77,10 @@ public class HuajiAgeRemastered implements ModInitializer {
 		// 自定义伤害类型由数据包注册（data/huajiager/damage_type/*.json），
 		// DamageLoader 仅提供 RegistryKey 与 DamageSource 工厂（见类头注释）
 
+		// 宝箱战利品：注册 set_nbts_random 掉落函数，并把 4 张自定义表按概率
+		// 挂进末地城/沙漠神殿/丛林神庙/下界要塞的原版宝箱表
+		org.huajiager.loot.LootLoader.init();
+
 		// 网络注册（C2S 能力请求 + S2C 技能客户端广播）
 		org.huajiager.network.StandNetWorkHandler.register();
 
