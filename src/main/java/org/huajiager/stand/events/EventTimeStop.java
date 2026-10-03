@@ -128,6 +128,11 @@ public final class EventTimeStop {
 	}
 
 	public static void scheduleDelayedTimeStop(PlayerEntity player, int delayTicks, int duration, boolean applyPotion) {
+		// 延迟时停开关（Stands.delayTimeStop，默认开）：关时跳过音频延迟、立即开始冻结；
+		// 开时保持现状——先播开场音、按音效时长延迟后由本队列触发时停。
+		if (!ConfigHuaji.Stands.delayTimeStop) {
+			delayTicks = 0;
+		}
 		if (delayTicks <= 0) {
 			ServerPlayerEntity sp = (ServerPlayerEntity) player;
 			TimeStopHelper.setTimeStop(sp, duration);

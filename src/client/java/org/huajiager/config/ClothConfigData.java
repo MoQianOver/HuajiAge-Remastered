@@ -13,7 +13,6 @@ public class ClothConfigData implements ConfigData {
     @ConfigEntry.Category("huaji")
     @ConfigEntry.Gui.TransitiveObject
     public HuajiConfig Huaji = new HuajiConfig();
-
     @ConfigEntry.Category("stands")
     @ConfigEntry.Gui.TransitiveObject
     public StandConfig Stands = new StandConfig();
@@ -31,6 +30,7 @@ public class ClothConfigData implements ConfigData {
     public static class StandConfig {
         public boolean roadRolerExplosion = true;
         public boolean allowTimeStopPlayer = true;
+        public boolean delayTimeStop = true;
         public boolean allowTheWorldDestory = true;
         public boolean allowCrazyDiamondBlock = true;
         public boolean allowStandPunish = false;

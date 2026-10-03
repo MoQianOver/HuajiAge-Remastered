@@ -43,6 +43,7 @@ public final class ConfigScreen {
 
         ConfigHuaji.Stands.roadRolerExplosion = data.Stands.roadRolerExplosion;
         ConfigHuaji.Stands.allowTimeStopPlayer = data.Stands.allowTimeStopPlayer;
+        ConfigHuaji.Stands.delayTimeStop = data.Stands.delayTimeStop;
         ConfigHuaji.Stands.allowTheWorldDestory = data.Stands.allowTheWorldDestory;
         ConfigHuaji.Stands.allowCrazyDiamondBlock = data.Stands.allowCrazyDiamondBlock;
         ConfigHuaji.Stands.allowStandPunish = data.Stands.allowStandPunish;

@@ -1,5 +1,6 @@
 package org.huajiager.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.huajiager.capability.IExposedData;
@@ -16,10 +17,12 @@ import org.huajiager.stand.messages.MessageParticleGenerator;
 import org.huajiager.util.NBTHelper;
 import org.huajiager.util.ServerUtil;
 
+import net.minecraft.enchantment.ProtectionEnchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -27,14 +30,19 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import net.minecraft.world.explosion.Explosion;
 
 /**
  * 压路机实体。
@@ -167,16 +175,16 @@ public class EntityRoadRoller extends ProjectileEntity {
 		List<Entity> list = this.getWorld().getOtherEntities(this, this.getBoundingBox().expand(2, 1.5, 2));
 		if (list != null) {
 			for (Entity entity : list) {
-				if (entity != null && !(entity instanceof ProjectileEntity) && entity != getOwner()
-				// 附带 !(entity instanceof EntityStandBase) 排除（自己的替身实体不触发爆炸）
-						&& !(entity instanceof EntityStandBase)) {
+				// 排除投掷物、替身实体（原行为）与己方/友军（召唤者、五五开头盔翅膀、己方替身），
+				// 避免"丢出压路机/黑色轿车后爆炸误伤自己的翅膀并炸到自己"。
+				if (entity != null && !(entity instanceof ProjectileEntity)
+						&& !(entity instanceof EntityStandBase) && !isFriendlyEntity(entity)) {
 					if (!this.getWorld().isClient) {
 						if (entity instanceof LivingEntity) {
 							//  EntityDragon 龙首特判（dragonPartHead + 爆炸伤害）暂裁剪为普通 thrown 伤害
 							entity.damage(this.getDamageSources().thrown(this, getOwner()), getDamage() + getExtra() * 2);
 						}
-						this.getWorld().createExplosion(this, getX(), getY(), getZ(), getExtra() > 5 ? 4f : 2f, false,
-								World.ExplosionSourceType.NONE);
+						this.explodeExcludingFriendly();
 						this.discard();
 					}
 				}
@@ -228,20 +236,110 @@ public class EntityRoadRoller extends ProjectileEntity {
 	protected void onCollision(HitResult result) {
 		if (result.getType() == HitResult.Type.ENTITY) {
 			Entity entityHit = ((EntityHitResult) result).getEntity();
-			if (entityHit != null && entityHit != getOwner() && !(entityHit instanceof EntityStandBase)) {
+			// 命中判定同样排除替身实体（原行为）与己方/友军（召唤者、五五开头盔翅膀、己方替身）。
+			if (entityHit != null && !(entityHit instanceof EntityStandBase) && !isFriendlyEntity(entityHit)) {
 				if (!this.getWorld().isClient) {
 					if (entityHit instanceof LivingEntity) {
 						entityHit.damage(this.getDamageSources().thrown(this, getOwner()), getDamage() + getExtra() * 2);
 					}
-					this.getWorld().createExplosion(this, getX(), getY(), getZ(), getExtra() > 5 ? 4f : 2f, false,
-							World.ExplosionSourceType.NONE);
+					this.explodeExcludingFriendly();
 					this.discard();
 				}
 			}
 		} else {
-			this.getWorld().createExplosion(this, getX(), getY(), getZ(), getExtra() > 5 ? 4f : 2f, false,
-					World.ExplosionSourceType.NONE);
+			this.explodeExcludingFriendly();
 			this.discard();
+		}
+	}
+
+	/**
+	 * 己方/友军判定：召唤者自身、其五五开头盔翅膀实体（EntityLordLuWing.getOwner() 匹配宿主）、
+	 * 其替身实体（EntityStandBase.getUser() 匹配宿主，与 EntityOrgaHairKnife 同口径）。
+	 * 爆炸结算与碰撞检测排除这些实体，避免"丢出压路机/黑色轿车后爆炸误伤自己的翅膀并炸到自己"。
+	 */
+	private boolean isFriendlyEntity(Entity target) {
+		if (target == null) {
+			return false;
+		}
+		Entity owner = this.getOwner();
+		if (target == owner) {
+			return true;
+		}
+		if (target instanceof EntityLordLuWing wing) {
+			return wing.getOwner() == owner;
+		}
+		if (target instanceof EntityStandBase stand) {
+			return stand.getUser() == owner;
+		}
+		return false;
+	}
+
+	/**
+	 * 爆炸结算：复刻原版 createExplosion 的实体伤害/击退公式（KEEP 不破坏方块），
+	 * 但在实体筛选中排除己方/友军（召唤者、翅膀、己方替身）。伤害源仍为爆炸默认伤害源
+	 * （causer=压路机自身），对敌人的伤害与击退与原版完全一致；随后发送爆炸 S2C 包
+	 * 驱动客户端音效/爆炸粒子/预测击退（等效 ServerWorld.createExplosion 的客户端表现）。
+	 */
+	private void explodeExcludingFriendly() {
+		World world = this.getWorld();
+		if (world.isClient) {
+			return;
+		}
+		float power = getExtra() > 5 ? 4f : 2f;
+		double x = getX();
+		double y = getY();
+		double z = getZ();
+		Explosion explosion = new Explosion(world, this, x, y, z, power, false, Explosion.DestructionType.KEEP);
+		float q = power * 2.0F;
+		int r = MathHelper.floor(x - (double) q - 1.0D);
+		int s = MathHelper.floor(x + (double) q + 1.0D);
+		int t = MathHelper.floor(y - (double) q - 1.0D);
+		int u = MathHelper.floor(y + (double) q + 1.0D);
+		int v = MathHelper.floor(z - (double) q - 1.0D);
+		int w = MathHelper.floor(z + (double) q + 1.0D);
+		List<Entity> list = world.getOtherEntities(this, new Box(r, t, v, s, u, w));
+		Vec3d center = new Vec3d(x, y, z);
+		for (Entity entity : list) {
+			if (entity.isImmuneToExplosion() || isFriendlyEntity(entity)) {
+				continue;
+			}
+			double dist = Math.sqrt(entity.squaredDistanceTo(center)) / (double) q;
+			if (dist > 1.0D) {
+				continue;
+			}
+			double dx = entity.getX() - x;
+			double dy = (entity instanceof TntEntity ? entity.getY() : entity.getEyeY()) - y;
+			double dz = entity.getZ() - z;
+			double len = Math.sqrt(dx * dx + dy * dy + dz * dz);
+			if (len == 0.0D) {
+				continue;
+			}
+			dx /= len;
+			dy /= len;
+			dz /= len;
+			double exposure = Explosion.getExposure(center, entity);
+			double impact = (1.0D - dist) * exposure;
+			entity.damage(explosion.getDamageSource(),
+					(float) ((int) ((impact * impact + impact) / 2.0D * 7.0D * (double) q + 1.0D)));
+			double knockback = impact;
+			if (entity instanceof LivingEntity living) {
+				knockback = ProtectionEnchantment.transformExplosionKnockback(living, impact);
+			}
+			Vec3d vel = new Vec3d(dx * knockback, dy * knockback, dz * knockback);
+			entity.setVelocity(entity.getVelocity().add(vel));
+			if (entity instanceof PlayerEntity player
+					&& !player.isSpectator() && !(player.isCreative() && player.getAbilities().flying)) {
+				explosion.getAffectedPlayers().put(player, vel);
+			}
+		}
+		// 复刻 ServerWorld.createExplosion：向所有玩家发送爆炸 S2C 包（携带每个玩家各自的击退向量），
+		// 客户端据此播放爆炸音效/粒子并施加本地预测击退；己方玩家不在 affectedPlayers 中则收到零向量。
+		if (world instanceof ServerWorld serverWorld) {
+			for (ServerPlayerEntity player : serverWorld.getPlayers()) {
+				player.networkHandler.sendPacket(new ExplosionS2CPacket(x, y, z, power,
+						new ArrayList<>(explosion.getAffectedBlocks()),
+						explosion.getAffectedPlayers().getOrDefault(player, Vec3d.ZERO)));
+			}
 		}
 	}
 

@@ -21,6 +21,7 @@ public class ConfigHuaji {
     public static class StandConfig {
         public boolean roadRolerExplosion = true;
         public boolean allowTimeStopPlayer = true;
+        public boolean delayTimeStop = true;
         public boolean allowTheWorldDestory = true;
         public boolean allowCrazyDiamondBlock = true;
         public boolean allowStandPunish = false;
