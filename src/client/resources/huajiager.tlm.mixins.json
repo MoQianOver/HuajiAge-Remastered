@@ -1,0 +1,11 @@
+{
+	"required": false,
+	"package": "org.huajiager.mixin.client.tlm",
+	"compatibilityLevel": "JAVA_17",
+	"client": [
+		"EntityChairYawFixMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

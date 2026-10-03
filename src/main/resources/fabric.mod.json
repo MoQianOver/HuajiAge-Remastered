@@ -41,6 +41,10 @@
 		{
 			"config": "huajiager.client.mixins.json",
 			"environment": "client"
+		},
+		{
+			"config": "huajiager.tlm.mixins.json",
+			"environment": "client"
 		}
 	],
 	"depends": {
@@ -54,6 +58,7 @@
 		"jei": ">=15.28.1.170",
 		"cloth-config": "*",
 		"modmenu": "*",
-		"jade": ">=11.13.3"
+		"jade": ">=11.13.3",
+		"touhou_little_maid": "*"
 	}
 }
