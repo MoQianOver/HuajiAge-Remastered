@@ -37,10 +37,12 @@ public final class JsEngineHelper {
 	private static final ThreadLocal<ScriptEngine> THREAD_ENGINES =
 			ThreadLocal.withInitial(JsEngineHelper::createEngine);
 
-	/** 全局共享的 JS 引擎入口：实际按调用线程分派到该线程自己的引擎。 */
+	/** 全局共享的 JS 引擎入口：实际按调用线程分派到该线程自己的引擎。
+	 * 必须同时实现 {@link javax.script.Invocable}——替身状态脚本靠它调用 JS 函数
+	 * （update / capability / timeOut），只实现 ScriptEngine 会让这些调用被静默跳过。 */
 	public static final ScriptEngine ENGINE = (ScriptEngine) java.lang.reflect.Proxy.newProxyInstance(
 			JsEngineHelper.class.getClassLoader(),
-			new Class<?>[] { ScriptEngine.class },
+			new Class<?>[] { ScriptEngine.class, javax.script.Invocable.class },
 			JsEngineHelper::invokeThreadEngine);
 
 	/** 把 ScriptEngine 的调用转发到当前线程的引擎实例。 */
