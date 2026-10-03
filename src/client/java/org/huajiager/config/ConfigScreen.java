@@ -57,9 +57,11 @@ public final class ConfigScreen {
         ConfigHuaji.Stands.useHuajiSplash = data.Stands.useHuajiSplash;
         ConfigHuaji.Stands.knifeHeight = data.Stands.knifeHeight;
         ConfigHuaji.Stands.chanceStandFail = data.Stands.chanceStandFail;
+        ConfigHuaji.Stands.arrowStand = data.Stands.arrowStand;
         ConfigHuaji.Stands.standHUDx = data.Stands.standHUDx;
         ConfigHuaji.Stands.standHUDy = data.Stands.standHUDy;
         ConfigHuaji.Stands.timeStopScale = data.Stands.timeStopScale;
         ConfigHuaji.Stands.timeStopEffect = data.Stands.timeStopEffect;
+        ConfigHuaji.Stands.showTimeStopRemain = data.Stands.showTimeStopRemain;
     }
 }

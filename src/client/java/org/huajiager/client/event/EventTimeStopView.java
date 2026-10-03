@@ -1,5 +1,7 @@
 package org.huajiager.client.event;
 
+import java.util.Locale;
+
 import org.huajiager.capability.StandHandler;
 import org.huajiager.config.ConfigHuaji;
 import org.huajiager.init.HuajiConstant;
@@ -13,9 +15,11 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 /**
@@ -79,9 +83,11 @@ public final class EventTimeStopView {
 
 	private static void onHudRender(DrawContext context, float tickDelta) {
 		MinecraftClient mc = MinecraftClient.getInstance();
-		// allowMaskTimeStop 关闭时不绘制时停遮罩与齿轮（判定条件：
-		// ConfigHuaji.Stands.allowMaskTimeStop && 时停激活标志）。
-		if (!isTimeStopActive(mc) || !ConfigHuaji.Stands.allowMaskTimeStop) {
+		if (!isTimeStopActive(mc)) {
+			return;
+		}
+		// allowMaskTimeStop 关闭时不绘制时停遮罩与齿轮。
+		if (!ConfigHuaji.Stands.allowMaskTimeStop) {
 			return;
 		}
 		int width = mc.getWindow().getScaledWidth();
@@ -130,7 +136,18 @@ public final class EventTimeStopView {
 		RenderSystem.disableBlend();
 	}
 
-	private static boolean isTimeStopActive(MinecraftClient mc) {
+	/** 时停剩余时间：剩余 tick 换算为秒（一位小数），坐标由调用方给出（替身 HUD 按键提示下方）。 */
+	public static void drawTimeStopRemain(DrawContext context, MinecraftClient mc, int x, int y) {
+		if (mc.player == null) {
+			return;
+		}
+		TextRenderer textRenderer = mc.textRenderer;
+		String seconds = String.format(Locale.ROOT, "%.1f", getRemaining(mc.player) / 20.0);
+		String text = Text.translatable("stand.huajiage.timestop.remain", seconds).getString();
+		context.drawTextWithShadow(textRenderer, Text.literal(text), x, y, 0xFFFFFF);
+	}
+
+	public static boolean isTimeStopActive(MinecraftClient mc) {
 		PlayerEntity player = mc.player;
 		if (player == null) {
 			return false;
@@ -141,7 +158,7 @@ public final class EventTimeStopView {
 				&& handler.getBuffer() > 0;
 	}
 
-	private static int getRemaining(PlayerEntity player) {
+	public static int getRemaining(PlayerEntity player) {
 		StandHandler handler = StandUtil.getStandHandler(player);
 		return handler == null ? 0 : handler.getBuffer();
 	}

@@ -82,6 +82,10 @@ public final class EventStandHudRender {
 		TextRenderer textRenderer = client.textRenderer;
 		int off = 16;
 
+		// 碟片图标：填在信息块左上角预留的 16px 槽位（文本块已整体下移 off=16 避开）；
+		// 贴图路径由 StandUtil.getDiscTex 给出（自定义替身走 JSON disc 字段）。
+		context.drawTexture(StandUtil.getDiscTex(stand), x, y, 0.0f, 0.0f, 16, 16, 16, 16);
+
 		// —— 右侧替身信息块（坐标与 onRenderOverlay 保持一致）——
 		// 标签：替身
 		draw(context, textRenderer, Text.translatable("stand.huajiage.name").getString(), 8 + x, 2 + off + y);
@@ -109,11 +113,10 @@ public final class EventStandHudRender {
 				Text.translatable("stand.huajiage.mp").getString() + "  " + charge + "/" + maxCharge,
 				8 + x, 40 + off + y, canCost ? COLOR_CHARGE_OK : COLOR_WHITE);
 
-		// —— 左上角按键提示——
-		// 技能提示与切换提示统一在「替身已召唤（isTriggered）」时显示：
-		// 当前实现无 stage 推进机制（stage 恒为 0），若沿用 stage>0 门槛，
-		// 技能提示将永远不显示；此处与 EventStandKey.performSkill 已放开
-		// 的「召唤后即可用技能」判定保持一致。
+		// —— 左上角按键提示 ——
+		// 释放/切换提示在替身已召唤（isTriggered）时显示；技能能否真正释放另由
+		// EventStandKey.performSkill 按 data.getStage() > 0 判定（未进化阶段按键不发包），
+		// 此处提示只表达"召唤后可以按键"。
 		if (ConfigHuaji.Stands.allowStandTip) {
 			String keyUp = KeyLoader.STAND_UP.getBoundKeyLocalizedText().getString();
 			draw(context, textRenderer, Text.translatable("stand.huajiage.tip", keyUp).getString(), 5, 0);
@@ -123,6 +126,15 @@ public final class EventStandHudRender {
 				String keySwitch = KeyLoader.STAND_SWITCH.getBoundKeyLocalizedText().getString();
 				draw(context, textRenderer, Text.translatable("stand.huajiage.tip.mode", keySwitch).getString(), 5, 20);
 			}
+		}
+
+		// —— 时停剩余时间：紧接按键提示下方绘制，避免压到替身信息块的精神力/技能消耗两行 ——
+		if (ConfigHuaji.Stands.showTimeStopRemain && EventTimeStopView.isTimeStopActive(client)) {
+			int tipsBottom = 0;
+			if (ConfigHuaji.Stands.allowStandTip) {
+				tipsBottom = data.isTriggered() ? 30 : 10;
+			}
+			EventTimeStopView.drawTimeStopRemain(context, client, 5, tipsBottom);
 		}
 
 		// —— 已觉醒（stage>0）时展示技能消耗 ——

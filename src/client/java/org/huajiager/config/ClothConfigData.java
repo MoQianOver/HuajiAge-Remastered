@@ -44,9 +44,12 @@ public class ClothConfigData implements ConfigData {
         public boolean useHuajiSplash = false;
         public double knifeHeight = -0.25f;
         public double chanceStandFail = 0.3;
+        @ConfigEntry.Gui.Tooltip
+        public String arrowStand = "";
         public double standHUDx = 0f;
         public double standHUDy = 0.64f;
         public double timeStopScale = 1.0;
         public double timeStopEffect = 1.5;
+        public boolean showTimeStopRemain = true;
     }
 }

@@ -35,9 +35,13 @@ public class ConfigHuaji {
         public boolean useHuajiSplash = false;
         public double knifeHeight = -0.25f;
         public double chanceStandFail = 0.3;
+        /** 觉醒之箭指定授予的替身注册名；空串表示从默认觉醒替身池随机抽取。 */
+        public String arrowStand = "";
         public double standHUDx = 0f;
         public double standHUDy = 0.64f;
         public double timeStopScale = 1.0;
         public double timeStopEffect = 1.5;
+        /** 是否在时停期间于 HUD 显示剩余时间（接在替身按键提示下方；该同步只发给发动者，故仅发动者可见）。 */
+        public boolean showTimeStopRemain = true;
     }
 }
