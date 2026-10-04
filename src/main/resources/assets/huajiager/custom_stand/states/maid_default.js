@@ -16,7 +16,8 @@ Java.asJSONCompatible({
         Helper.potionEffectAdd(entityWrapper.getLivingBase(), "luck", 100, 1);
     },
 
-    // 技能：速度III + 再生 + 发光，各 300 tick，再随机追加一条增益，并播女仆驯服音与升级音
+    // 技能：速度III + 再生 + 发光，各 300 tick，再随机追加一条增益，
+    // 并播原版的两句聊天提示 + 女仆驯服音 + 玩家升级音
     capability: function (worldWrapper, entityWrapper, dataWrapper) {
         var user = entityWrapper.getLivingBase();
         Helper.potionEffectAdd(user, "speed", 300, 3);
@@ -35,8 +36,10 @@ Java.asJSONCompatible({
         var pick = pool[Math.floor(Math.random() * pool.length)];
         Helper.potionEffectAdd(user, pick[0], 300, pick[1]);
 
-        Helper.playSound(user, "touhou_little_maid:maid.ai.tamed", 2.0, 1.0);
-        Helper.playSound(user, "minecraft:entity.player.levelup", 2.0, 1.0);
+        Helper.sendMessage(user, "§c§l女§f§l仆");
+        Helper.sendMessage(user, "\\(>￣▽￣<)/");
+        Helper.playStandSoundWithCooldown(user, "touhou_little_maid:maid.ai.tamed", 2.0);
+        Helper.playStandSoundWithCooldown(user, "minecraft:entity.player.levelup", 2.0);
         return true;
     },
 

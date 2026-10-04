@@ -107,10 +107,7 @@ public final class MaidBallHelper {
         data.setStand(MAID_STAND);
         data.setStage(1);
         // 存女仆自己的 model id：渲染端据此借用她的模型与皮肤（MaidStandRenderer）
-        data.setModel(modelId + "_default");
-        data.setTrigger(false);
-
-        // 对齐原版：先按球里的数据临时还原一只女仆，把她的背包掉在原地再移除，
+        data.setModel(modelId + "_default");        // 对齐原版：先按球里的数据临时还原一只女仆，把她的背包掉在原地再移除，
         // 这样转替身后女仆身上的东西不会凭空消失
         if (world instanceof ServerWorld serverWorld) {
             EntityMaid temp = new EntityMaid(serverWorld);
