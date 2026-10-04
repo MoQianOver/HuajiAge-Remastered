@@ -169,6 +169,8 @@ public final class MaidBallHelper {
         if (!player.isCreative()) {
             disc.decrement(1);
         }
+        // 复活成功一并解除心智剥夺标记（用完 disc 就把剥夺状态清掉）
+        org.huajiager.util.NBTHelper.setDiscDeprive(player, false);
         return true;
     }
 
