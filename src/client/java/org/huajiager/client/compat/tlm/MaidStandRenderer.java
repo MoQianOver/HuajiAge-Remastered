@@ -103,7 +103,8 @@ public final class MaidStandRenderer {
                     new com.github.tartaricacid.touhoulittlemaid.client.sound.data.MaidSoundInstance(
                             event, dummy.getSoundPackId(), dummy, true));
             return true;
-        } catch (RuntimeException e) {
+        } catch (Throwable t) {
+            // 车万缺席时会抛 NoClassDefFoundError（属 Error 而非 RuntimeException），必须一并兜住
             return false;
         }
     }
