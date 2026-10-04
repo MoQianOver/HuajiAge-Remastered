@@ -16,9 +16,9 @@ Java.asJSONCompatible({
         Helper.potionEffectAdd(entityWrapper.getLivingBase(), "luck", 100, 1);
     },
 
-    // 技能：速度III + 再生 + 发光，各 300 tick，再随机追加一条增益，
-    // 并播原版的两句聊天提示 + 升级音 + 女仆驯服音
-    // 注意：两条音效共用同一冷却通道，只有先播的那条会响，因此把必定有声的升级音放前面
+    // 技能：速度III + 再生 + 发光，各 300 tick，再随机追加一条增益，并播原版台词与升级音。
+    // 注意一：车万的女仆音效默认指向空音频（maid/empty），只有装音效包才有声，所以这里用原版升级音保证必定有声。
+    // 注意二：两条音效共用同一冷却通道，同时调用只有第一条会响，因此只保留一条。
     capability: function (worldWrapper, entityWrapper, dataWrapper) {
         var user = entityWrapper.getLivingBase();
         Helper.potionEffectAdd(user, "speed", 300, 3);
@@ -40,7 +40,6 @@ Java.asJSONCompatible({
         Helper.sendMessage(user, "§c§l女§f§l仆");
         Helper.sendMessage(user, "\\(>￣▽￣<)/");
         Helper.playStandSoundWithCooldown(user, "minecraft:entity.player.levelup", 2.0);
-        Helper.playStandSoundWithCooldown(user, "touhou_little_maid:maid.mode.idle", 2.0);
         return true;
     },
 
