@@ -20,7 +20,7 @@ public class ExposedData implements IExposedData {
             Codec.INT.fieldOf("stage").forGetter(ExposedData::getStage),
             Codec.STRING.fieldOf("state").forGetter(ExposedData::getState),
             Codec.STRING.fieldOf("model").forGetter(ExposedData::getModel),
-            Codec.STRING.fieldOf("display_name").forGetter(ExposedData::getDisplayName)
+            Codec.STRING.optionalFieldOf("display_name", "").forGetter(ExposedData::getDisplayName)
     ).apply(instance, ExposedData::new));
 
     private String standName = EMPTY_STAND;
