@@ -17,7 +17,8 @@ Java.asJSONCompatible({
     },
 
     // 技能：速度III + 再生 + 发光，各 300 tick，再随机追加一条增益，
-    // 并播原版的两句聊天提示 + 女仆驯服音 + 玩家升级音
+    // 并播原版的两句聊天提示 + 升级音 + 女仆驯服音
+    // 注意：两条音效共用同一冷却通道，只有先播的那条会响，因此把必定有声的升级音放前面
     capability: function (worldWrapper, entityWrapper, dataWrapper) {
         var user = entityWrapper.getLivingBase();
         Helper.potionEffectAdd(user, "speed", 300, 3);
@@ -38,8 +39,8 @@ Java.asJSONCompatible({
 
         Helper.sendMessage(user, "§c§l女§f§l仆");
         Helper.sendMessage(user, "\\(>￣▽￣<)/");
-        Helper.playStandSoundWithCooldown(user, "touhou_little_maid:maid.ai.tamed", 2.0);
         Helper.playStandSoundWithCooldown(user, "minecraft:entity.player.levelup", 2.0);
+        Helper.playStandSoundWithCooldown(user, "touhou_little_maid:maid.mode.idle", 2.0);
         return true;
     },
 
