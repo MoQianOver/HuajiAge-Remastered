@@ -233,16 +233,19 @@ public final class StandPowerHelper {
         }
         Identifier sid = Identifier.tryParse(soundId);
         SoundEvent se = sid == null ? null : Registries.SOUND_EVENT.get(sid);
+        org.slf4j.LoggerFactory.getLogger("huajiager").info("[HuajiSound] id={} resolved={}", soundId, se);
         if (se == null || se == SoundEvents.INTENTIONALLY_EMPTY) {
             return false;
         }
         String channel = soundChannel(soundId);
+        org.slf4j.LoggerFactory.getLogger("huajiager").info("[HuajiSound] id={} channel={} ready={}", soundId, channel, isStandSoundReady(user, channel));
         if (!isStandSoundReady(user, channel)) {
             return false;
         }
         int duration = STAND_SOUND_DURATION_TICKS.getOrDefault(soundId, 60);
         STAND_SOUND_CD_UNTIL.put(user.getUuid() + ":" + channel, user.age + duration);
         HuajiSoundPlayer.playToNearbyClient(user, se, volume);
+        org.slf4j.LoggerFactory.getLogger("huajiager").info("[HuajiSound] id={} broadcast vol={}", soundId, volume);
         return true;
     }
 
