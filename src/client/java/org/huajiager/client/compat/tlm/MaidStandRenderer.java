@@ -72,7 +72,40 @@ public final class MaidStandRenderer {
         dummy.prevHeadYaw = entity.prevHeadYaw;
         dummy.headYaw = entity.headYaw;
         client.getEntityRenderDispatcher().render(dummy, 0.0, 0.0, 0.0, yaw, tickDelta, matrices, vcp, light);
+        playSummonVoiceIfNeeded(entity);
         return true;
+    }
+
+    /** 已播过召唤语音的替身，避免每帧重复播放。 */
+    private static final java.util.Set<Integer> SUMMON_VOICED = java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    /** 某只女仆替身首次出现时，让她说一句车万驯服语音。 */
+    private static void playSummonVoiceIfNeeded(EntityStandBase entity) {
+        if (SUMMON_VOICED.add(entity.getId())) {
+            playVoice(com.github.tartaricacid.touhoulittlemaid.init.InitSounds.MAID_TAMED, entity);
+        }
+    }
+
+    /**
+     * 让哑女仆发声：必须走车万的 {@code MaidSoundInstance}。
+     *
+     * <p>车万女仆语音的 43 条 sounds.json 条目全部指向空占位 {@code maid/empty}，
+     * 原版 SoundEvent 广播必然静音；女仆本人说话走的是车万自己的音频系统
+     * （CustomSoundLoader 缓存 + MaidSoundInstance），车万的音效包 GUI 也是这么播的。</p>
+     */
+    public static boolean playVoice(net.minecraft.sound.SoundEvent event, EntityStandBase entity) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (event == null || client.getSoundManager() == null || dummy == null) {
+            return false;
+        }
+        try {
+            client.getSoundManager().play(
+                    new com.github.tartaricacid.touhoulittlemaid.client.sound.data.MaidSoundInstance(
+                            event, dummy.getSoundPackId(), dummy, true));
+            return true;
+        } catch (RuntimeException e) {
+            return false;
+        }
     }
 
     /** 替身数据里存的模型 id（球转替身时写入），去掉状态后缀即车万的 model id。 */
