@@ -64,6 +64,9 @@ public final class MaidBallHelper {
         NbtCompound data = new NbtCompound();
         maid.writeNbt(data);
         ball.setMaidData(stack, maid.getModelId(), data, player);
+        // 女仆的名字只体现在实体 getName() 上（模型名，或被名牌改过的名字），
+        // 实体 NBT 里不一定有对应键，所以在这里单独取出来存进球自己的键
+        ball.setMaidName(stack, maid.getName().getString());
         explosionParticle(maid);
         maid.discard();
         return true;
@@ -106,9 +109,8 @@ public final class MaidBallHelper {
         String modelId = ball.getMaidModel(stack);
         data.setStand(MAID_STAND);
         data.setStage(1);
-        // HUD 显示名取女仆本人的自定义名（NBT 里的字符串带引号，去掉后作为纯文本显示）；
-        // 没起过名字的女仆用通用称呼，避免 HUD 退回语言键
-        String maidName = ball.getMaidTag(stack).getString("CustomName").replace("\"", "").trim();
+        // HUD 显示名取捕捉时存下的女仆名字；老球没有该键时用通用称呼，避免 HUD 退回语言键
+        String maidName = ball.getMaidName(stack);
         data.setDisplayName(maidName.isEmpty() ? "女仆" : maidName);
         // 存女仆自己的 model id：渲染端据此借用她的模型与皮肤（MaidStandRenderer）
         data.setModel(modelId + "_default");        // 对齐原版：先按球里的数据临时还原一只女仆，把她的背包掉在原地再移除，

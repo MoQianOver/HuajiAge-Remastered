@@ -81,14 +81,15 @@ public class ItemYinYangBall extends Item {
         // 对齐原版：第一行固定显示，按住 Shift 再展开"从者/御主"
         tooltip.add(net.minecraft.text.Text.translatable("item.huajiager.yin_yang_ball.tooltips.1"));
         if (org.huajiager.util.ClientKeyState.isShiftDown()) {
-            String customName = getMaidTag(stack).getString("CustomName").replace("\"", "");
+            // 名字在捕捉时从女仆实体读出并存进 maid_name；老球没有该键时回落通用称呼
+            String maidName = getMaidName(stack);
             net.minecraft.text.Text servant;
             if (!isModelLoad(stack)) {
                 servant = net.minecraft.text.Text.translatable("item.huajiager.yin_yang_ball.empty");
-            } else if (customName.isEmpty()) {
+            } else if (maidName.isEmpty()) {
                 servant = net.minecraft.text.Text.translatable("item.huajiager.yin_yang_ball.maid");
             } else {
-                servant = net.minecraft.text.Text.literal(customName);
+                servant = net.minecraft.text.Text.literal(maidName);
             }
             tooltip.add(net.minecraft.text.Text.translatable("item.huajiager.yin_yang_ball.tooltips.2", servant));
             tooltip.add(net.minecraft.text.Text.translatable("item.huajiager.yin_yang_ball.tooltips.3",
@@ -217,6 +218,15 @@ public class ItemYinYangBall extends Item {
         return !"empty".equals(getMaidModel(stack));
     }
 
+    /** 球里存的女仆名字：捕捉时从实体读出，没有则为空串。 */
+    public String getMaidName(ItemStack stack) {
+        return NBTHelper.getTagCompoundSafe(stack).getString(NBT.MAID_NAME.getName());
+    }
+
+    public void setMaidName(ItemStack stack, String name) {
+        NBTHelper.getTagCompoundSafe(stack).putString(NBT.MAID_NAME.getName(), name == null ? "" : name);
+    }
+
     public boolean isDataLoad(ItemStack stack) {
         return !getMaidTag(stack).isEmpty();
     }
@@ -229,17 +239,19 @@ public class ItemYinYangBall extends Item {
         return getMaidOwner(stack).equals(entity.getUuid().toString());
     }
 
-    /** 清空球里的女仆（模型与实体数据都重置，owner 也回到 empty）。 */
+    /** 清空球里的女仆（模型与实体数据都重置，owner 与存下的名字也一并清掉）。 */
     public void reset(ItemStack stack) {
         setMaidData(stack, "empty", new NbtCompound(), "empty");
+        NBTHelper.getTagCompoundSafe(stack).remove(NBT.MAID_NAME.getName());
     }
 
-    /** 物品自身 NBT 键名（与原版同名同值）。 */
+    /** 物品自身 NBT 键名（与原版同名同值，maid_name 为本模组附加的键）。 */
     public enum NBT {
         MAID_MODEL("model"),
         MAID_DATA("data"),
         MAID_OWNER_NAME("owner_name"),
-        MAID_OWNER("owner");
+        MAID_OWNER("owner"),
+        MAID_NAME("maid_name");
 
         private final String name;
 
