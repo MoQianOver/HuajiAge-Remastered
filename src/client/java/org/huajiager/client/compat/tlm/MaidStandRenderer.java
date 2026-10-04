@@ -81,9 +81,19 @@ public final class MaidStandRenderer {
 
     /** 某只女仆替身首次出现时，让她说一句车万驯服语音。 */
     private static void playSummonVoiceIfNeeded(EntityStandBase entity) {
-        if (SUMMON_VOICED.add(entity.getId())) {
-            playVoice(com.github.tartaricacid.touhoulittlemaid.init.InitSounds.MAID_TAMED, entity);
+        if (!SUMMON_VOICED.add(entity.getId())) {
+            return;
         }
+        // 召唤音随机取一条女仆环境/战斗语音，与技能用的驯服语音区分开
+        // （数组在方法内构造，避免类初始化阶段就触碰车万的类）
+        net.minecraft.sound.SoundEvent[] voices = {
+                com.github.tartaricacid.touhoulittlemaid.init.InitSounds.MAID_IDLE,
+                com.github.tartaricacid.touhoulittlemaid.init.InitSounds.MAID_ATTACK,
+                com.github.tartaricacid.touhoulittlemaid.init.InitSounds.MAID_DANMAKU_ATTACK,
+                com.github.tartaricacid.touhoulittlemaid.init.InitSounds.MAID_FIND_TARGET,
+                com.github.tartaricacid.touhoulittlemaid.init.InitSounds.MAID_SNOW
+        };
+        playVoice(voices[java.util.concurrent.ThreadLocalRandom.current().nextInt(voices.length)], entity);
     }
 
     /**
