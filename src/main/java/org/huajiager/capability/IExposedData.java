@@ -30,6 +30,11 @@ public interface IExposedData {
 
     void setModel(String model);
 
+    /** HUD 上显示的替身名（女仆替身用女仆本人的名字），空串表示沿用语言键。 */
+    String getDisplayName();
+
+    void setDisplayName(String displayName);
+
     boolean isDirty();
 
     void setDirty(boolean dirty);

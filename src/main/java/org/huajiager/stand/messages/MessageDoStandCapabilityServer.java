@@ -100,10 +100,14 @@ public record MessageDoStandCapabilityServer(int cost) implements FabricPacket {
 		// 能力真正触发后才启动。此前客户端按技能键本地即播歌词，能量不足时服务端
 		// 校验失败（本 handler 提前 return）能力未触发，歌词仍照播（用户反馈 bug）。
 		// 复用 MessageDoStandPowerClient（载荷 playerName+standName），客户端 handler
-		// 对 ORGA_REQUIEM 且实体为本机玩家时调 EventStandKey.triggerRequiemBgm()。
-		if (StandLoader.ORGA_REQUIEM.getName().equals(stand.getName())) {
+		// 对 ORGA_REQUIEM 且实体为本机玩家时调 EventStandKey.triggerRequiemBgm()；
+		// 女仆替身同样借本确认包驱动客户端技能语音（客户端 handler 按替身名分发）。
+		// MAID_STAND 是编译期字符串常量，引用它不会加载车万相关的 compat 类。
+		String firedStand = stand.getName();
+		if (StandLoader.ORGA_REQUIEM.getName().equals(firedStand)
+				|| org.huajiager.compat.tlm.MaidBallHelper.MAID_STAND.equals(firedStand)) {
 			ServerPlayNetworking.send(player,
-					new MessageDoStandPowerClient(player.getGameProfile().getName(), stand.getName()));
+					new MessageDoStandPowerClient(player.getGameProfile().getName(), firedStand));
 		}
 	}
 }

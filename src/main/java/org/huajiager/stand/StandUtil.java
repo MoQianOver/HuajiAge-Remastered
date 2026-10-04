@@ -131,7 +131,8 @@ public final class StandUtil {
         }
         StandNetWorkHandler.sendTo(player, new SyncExposedStandDataMessage(
                 data.getStand(), data.getStage(), data.isTriggered(), data.isHandDisplay(),
-                data.getState(), data.getModel(), player.getGameProfile().getName(), true));
+                data.getState(), data.getModel(), data.getDisplayName(),
+                player.getGameProfile().getName(), true));
     }
 
     /**

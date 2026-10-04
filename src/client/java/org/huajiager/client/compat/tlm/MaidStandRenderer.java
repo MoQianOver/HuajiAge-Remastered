@@ -87,6 +87,20 @@ public final class MaidStandRenderer {
     }
 
     /**
+     * 技能语音：技能确认包到达宿主本机后调用，让当前女仆替身说一句车万驯服语音。
+     *
+     * <p>发声本身复用渲染时创建的哑女仆实例，这里只用 owner 找到该玩家的替身实体；
+     * 还没渲染过、或找不到替身实体时静默返回 false。</p>
+     */
+    public static boolean playSkillVoice(net.minecraft.entity.LivingEntity owner) {
+        EntityStandBase standEntity = org.huajiager.stand.helper.StandPowerHelper.getUserStand(owner);
+        if (standEntity == null) {
+            return false;
+        }
+        return playVoice(com.github.tartaricacid.touhoulittlemaid.init.InitSounds.MAID_TAMED, standEntity);
+    }
+
+    /**
      * 让哑女仆发声：必须走车万的 {@code MaidSoundInstance}。
      *
      * <p>车万女仆语音的 43 条 sounds.json 条目全部指向空占位 {@code maid/empty}，

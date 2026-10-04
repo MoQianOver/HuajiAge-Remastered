@@ -19,7 +19,8 @@ public class ExposedData implements IExposedData {
             Codec.BOOL.fieldOf("hand_display").forGetter(ExposedData::isHandDisplay),
             Codec.INT.fieldOf("stage").forGetter(ExposedData::getStage),
             Codec.STRING.fieldOf("state").forGetter(ExposedData::getState),
-            Codec.STRING.fieldOf("model").forGetter(ExposedData::getModel)
+            Codec.STRING.fieldOf("model").forGetter(ExposedData::getModel),
+            Codec.STRING.fieldOf("display_name").forGetter(ExposedData::getDisplayName)
     ).apply(instance, ExposedData::new));
 
     private String standName = EMPTY_STAND;
@@ -29,19 +30,22 @@ public class ExposedData implements IExposedData {
     private int stage = 0;
     private String state = States.DEFAULT.getName();
     private String modelID = EMPTY_STAND;
+    /** HUD 显示名：默认为空串，表示按替身语言键显示。 */
+    private String displayName = "";
 
     public ExposedData() {
     }
 
     /** 全参构造器：仅用于 Codec 反序列化还原 */
     public ExposedData(String standName, boolean isTriggered, boolean isHandDisplay,
-                       int stage, String state, String modelID) {
+                       int stage, String state, String modelID, String displayName) {
         this.standName = standName;
         this.isTriggered = isTriggered;
         this.isHandDisplay = isHandDisplay;
         this.stage = stage;
         this.state = state;
         this.modelID = modelID;
+        this.displayName = displayName;
     }
 
     @Override
@@ -110,6 +114,17 @@ public class ExposedData implements IExposedData {
     @Override
     public void setModel(String model) {
         this.modelID = model;
+        markDirty();
+    }
+
+    @Override
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    @Override
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
         markDirty();
     }
 

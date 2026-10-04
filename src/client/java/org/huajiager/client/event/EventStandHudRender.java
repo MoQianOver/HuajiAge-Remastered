@@ -89,9 +89,19 @@ public final class EventStandHudRender {
 		// —— 右侧替身信息块（坐标与 onRenderOverlay 保持一致）——
 		// 标签：替身
 		draw(context, textRenderer, Text.translatable("stand.huajiage.name").getString(), 8 + x, 2 + off + y);
-		// 替身显示名（localName 为 lang key，translatable 本地化为中文）
-		draw(context, textRenderer,
-				Text.translatable(StandUtil.getLocalName(stand)).getString(), 13 + x, 10 + off + y);
+		// 替身显示名（localName 为 lang key，translatable 本地化为中文）；
+		// 女仆替身改显示那一只女仆本人的名字（转替身时随替身数据写入并同步），字段为空时仍走语言键
+		String displayName = null;
+		if (org.huajiager.compat.tlm.MaidBallHelper.MAID_STAND.equals(data.getStand())) {
+			String maidName = data.getDisplayName();
+			if (maidName != null && !maidName.isEmpty()) {
+				displayName = maidName;
+			}
+		}
+		if (displayName == null) {
+			displayName = Text.translatable(StandUtil.getLocalName(stand)).getString();
+		}
+		draw(context, textRenderer, displayName, 13 + x, 10 + off + y);
 		// 阶段
 		draw(context, textRenderer, Text.translatable("stand.huajiage.stage").getString() + "  " + stage, 8 + x, 20 + off + y);
 		// 模式（状态机状态）：自定义替身状态用 JS 声明的 stateKey（如

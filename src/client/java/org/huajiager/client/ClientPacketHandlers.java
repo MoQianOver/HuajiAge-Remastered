@@ -68,6 +68,14 @@ public final class ClientPacketHandlers {
 					if (StandLoader.ORGA_REQUIEM.getName().equals(payload.standName()) && entity == mc.player) {
 						EventStandKey.triggerRequiemBgm();
 					}
+					// 女仆替身技能语音：本包只在服务端能量校验通过、能力真正触发后单播宿主，
+					// 所以「替身名是女仆替身 + 实体是本机玩家」两条判定足够，无需另加客户端状态。
+					// 车万缺席时不加载 compat 类（与渲染路径同一 isModLoaded 守卫写法）。
+					if (entity == mc.player
+							&& org.huajiager.compat.tlm.MaidBallHelper.MAID_STAND.equals(payload.standName())
+							&& net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("touhou_little_maid")) {
+						org.huajiager.client.compat.tlm.MaidStandRenderer.playSkillVoice(entity);
+					}
 				}
 			});
 		});
@@ -193,6 +201,7 @@ public final class ClientPacketHandlers {
 						data.setHandDisplay(payload.hand());
 						data.setState(payload.state());
 						data.setModel(payload.model());
+						data.setDisplayName(payload.displayName());
 						// 镇魂曲的鞘翅循环音不在这里单独启停：它已由召唤时创建的替身循环音层
 						// 承担（音量按当前状态 soundLoop 门控，default 与 fly 都是循环态），
 						// 两处都播会叠成双份鞘翅声。
